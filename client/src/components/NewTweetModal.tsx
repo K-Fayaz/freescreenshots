@@ -21,7 +21,7 @@ const NewTweetModal: React.FC<NewTweetModalProps> = ({ isOpen, onClose, setPostD
     console.log('URL submitted:', url);
 
     setLoading(true);
-    let endpoint = `${BASE_URL}/screenshots?url=${url}`;
+    let endpoint = `${BASE_URL}/api/screenshots?url=${url}`;
 
     axios({
       method:"POST",
