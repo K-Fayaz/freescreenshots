@@ -21,7 +21,7 @@ A beautiful, production-ready web app for capturing and customizing screenshots 
 
 ## Demo
 
-![screenshot demo](client/src/assets/avatar1.png)
+https://youtu.be/Up2pS7dQDi0
 
 ## Tech Stack
 - **Frontend:** React, TypeScript, Vite, Tailwind CSS, Lucide React, html2canvas, html-to-image
@@ -29,11 +29,6 @@ A beautiful, production-ready web app for capturing and customizing screenshots 
 
 ---
 
-## License
-
-[MIT](LICENSE)
-
----
 
 ## Credits
 - UI/UX: [@fayaz_kudremane](https://x.com/fayaz_kudremane/) 
