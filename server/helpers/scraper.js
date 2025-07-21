@@ -6,8 +6,31 @@ const axios = require("axios");
 puppeteer.use(StealthPlugin());
 
 async function scrapeTweet(url) {
-    const browser = await puppeteer.launch({ headless: "new" });
+    console.log('[scrapeTweet] Starting Puppeteer browser...');
+    const browser = await puppeteer.launch({
+        headless: "new",
+        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
+        args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--disable-extensions',
+            '--disable-gpu',
+            '--disable-web-security',
+            '--disable-features=VizDisplayCompositor',
+            '--no-first-run',
+            '--no-zygote',
+            '--single-process',
+            '--disable-background-timer-throttling',
+            '--disable-backgrounding-occluded-windows',
+            '--disable-renderer-backgrounding'
+        ],
+        protocolTimeout: 180000, // 3 minutes
+        timeout: 120000 // 2 minutes browser launch timeout
+    });
     const page = await browser.newPage();
+    page.setDefaultTimeout(60000);
+    page.setDefaultNavigationTimeout(60000);
 
     // Set a realistic user-agent and language
     await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36');
@@ -16,6 +39,7 @@ async function scrapeTweet(url) {
     });
 
     try {
+        console.log(`[scrapeTweet] Navigating to URL: ${url}`);
         await page.goto(url, { waitUntil: "networkidle2", timeout: 30000 });
 
         // Wait for the tweet article, but with a timeout
@@ -31,24 +55,63 @@ async function scrapeTweet(url) {
         const tweetHtml = await page.$eval("article", el => el.outerHTML);
 
         await browser.close();
+        console.log('[scrapeTweet] Scraping completed successfully.');
         return tweetHtml;
     } catch (err) {
         await browser.close();
+        console.log('[scrapeTweet] Error during scraping:', err);
         throw err;
     }
 }
   
 async function scrapePeerlistPost(url) {
-    const browser = await puppeteer.launch({ headless: "new" });
+    console.log('[scrapePeerlistPost] Starting Puppeteer browser...');
+    const browser = await puppeteer.launch({
+        headless: "new",
+        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
+        args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--disable-extensions',
+            '--disable-gpu',
+            '--disable-web-security',
+            '--disable-features=VizDisplayCompositor',
+            '--no-first-run',
+            '--no-zygote',
+            '--single-process',
+            '--disable-background-timer-throttling',
+            '--disable-backgrounding-occluded-windows',
+            '--disable-renderer-backgrounding'
+        ],
+        protocolTimeout: 180000, // 3 minutes
+        timeout: 120000 // 2 minutes browser launch timeout
+    });
     const page = await browser.newPage();
+    page.setDefaultTimeout(60000);
+    page.setDefaultNavigationTimeout(60000);
+
+    // Set a realistic user-agent and language
+    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36');
+    await page.setExtraHTTPHeaders({
+        'accept-language': 'en-US,en;q=0.9'
+    });
   
-    await page.goto(url, { waitUntil: "networkidle2" });
+    try {
+        console.log(`[scrapePeerlistPost] Navigating to URL: ${url}`);
+        await page.goto(url, { waitUntil: "networkidle2" });
   
-    // Fetch the entire HTML content of the page
-    const fullHtml = await page.content();
+        // Fetch the entire HTML content of the page
+        const fullHtml = await page.content();
   
-    await browser.close();
-    return fullHtml;
+        await browser.close();
+        console.log('[scrapePeerlistPost] Scraping completed successfully.');
+        return fullHtml;
+    } catch (err) {
+        await browser.close();
+        console.log('[scrapePeerlistPost] Error during scraping:', err);
+        throw err;
+    }
 }
   
 function extractTweetData(htmlString) {

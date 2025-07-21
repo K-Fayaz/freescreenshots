@@ -19,10 +19,10 @@ const Header: React.FC<HeaderProps> = ({ onNewTweetClick }) => {
             <Plus size={20} />
             <span>New post</span>
           </button>
-          <div className="flex items-center space-x-2 text-sm text-gray-500">
+          {/* <div className="flex items-center space-x-2 text-sm text-gray-500">
             <span>Screenshots downloaded:</span>
             <span className="font-semibold text-gray-700">1,247</span>
-          </div>
+          </div> */}
         </div>
         
         <button 
