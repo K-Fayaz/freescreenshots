@@ -75,7 +75,7 @@ const TweetPreview: React.FC<TweetPreviewProps> = ({
           {/* Render post details if available */}
           {postDetails && (
             postDetails.platform === 'x.com' ? (
-              <Tweet details={postDetails.post} logo={logo} theme={theme}/>
+              <Tweet details={postDetails.post} logo={logo} theme={theme} showMetrics={showMetrics} showViews={showViews}/>
             ) : (
               <h1>hola</h1>
             )

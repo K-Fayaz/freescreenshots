@@ -84,7 +84,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   const [customGradientFrom, setCustomGradientFrom] = React.useState('#4F46E5');
   const [customGradientTo, setCustomGradientTo] = React.useState('#9333EA');
   return (
-    <div className="w-80 bg-white border-l border-gray-200 h-screen overflow-y-auto relative">
+    <div className="w-80 bg-white border-l border-gray-200 h-screen overflow-y-auto overflow-x-hidden relative">
       <div className="p-6">
         {/* Tab Selection */}
         {/* <div className="flex space-x-1 mb-6">

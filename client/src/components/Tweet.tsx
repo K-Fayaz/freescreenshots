@@ -7,9 +7,11 @@ interface TweetProps {
     details: any;
     logo: string;
     theme: 'Light' | 'Dark';
+    showMetrics: boolean;
+    showViews: boolean;
 }
 
-const Tweet: React.FC<TweetProps> = ({ details, logo, theme }) => {
+const Tweet: React.FC<TweetProps> = ({ details, logo, theme, showMetrics, showViews }) => {
     return(
         <div className="p-5">
             {/* Top: Profile */}
@@ -102,6 +104,7 @@ const Tweet: React.FC<TweetProps> = ({ details, logo, theme }) => {
                 )}
             </div>
             {/* Tweet Metrics */}
+            {showMetrics && (
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 28, marginBottom: 0, color: '#71767b', fontSize: 16 }}>
               <div style={{ display: 'flex', gap: 32 }}>
                 {/* Replies */}
@@ -124,11 +127,14 @@ const Tweet: React.FC<TweetProps> = ({ details, logo, theme }) => {
                 </span>
               </div>
               {/* Views */}
-              <span style={{ color: theme === 'Dark' ? '#fff' : '#000', fontWeight: 700, fontSize: 16 }}>
-                {details.views ? details.views : 0}
-                <span style={{ color: '#71767b', fontWeight: 400, marginLeft: 4 }}>Views</span>
-              </span>
+              {showViews && (
+                <span style={{ color: theme === 'Dark' ? '#fff' : '#000', fontWeight: 700, fontSize: 16 }}>
+                  {details.views ? details.views : 0}
+                  <span style={{ color: '#71767b', fontWeight: 400, marginLeft: 4 }}>Views</span>
+                </span>
+              )}
             </div>
+            )}
         </div>
     )
 }
