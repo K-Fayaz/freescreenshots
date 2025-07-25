@@ -23,7 +23,7 @@ app.get('/api/health',(req,res) => {
 })
 
 // CORS image proxy endpoint
-app.get('/image-proxy', (req, res) => {
+app.get('/api/image-proxy', (req, res) => {
   const url = req.query.url;
   if (!url) return res.status(400).send('Missing url param');
   request({ url, encoding: null }, (err, resp, buffer) => {
@@ -33,7 +33,10 @@ app.get('/image-proxy', (req, res) => {
       res.send(buffer);
     } else {
       console.log("erro occured: ",err);
-      res.status(500).send('Error fetching image');
+      res.status(500).json({
+        message:"Something went wrong!",
+        error: err
+      });
     }
   });
 });

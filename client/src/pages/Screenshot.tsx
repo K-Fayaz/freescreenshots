@@ -54,7 +54,7 @@ function Screenshot() {
       
       // Multiple CORS proxy options to try
       const CORS_PROXIES = [
-        'http://localhost:8080/image-proxy?url=',
+        '/image-proxy?url=',
         'https://corsproxy.io/?',
         'https://api.codetabs.com/v1/proxy?quest=',
         'https://cors.bridged.cc/',
