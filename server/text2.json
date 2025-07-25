@@ -1,0 +1,143 @@
+{
+  "props": {
+    "pageProps": {
+      "postData": {
+        "postTitle": "React Native Architecture: What Really Happens Under the Hood",
+        "caption": "<p>Hey Peers, I’ve just published a new article on Peerlist. Give it a read and share your thoughts! <a target=\"_blank\" rel=\"noopener noreferrer\" class=\"break-all link-break text-gray-500 hover:underline\" href=\"https://peerlist.io/sahilbhosale/articles/react-native-architecture-a-deep-dive\">https://peerlist.io/sahilbhosale/articles/react-native-architecture-a-deep-dive</a> </p>",
+        "context": "ARTICLE",
+        "createdAt": "2025-07-24T07:54:40.557Z",
+        "updatedAt": "2025-07-24T16:18:17.485Z",
+        "embed": "ARTICLE",
+        "media": [],
+        "videos": [],
+        "postedFrom": "WEB",
+        "commentsUpdatedAt": null,
+        "metaData": {
+          "id": "BLGHOK8D96QDRLRBJC8PJRAL8ALQ6E",
+          "title": "React Native Architecture: A Deep Dive Into What Really Happens Under the Hood",
+          "slug": "react-native-architecture-a-deep-dive",
+          "subTitle": "After working with React Native for over a year, I've learned that understanding how it works isn't just nice to know it helps you write better code, fix bugs faster, and make your apps run smoother. ",
+          "publishedAt": "2025-07-24T07:53:46.489Z",
+          "createdBy": "UH9OLQPEOBLR8GL2G9OGNB8MORAR",
+          "url": "https://peerlist.io/sahilbhosale/articles/react-native-architecture-a-deep-dive",
+          "seo": {
+            "title": "React Native Architecture: A Deep Dive Into What Really Happens Under the Hood",
+            "description": "I want to break down the main parts that make React Native work and show you exactly what happens when someone taps a button in your app.",
+            "ogImage": null,
+            "keywords": [
+              "React Native"
+            ]
+          },
+          "creator": {
+            "displayName": "Sahil Bhosale",
+            "firstName": "Sahil",
+            "headline": "React Native | React JS | Javascript",
+            "lastName": "Bhosale",
+            "profileHandle": "sahilbhosale",
+            "profilePicture": "https://dqy38fnwh4fqs.cloudfront.net/UH9OLQPEOBLR8GL2G9OGNB8MORAR/h9olqpeoblr8gl2g9ognb8morar-profile.webp",
+            "verified": true,
+            "id": "UH9OLQPEOBLR8GL2G9OGNB8MORAR",
+            "canSuperUpvote": false,
+            "upvoteWeight": 1
+          },
+          "upvoteCount": 3,
+          "bookmarkCount": 0,
+          "commentCount": 0,
+          "editAccess": false,
+          "featuredImage": "https://dqy38fnwh4fqs.cloudfront.net/UH9OLQPEOBLR8GL2G9OGNB8MORAR/blog/featured-a86bbf63-ee5a-4f5e-861a-304c9c2ed7c8.webp",
+          "content": "The Big Picture FirstBefore we look at each part, let's understand what React Native is trying to do. Regular native apps need different code for iOS and Android. React Native fixe",
+          "readTime": 6,
+          "link": "https://peerlist.io/sahilbhosale/articles/react-native-architecture-a-deep-dive",
+          "autoShared": true
+        },
+        "postedBy": {
+          "displayName": "Sahil Bhosale",
+          "firstName": "Sahil",
+          "headline": "React Native | React JS | Javascript",
+          "lastName": "Bhosale",
+          "profileHandle": "sahilbhosale",
+          "profilePicture": "https://dqy38fnwh4fqs.cloudfront.net/UH9OLQPEOBLR8GL2G9OGNB8MORAR/h9olqpeoblr8gl2g9ognb8morar-profile.webp",
+          "verified": true,
+          "id": "UH9OLQPEOBLR8GL2G9OGNB8MORAR",
+          "canSuperUpvote": false,
+          "upvoteWeight": 1
+        },
+        "id": "ACTHDNDK8L98LJ97K1N7BOM6NLQLAN",
+        "upvoteCount": 3,
+        "resharedCount": 0,
+        "contextLabel": "article",
+        "commentCount": 0,
+        "isBookmarked": false,
+        "timestamp": "2025-07-24T16:18:17.485Z",
+        "postOG": {
+          "image": "https://dqy38fnwh4fqs.cloudfront.net/website/scroll-post-og.webp",
+          "title": "React Native Architecture: What Really Happens Under the Hoo",
+          "description": "Hey Peers, I’ve just published a new article on Peerlist. Give it a read and share your thoughts! https://peerlist.io/sahilbhosale/articles/react-native-architecture-a-deep-dive "
+        },
+        "jsonLD": {
+          "@context": "https://schema.org",
+          "@type": "SocialMediaPosting",
+          "url": "https://peerlist.io/scroll/post/ACTHDNDK8L98LJ97K1N7BOM6NLQLAN",
+          "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https://peerlist.io/scroll/post/ACTHDNDK8L98LJ97K1N7BOM6NLQLAN"
+          },
+          "headline": "React Native Architecture: What Really Happens Under the Hood",
+          "datePublished": "2025-07-24T07:54:40.557Z",
+          "dateModified": "2025-07-24T16:18:17.485Z",
+          "author": {
+            "@type": "Person",
+            "name": "Sahil Bhosale",
+            "url": "https://peerlist.io/sahilbhosale"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "Peerlist",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://peerlist.io/favicon_512.png"
+            }
+          },
+          "articleBody": "Hey Peers, I’ve just published a new article on Peerlist. Give it a read and share your thoughts! https://peerlist.io/sahilbhosale/articles/react-native-architecture-a-deep-dive ",
+          "interactionStatistic": [
+            {
+              "@type": "InteractionCounter",
+              "interactionType": {
+                "@type": "LikeAction",
+                "name": "Like"
+              },
+              "userInteractionCount": 3
+            },
+            {
+              "@type": "InteractionCounter",
+              "interactionType": {
+                "@type": "CommentAction",
+                "name": "Comment"
+              },
+              "userInteractionCount": 0
+            },
+            {
+              "@type": "InteractionCounter",
+              "interactionType": {
+                "@type": "ShareAction",
+                "name": "Share"
+              },
+              "userInteractionCount": 0
+            }
+          ]
+        }
+      },
+      "postId": "ACTHDNDK8L98LJ97K1N7BOM6NLQLAN"
+    },
+    "__N_SSP": true
+  },
+  "page": "/scroll/post/[postId]",
+  "query": {
+    "postId": "ACTHDNDK8L98LJ97K1N7BOM6NLQLAN"
+  },
+  "buildId": "gzWsqlrGIsH3Ci2mAKmml",
+  "isFallback": false,
+  "isExperimentalCompile": false,
+  "gssp": true,
+  "scriptLoader": []
+}

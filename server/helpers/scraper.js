@@ -40,6 +40,7 @@ async function scrapeTweet(url) {
 
     try {
         console.log(`[scrapeTweet] Navigating to URL: ${url}`);
+        // FIXME: Navigation timeout of 30000 ms exceeded - Fix this error
         await page.goto(url, { waitUntil: "networkidle2", timeout: 30000 });
 
         // Wait for the tweet article, but with a timeout
@@ -101,12 +102,12 @@ async function scrapePeerlistPost(url) {
         console.log(`[scrapePeerlistPost] Navigating to URL: ${url}`);
         await page.goto(url, { waitUntil: "networkidle2" });
   
-        // Fetch the entire HTML content of the page
-        const fullHtml = await page.content();
+        // Fetch only the <body> HTML content of the page
+        const bodyHtml = await page.$eval('body', el => el.outerHTML);
   
         await browser.close();
         console.log('[scrapePeerlistPost] Scraping completed successfully.');
-        return fullHtml;
+        return bodyHtml;
     } catch (err) {
         await browser.close();
         console.log('[scrapePeerlistPost] Error during scraping:', err);
@@ -299,98 +300,110 @@ function extractTweetData(htmlString) {
 function extractPeerlistPostData(htmlString) {
   const $ = cheerio.load(htmlString);
 
-  // Profile picture
-  let profileImg = null;
-  const profileImgElem = $('img[alt][class*="rounded-full"][src]').first();
-  if (profileImgElem.length) profileImg = profileImgElem.attr('src');
+  // Try to get from JSON-LD if available
+  const jsonLdScript = $('script#__NEXT_DATA__').html();
+  console.log(jsonLdScript);
+  let profileImg = null, username = null, profileHandle = null, contextLabel = null, title = null, content = null, upvotes = 0, comments = 0, reposts = 0, time = null, media = [], isVideo = false, embed = null, projectEmbed = null, linkEmbed = null;
+  let pollEmbed = null;
+  let articleEmbed = null;
 
-  // Username (display name)
-  let username = null;
-  const usernameElem = $('h3.text-gray-1k.font-semibold.text-sm').first();
-  if (usernameElem.length) username = usernameElem.text().trim();
-
-  // Profile handle (e.g., raymond)
-  let profileHandle = null;
-  const handleElem = $('div.text-gray-500.text-xs a[href^="/"] span').filter((i, el) => $(el).text().trim().startsWith('@')).first();
-  if (handleElem.length) {
-    profileHandle = handleElem.text().trim().replace(/^@/, '');
-  }
-
-  // #Show or #Ask (context label)
-  let contextLabel = null;
-  const contextElem = $('div.text-gray-500.text-xs a[href^="/scroll/"]').first();
-  if (contextElem.length) {
-    contextLabel = contextElem.text().trim().replace('#', '');
-  }
-
-  // Post title
-  let title = null;
-  const titleElem = $('h1.text-gray-1k.font-semibold').first();
-  if (titleElem.length) title = titleElem.text().trim();
-
-  // Post content (HTML, with \n)
-  let content = null;
-  const contentElem = $('.post-caption.rich-text-paragraph-regular').first();
-  if (contentElem.length) {
-    // Keep HTML, but replace <br> with \n for newlines
-    content = contentElem.html()?.replace(/<br\s*\/?>(\s*)/gi, '\n');
-  }
-
-  // Upvotes (number)
-  let upvotes = null;
-  const upvoteBtn = $('button[title="Upvote"]').first();
-  if (upvoteBtn.length) {
-    const upvoteNum = upvoteBtn.find('span.tabular-nums').first().text().trim();
-    if (upvoteNum) upvotes = upvoteNum;
-  }
-
-  // Comments (number)
-  let comments = null;
-  const commentBtn = $('button[title="Comment"]').first();
-  if (commentBtn.length) {
-    const commentNum = commentBtn.find('span.tabular-nums').first().text().trim();
-    if (commentNum) comments = commentNum;
-  }
-
-  // Reposts (number)
-  let reposts = null;
-  const repostBtn = $('button[title="Reshare or Repost"]').first();
-  if (repostBtn.length) {
-    const repostNum = repostBtn.find('span.tabular-nums').first().text().trim();
-    if (repostNum) reposts = repostNum;
-  }
-
-  // Time (e.g., '31m', '2h', etc.)
-  let time = null;
-  const timeElem = $('div.text-gray-500.text-xs span').filter((i, el) => /[0-9]+[mhds]/.test($(el).text().trim())).first();
-  if (timeElem.length) time = timeElem.text().trim();
-
-  // Media (array of image/video URLs)
-  let media = [];
-  // Main post image (if any)
-  const postImageElem = $('.ml-12 .bg-gray-200, .ml-12 img').first();
-  if (postImageElem.length && postImageElem.is('img')) {
-    media.push(postImageElem.attr('src'));
-  } else {
-    // Try to get from JSON-LD if available
-    const jsonLdScript = $('script#__NEXT_DATA__').html();
-    if (jsonLdScript) {
-      try {
-        const json = JSON.parse(jsonLdScript);
-        const postData = json?.props?.pageProps?.postData;
-        if (postData?.media && Array.isArray(postData.media)) {
-          media = postData.media;
-        } else if (postData?.postOG?.image) {
+  if (jsonLdScript) {
+    try {
+      const json = JSON.parse(jsonLdScript);
+      const postData = json?.props?.pageProps?.postData;
+      // Profile info
+      profileImg = postData?.postedBy?.profilePicture || postData?.metaData?.createdBy?.profilePicture || null;
+      username = postData?.postedBy?.displayName || postData?.metaData?.createdBy?.displayName || null;
+      profileHandle = postData?.postedBy?.profileHandle || postData?.metaData?.createdBy?.profileHandle || null;
+      // Context label
+      contextLabel = postData?.contextLabel || postData?.context || null;
+      // Title
+      title = postData?.postTitle || postData?.postOG?.title || null;
+      // Content
+      content = postData?.caption || postData?.postOG?.description || null;
+      // Upvotes, comments, reposts
+      upvotes = postData?.upvoteCount ?? postData?.metaData?.upvotesCount ?? 0;
+      comments = postData?.commentCount ?? postData?.metaData?.commentCount ?? 0;
+      reposts = postData?.resharedCount ?? 0;
+      // Time
+      time = postData?.createdAt || postData?.timestamp || null;
+      // Media: always use postData.media if present
+      if (postData?.media && Array.isArray(postData.media)) {
+        media = postData.media;
+      }
+      // isVideo
+      isVideo = (postData?.videos && Array.isArray(postData.videos) && postData.videos.length > 0);
+      // If video, filter out fallback and use postOG.image as thumbnail if present
+      if (isVideo) {
+        const VIDEO_FALLBACK = "https://dqy38fnwh4fqs.cloudfront.net/mobile/video-mobile-fallback.png";
+        media = media.filter(url => url && url !== VIDEO_FALLBACK);
+        if (postData?.postOG?.image) {
           media = [postData.postOG.image];
         }
-      } catch (e) {}
-    }
-  }
+      }
+      // Filter out Peerlist's default "Read this post" image
+      const DEFAULT_PEERLIST_IMAGE = "https://dqy38fnwh4fqs.cloudfront.net/website/scroll-post-og.webp";
+      media = media.filter(url => url && url !== DEFAULT_PEERLIST_IMAGE);
+      // Poll detection
+      const jsonLD = postData?.jsonLD;
+      if (jsonLD?.additionalType === "Poll") {
+        const metaData = postData?.metaData || {};
+        const options = metaData.option || {};
+        const labels = Object.values(options).map(opt => opt.label).filter(Boolean);
+        pollEmbed = {
+          type: "poll",
+          endsOn: metaData.endOn,
+          totalVotes: metaData.totalVotes,
+          labels
+        };
+      }
 
-  // Fallback: if no media found, try og:image meta
-  if (media.length === 0) {
-    const ogImg = $('meta[property="og:image"]').attr('content');
-    if (ogImg) media.push(ogImg);
+      console.log(postData);
+      // Project embed detection (not else-if, so can coexist)
+      if (postData?.embed === 'PROJECT' && postData?.metaData) {
+        const meta = postData.metaData;
+        projectEmbed = {
+          type: 'project',
+          title: meta.title || null,
+          tagline: meta.tagline || null,
+          logo: meta.logo || null,
+          upvotes: meta.upvotesCount ?? null,
+          comments: meta.commentCount ?? null,
+          bookmarks: meta.bookmarkCount ?? null,
+          categories: Array.isArray(meta.categories) ? meta.categories.map(cat => cat.name) : []
+        };
+      }
+      // Article embed detection
+      if (postData?.embed === 'ARTICLE' && postData?.metaData) {
+        const meta = postData.metaData;
+        articleEmbed = {
+          type: 'article',
+          title: meta.title || null,
+          subtitle: meta.subTitle || null,
+          keywords: meta?.seo?.keywords || [],
+          upvoteCount: meta.upvoteCount ?? null,
+          bookmarkCount: meta.bookmarkCount ?? null,
+          commentCount: meta.commentCount ?? null,
+          featuredImage: meta.featuredImage || null,
+          readTime: meta.readTime || null,
+          creator: meta.creator ? {
+            displayName: meta.creator.displayName || null,
+            profilePicture: meta.creator.profilePicture || null
+          } : null
+        };
+      }
+      // Link embed
+      if (media.length === 0 && postData?.metaData?.link) {
+        linkEmbed = {
+          type: 'link',
+          link: postData.metaData.link || null,
+          image: postData.metaData.image || null,
+          description: postData.metaData.description || null,
+          title: postData.metaData.title || null,
+          tldr: postData.metaData?.tldr || null
+        };
+      }
+    } catch (e) {}
   }
 
   return {
@@ -404,7 +417,12 @@ function extractPeerlistPostData(htmlString) {
     comments,
     reposts,
     time,
-    media
+    media,
+    isVideo,
+    pollEmbed,
+    projectEmbed,
+    linkEmbed,
+    articleEmbed
   };
 }
 

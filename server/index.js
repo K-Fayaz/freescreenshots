@@ -4,6 +4,7 @@ const cors     = require("cors");
 const express  = require("express");
 const path     = require("path");
 const app      = express();
+const request = require('request');
 
 // Middleware
 app.use(express.json());
@@ -20,6 +21,21 @@ app.get('/api/health',(req,res) => {
     message:"Working fine babe!"
   });
 })
+
+// CORS image proxy endpoint
+app.get('/image-proxy', (req, res) => {
+  const url = req.query.url;
+  if (!url) return res.status(400).send('Missing url param');
+  request({ url, encoding: null }, (err, resp, buffer) => {
+    if (!err && resp.statusCode === 200) {
+      res.set('Access-Control-Allow-Origin', '*');
+      res.set('Content-Type', resp.headers['content-type']);
+      res.send(buffer);
+    } else {
+      res.status(500).send('Error fetching image');
+    }
+  });
+});
 
 // Serve static files from React build
 app.use(express.static(path.join(__dirname, 'public')));

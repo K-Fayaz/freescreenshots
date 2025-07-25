@@ -1,0 +1,167 @@
+{
+  "props": {
+    "pageProps": {
+      "postData": {
+        "postTitle": "Thank you all for support🙏",
+        "caption": "<p><a rel=\"noreferrer nofollow\" target=\"_blank\" href=\"https://peerlist.io/meetpatel/project/sniffhunt-scraper\">https://peerlist.io/meetpatel/project/sniffhunt-scraper</a></p><br><p>Thank you for all the support. Never thought I would get this good a response. My mission is to make the best URL to Markdown tool for free and the best alternative, which outperforms even paid solutions and YC-backed startups.</p><br><p>SniffHunt just started getting started; currently, there is no web UI or custom Docker-based solution for the normal user. It has only CLI and MCP support. Soon, launching a beautiful UI & Docker-based solution for ease of use for day-to-day use for normal users as well!</p>",
+        "context": "SHOW",
+        "createdAt": "2025-07-24T05:57:20.403Z",
+        "updatedAt": "2025-07-24T07:19:24.902Z",
+        "embed": "PROJECT",
+        "media": [],
+        "videos": [],
+        "postedFrom": "APP",
+        "commentsUpdatedAt": null,
+        "metaData": {
+          "id": "PRJHGNQ8QDD6PEDJECAJ67K7OQQMDB",
+          "title": "Sniffhunt Scraper",
+          "tagline": "Outperforms FireCrawl, Jina Reader, and other paid solutions",
+          "projectURL": "/meetpatel/project/sniffhunt-scraper",
+          "createdBy": {
+            "firstName": "Meet",
+            "lastName": "Patel",
+            "displayName": "Meet Patel",
+            "profilePicture": "https://dqy38fnwh4fqs.cloudfront.net/UH8OJED96BJ6AL7CDPQL6PN9GMAL/0371cc1e-03e2-46d1-9f09-7eb2df634502.jpg",
+            "headline": "Author & Software Engineer",
+            "profileHandle": "meetpatel",
+            "verified": false,
+            "id": "UH8OJED96BJ6AL7CDPQL6PN9GMAL",
+            "launchDetails": "/meetpatel/project/sniffhunt-scraper"
+          },
+          "createdAt": "2025-07-21T11:18:51.376Z",
+          "collaborators": [],
+          "slug": "sniffhunt-scraper",
+          "featuredOn": "2025-07-21T11:20:01.866Z",
+          "upvotesCount": 89,
+          "commentCount": 14,
+          "bookmarkCount": 2,
+          "categories": [
+            {
+              "name": "AI",
+              "id": "AI",
+              "title": "Innovative AI Tools & Technologies",
+              "description": "Dive into the latest AI tools and technologies transforming industries. Discover AI solutions for automation, data analysis, and more."
+            },
+            {
+              "name": "DevTool",
+              "id": "DEV_TOOL",
+              "title": "Essential Developer Tools & Resources",
+              "description": "Explore a comprehensive collection of developer tools to streamline coding, debugging, and project management. Ideal for developers seeking efficient solutions."
+            }
+          ],
+          "videos": [
+            {
+              "playbackId": "ncvdsK02m28o4TMVKliX3601aJF6BxH1KITubBMM025nCA",
+              "metaData": {
+                "width": 1920,
+                "height": 1080,
+                "frameRate": 29.97,
+                "duration": 52.8528
+              },
+              "uploadId": "lr00o3pl8plZAxT5Mct7MLhP59bggKtrqIkwsRuhoCqo"
+            }
+          ],
+          "logo": "https://dqy38fnwh4fqs.cloudfront.net/UH8OJED96BJ6AL7CDPQL6PN9GMAL/projects/sniffhunt-scraper1d91227d-a23b-4e01-9c4d-4e811306fdea",
+          "images": [
+            "https://dqy38fnwh4fqs.cloudfront.net/UH8OJED96BJ6AL7CDPQL6PN9GMAL/projects/sniffhunt-scraper2c117546-a9d7-4563-8b89-2b06ed3fd5f1"
+          ],
+          "projectId": "PRJHGNQ8QDD6PEDJECAJ67K7OQQMDB"
+        },
+        "postedBy": {
+          "firstName": "Meet",
+          "lastName": "Patel",
+          "displayName": "Meet Patel",
+          "profilePicture": "https://dqy38fnwh4fqs.cloudfront.net/UH8OJED96BJ6AL7CDPQL6PN9GMAL/0371cc1e-03e2-46d1-9f09-7eb2df634502.jpg",
+          "headline": "Author & Software Engineer",
+          "profileHandle": "meetpatel",
+          "verified": false,
+          "id": "UH8OJED96BJ6AL7CDPQL6PN9GMAL",
+          "launchDetails": "/meetpatel/project/sniffhunt-scraper"
+        },
+        "id": "ACTHGNQ8JRO9J797BIK8JGD7KG8NDO",
+        "upvoteCount": 6,
+        "resharedCount": 0,
+        "contextLabel": "show",
+        "commentCount": 0,
+        "isBookmarked": false,
+        "timestamp": "2025-07-24T07:19:24.902Z",
+        "postOG": {
+          "image": "https://image.mux.com/ncvdsK02m28o4TMVKliX3601aJF6BxH1KITubBMM025nCA/thumbnail.webp",
+          "title": "Thank you all for support🙏",
+          "description": "https://peerlist.io/meetpatel/project/sniffhunt-scraperThank you for all the support. Never thought I would get this good a response. My mission is to make the best URL to Markdown tool for free and the best alternative, which outperforms even paid solutions and YC-backed startups.SniffHunt just started getting started; currently, there is no web UI or custom Docker-based solution for the normal user. It has only CLI and MCP support. Soon, launching a beautiful UI \u0026 Docker-based solution for ease of use for day-to-day use for normal users as well!"
+        },
+        "jsonLD": {
+          "@context": "https://schema.org",
+          "@type": "SocialMediaPosting",
+          "url": "https://peerlist.io/scroll/post/ACTHGNQ8JRO9J797BIK8JGD7KG8NDO",
+          "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https://peerlist.io/scroll/post/ACTHGNQ8JRO9J797BIK8JGD7KG8NDO"
+          },
+          "headline": "Thank you all for support🙏",
+          "datePublished": "2025-07-24T05:57:20.403Z",
+          "dateModified": "2025-07-24T07:19:24.902Z",
+          "author": {
+            "@type": "Person",
+            "name": "Meet Patel",
+            "url": "https://peerlist.io/meetpatel"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "Peerlist",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://peerlist.io/favicon_512.png"
+            }
+          },
+          "articleBody": "https://peerlist.io/meetpatel/project/sniffhunt-scraperThank you for all the support. Never thought I would get this good a response. My mission is to make the best URL to Markdown tool for free and the best alternative, which outperforms even paid solutions and YC-backed startups.SniffHunt just started getting started; currently, there is no web UI or custom Docker-based solution for the normal user. It has only CLI and MCP support. Soon, launching a beautiful UI \u0026 Docker-based solution for ease of use for day-to-day use for normal users as well!",
+          "interactionStatistic": [
+            {
+              "@type": "InteractionCounter",
+              "interactionType": {
+                "@type": "LikeAction",
+                "name": "Like"
+              },
+              "userInteractionCount": 6
+            },
+            {
+              "@type": "InteractionCounter",
+              "interactionType": {
+                "@type": "CommentAction",
+                "name": "Comment"
+              },
+              "userInteractionCount": 0
+            },
+            {
+              "@type": "InteractionCounter",
+              "interactionType": {
+                "@type": "ShareAction",
+                "name": "Share"
+              },
+              "userInteractionCount": 0
+            }
+          ],
+          "video": {
+            "@type": "VideoObject",
+            "name": "Thank you all for support🙏",
+            "description": "https://peerlist.io/meetpatel/project/sniffhunt-scraperThank you for all the support. Never thought I would get this good a response. My mission is to make the best URL to Markdown tool for free and the best alternative, which outperforms even paid solutions and YC-backed startups.SniffHunt just started getting started; currently, there is no web UI or custom Docker-based solution for the normal user. It has only CLI and MCP support. Soon, launching a beautiful UI \u0026 Docker-based solution for ease of use for day-to-day use for normal users as well!",
+            "thumbnailUrl": "https://image.mux.com/ncvdsK02m28o4TMVKliX3601aJF6BxH1KITubBMM025nCA/thumbnail.webp",
+            "uploadDate": "2025-07-24T05:57:20.403Z",
+            "duration": "PT52.8528S"
+          }
+        }
+      },
+      "postId": "ACTHGNQ8JRO9J797BIK8JGD7KG8NDO"
+    },
+    "__N_SSP": true
+  },
+  "page": "/scroll/post/[postId]",
+  "query": {
+    "postId": "ACTHGNQ8JRO9J797BIK8JGD7KG8NDO"
+  },
+  "buildId": "gzWsqlrGIsH3Ci2mAKmml",
+  "isFallback": false,
+  "isExperimentalCompile": false,
+  "gssp": true,
+  "scriptLoader": []
+}

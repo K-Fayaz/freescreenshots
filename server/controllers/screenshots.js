@@ -21,7 +21,7 @@ const getDetails = async (req, res) => {
       }
       else if (platform.includes('peerlist.io')) {
         html = await scrapePeerlistPost(url);
-        console.log(html)
+        // console.log(html)
         data = extractPeerlistPostData(html);
       }
   
