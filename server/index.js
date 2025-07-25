@@ -32,6 +32,7 @@ app.get('/image-proxy', (req, res) => {
       res.set('Content-Type', resp.headers['content-type']);
       res.send(buffer);
     } else {
+      console.log("erro occured: ",err);
       res.status(500).send('Error fetching image');
     }
   });
