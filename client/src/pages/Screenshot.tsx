@@ -32,6 +32,7 @@ function Screenshot() {
   const [showMetrics, setShowMetrics] = useState(true);
   const [showViews, setShowViews] = useState(true);
   const [postDetails,setPostDetails] = useState(null);
+  const [parentWidth, setParentWidth] = useState(460);
 
   // Ref for the tweet card
   const tweetRef = useRef<HTMLDivElement>(null);
@@ -44,32 +45,211 @@ function Screenshot() {
     setIsModalOpen(false);
   };
 
-  // Export function
-  // const handleExport = async () => {
-  //   if (!tweetRef.current) return;
-  //   const canvas = await html2canvas(tweetRef.current, { backgroundColor: null, useCORS: true });
-  //   const dataUrl = canvas.toDataURL('image/png');
-  //   const link = document.createElement('a');
-  //   link.href = dataUrl;
-  //   link.download = 'tweet.png';
-  //   document.body.appendChild(link);
-  //   link.click();
-  //   document.body.removeChild(link);
-  // };
+  const handleExport = async () => {
+    if (!tweetRef.current) return;
 
-  const handleExport = () => {
-    if (tweetRef.current) {
-      toPng(tweetRef.current)
-        .then((dataUrl) => {
-          const link = document.createElement('a');
-          link.download = 'tweet.png';
-          link.href = dataUrl;
-          link.click();
+    const originalSrcs: string[] = [];
+    try {
+      const imgElements = tweetRef.current.querySelectorAll('img');
+      
+      // Multiple CORS proxy options to try
+      const CORS_PROXIES = [
+        'http://localhost:8080/image-proxy?url=',
+        'https://corsproxy.io/?',
+        'https://api.codetabs.com/v1/proxy?quest=',
+        'https://cors.bridged.cc/',
+        // Backup: just try the original URL with different approaches
+      ];
+
+      // Helper function to try multiple proxies
+      const fetchImageWithProxy = async (url: string): Promise<string> => {
+        // Skip if already data URL
+        if (url.startsWith('data:')) return url;
+        
+        // Try each proxy
+        for (const proxy of CORS_PROXIES) {
+          try {
+            console.log(`Trying proxy: ${proxy} for ${url}`);
+            const proxyUrl = `${proxy}${encodeURIComponent(url)}`;
+            
+            const response = await fetch(proxyUrl, {
+              method: 'GET',
+              headers: {
+                'Accept': 'image/*',
+              },
+            });
+            
+            if (response.ok) {
+              const blob = await response.blob();
+              
+              return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result as string);
+                reader.onerror = reject;
+                reader.readAsDataURL(blob);
+              });
+            }
+          } catch (error) {
+            console.warn(`Proxy ${proxy} failed:`, error);
+            continue;
+          }
+        }
+        
+        // If all proxies fail, try canvas approach with crossOrigin
+        try {
+          return await loadImageWithCanvas(url);
+        } catch (error) {
+          console.warn(`Canvas approach failed for ${url}:`, error);
+          // Return placeholder image
+          return generatePlaceholderImage();
+        }
+      };
+
+      // Canvas-based image loading (sometimes works even with CORS)
+      const loadImageWithCanvas = async (url: string): Promise<string> => {
+        return new Promise((resolve, reject) => {
+          const img = new Image();
+          img.crossOrigin = 'anonymous';
+          
+          img.onload = () => {
+            try {
+              const canvas = document.createElement('canvas');
+              const ctx = canvas.getContext('2d');
+              
+              if (!ctx) {
+                reject(new Error('Could not get canvas context'));
+                return;
+              }
+
+              canvas.width = img.naturalWidth || img.width;
+              canvas.height = img.naturalHeight || img.height;
+              
+              ctx.drawImage(img, 0, 0);
+              const dataURL = canvas.toDataURL('image/png');
+              resolve(dataURL);
+            } catch (error) {
+              reject(error);
+            }
+          };
+
+          img.onerror = () => {
+            reject(new Error(`Failed to load image: ${url}`));
+          };
+
+          img.src = url;
+          
+          // Timeout after 10 seconds
+          setTimeout(() => {
+            reject(new Error('Image load timeout'));
+          }, 10000);
         });
+      };
+
+      // Generate a placeholder image when all else fails
+      const generatePlaceholderImage = (): string => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        if (!ctx) return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
+        
+        canvas.width = 40;
+        canvas.height = 40;
+        
+        // Draw a simple avatar placeholder
+        ctx.fillStyle = '#6B7280';
+        ctx.fillRect(0, 0, 40, 40);
+        
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = '20px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('?', 20, 20);
+        
+        return canvas.toDataURL('image/png');
+      };
+
+      // Process all images
+      console.log('Processing images...');
+      const imagePromises = Array.from(imgElements).map(async (img, index) => {
+        originalSrcs[index] = img.src;
+        
+        try {
+          const dataUrl = await fetchImageWithProxy(img.src);
+          console.log(`Successfully processed image ${index}`);
+          return { index, dataUrl, success: true };
+        } catch (error) {
+          console.warn(`Failed to process image ${index}:`, error);
+          return { 
+            index, 
+            dataUrl: generatePlaceholderImage(), 
+            success: false 
+          };
+        }
+      });
+
+      const imageResults = await Promise.all(imagePromises);
+      
+      // Update image sources
+      imageResults.forEach(result => {
+        if (imgElements[result.index]) {
+          imgElements[result.index].src = result.dataUrl;
+          console.log(`Updated image ${result.index}, success: ${result.success}`);
+        }
+      });
+
+      // Wait longer for images to load
+      console.log('Waiting for images to render...');
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // Generate screenshot using html-to-image
+      const { toPng } = await import('html-to-image');
+      
+      console.log('Generating screenshot...');
+      const dataUrl = await toPng(tweetRef.current, {
+        quality: 1,
+        pixelRatio: 2,
+        backgroundColor: 'transparent',
+        skipFonts: true,
+        style: {
+          // Ensure fonts are loaded
+          fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+        },
+        filter: (node) => {
+          // Only allow data URLs and blob URLs
+          if (node instanceof HTMLImageElement) {
+            return node.src.startsWith('data:') || node.src.startsWith('blob:');
+          }
+          return true;
+        },
+      });
+
+      // Download the image
+      const link = document.createElement('a');
+      link.download = `peerlist-post-${Date.now()}.png`;
+      link.href = dataUrl;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      console.log('Export completed successfully!');
+
+    } catch (error: any) {
+      console.error('Export failed:', error);
+      alert(`Export failed: ${error.message}. The screenshot was generated but some images may appear as placeholders due to CORS restrictions.`);
+    } finally {
+      // Restore original image sources
+      const imgElements = tweetRef.current?.querySelectorAll('img');
+      if (imgElements && originalSrcs.length > 0) {
+        imgElements.forEach((img, i) => {
+          if (originalSrcs[i]) {
+            img.src = originalSrcs[i];
+          }
+        });
+      }
     }
   };
 
-  // Update selectedColor when theme changes
+  // Update selectedColor when theme changes 
   React.useEffect(() => {
     setSelectedColor(theme === 'Light' ? lightColors[0] : darkColors[0]);
   }, [theme]);
@@ -90,6 +270,7 @@ function Screenshot() {
     showViews, setShowViews,
     postDetails,
     onExport: handleExport,
+    parentWidth, setParentWidth,
   };
   const tweetPreviewProps = {
     theme,
@@ -106,6 +287,7 @@ function Screenshot() {
     showViews,
     tweetRef,
     postDetails,
+    parentWidth,
   };
 
   // Skeleton component for loading
