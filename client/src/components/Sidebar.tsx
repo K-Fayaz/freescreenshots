@@ -31,6 +31,7 @@ interface SidebarProps {
   setShowViews: React.Dispatch<React.SetStateAction<boolean>>;
   postDetails: any;
   onExport: () => void;
+  exporting: boolean;
   parentWidth: number;
   setParentWidth: React.Dispatch<React.SetStateAction<number>>;
 }
@@ -47,7 +48,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   timestamp, setTimestamp,
   showTimeAgo, setShowTimeAgo,
   showMetrics, setShowMetrics,
-  showViews, setShowViews,postDetails, onExport, parentWidth, setParentWidth
+  showViews, setShowViews,postDetails, onExport, exporting, parentWidth, setParentWidth
 }) => {
   // Theme-based color and gradient options
   const lightColors = [
@@ -462,11 +463,29 @@ const Sidebar: React.FC<SidebarProps> = ({
           <button className="flex items-center justify-center w-10 h-10 border border-gray-300 rounded-lg hover:bg-gray-50">
             <Copy size={16} />
           </button>
-          <button className="flex items-center justify-center space-x-2 flex-1 bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800"
+          <button 
+            className={`flex items-center justify-center space-x-2 flex-1 px-4 py-2 rounded-lg transition-colors ${
+              exporting 
+                ? 'bg-gray-400 cursor-not-allowed' 
+                : 'bg-black text-white hover:bg-gray-800'
+            }`}
             onClick={onExport}
+            disabled={exporting}
           >
-            <Download size={16} />
-            <span>Export</span>
+            {exporting ? (
+              <>
+                <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+                </svg>
+                <span>Exporting...</span>
+              </>
+            ) : (
+              <>
+                <Download size={16} />
+                <span>Export</span>
+              </>
+            )}
           </button>
         </div>
       </div>

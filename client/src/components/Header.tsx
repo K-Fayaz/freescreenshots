@@ -1,5 +1,6 @@
 import React from 'react';
 import { Plus } from 'lucide-react';
+import { BsTwitterX } from "react-icons/bs";
 import avatar1 from '../assets/avatar1.png';
 import axios from "axios";
 
@@ -26,7 +27,7 @@ const Header: React.FC<HeaderProps> = ({ onNewTweetClick }) => {
         </div>
         
         <button 
-          onClick={() => window.open('https://x.com/fayaz_kudremane/', '_blank')}
+          onClick={() => window.open('https://x.com/fayaxtwt/', '_blank')}
           className="flex items-center space-x-2 text-gray-600 hover:text-gray-900"
         >
           {/* <img 
@@ -35,7 +36,8 @@ const Header: React.FC<HeaderProps> = ({ onNewTweetClick }) => {
             className="w-10 h-10 rounded-full object-cover border boder-1 border-black"
           /> */}
           {/* <span>Meet the creator</span> */}
-          <span>@fayaz_kudremane</span>
+          <BsTwitterX size={20} />
+          <span>@fayaxtwt</span>
         </button>
       </div>
     </header>

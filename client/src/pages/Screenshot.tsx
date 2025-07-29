@@ -3,8 +3,10 @@ import Header from '../components/Header';
 import TweetPreview from '../components/TweetPreview';
 import Sidebar from '../components/Sidebar';
 import NewTweetModal from '../components/NewTweetModal';
+import DownloadSuccessModal from '../components/DownloadSuccessModal';
 import html2canvas from 'html2canvas';
 import { toPng } from 'html-to-image';
+import BASE_URL from '../config';
 
 // Define the color arrays here to sync with Sidebar
 const lightColors = [
@@ -16,7 +18,9 @@ const darkColors = [
 
 function Screenshot() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [exporting, setExporting] = useState(false);
 
   // Shared state for Sidebar and TweetPreview
   const [theme, setTheme] = useState<'Light' | 'Dark'>('Dark');
@@ -45,16 +49,22 @@ function Screenshot() {
     setIsModalOpen(false);
   };
 
+  const handleCloseDownloadModal = () => {
+    setIsDownloadModalOpen(false);
+  };
+
   const handleExport = async () => {
     if (!tweetRef.current) return;
 
+    setExporting(true);
     const originalSrcs: string[] = [];
     try {
       const imgElements = tweetRef.current.querySelectorAll('img');
       
       // Multiple CORS proxy options to try
+      let endpoint = `${BASE_URL}api/image-proxy?url=`;
       const CORS_PROXIES = [
-        '/api/image-proxy?url=',
+        endpoint,
         'https://corsproxy.io/?',
         'https://api.codetabs.com/v1/proxy?quest=',
         'https://cors.bridged.cc/',
@@ -232,11 +242,15 @@ function Screenshot() {
       document.body.removeChild(link);
       
       console.log('Export completed successfully!');
+      
+      // Show the download success modal
+      setIsDownloadModalOpen(true);
 
     } catch (error: any) {
       console.error('Export failed:', error);
       alert(`Export failed: ${error.message}. The screenshot was generated but some images may appear as placeholders due to CORS restrictions.`);
     } finally {
+      setExporting(false);
       // Restore original image sources
       const imgElements = tweetRef.current?.querySelectorAll('img');
       if (imgElements && originalSrcs.length > 0) {
@@ -270,6 +284,7 @@ function Screenshot() {
     showViews, setShowViews,
     postDetails,
     onExport: handleExport,
+    exporting,
     parentWidth, setParentWidth,
   };
   const tweetPreviewProps = {
@@ -344,6 +359,7 @@ function Screenshot() {
         <Sidebar {...sidebarProps} />
       </div>
       <NewTweetModal isOpen={isModalOpen} onClose={handleCloseModal} setPostDetails={setPostDetails} setLoading={setLoading} />
+      <DownloadSuccessModal isOpen={isDownloadModalOpen} onClose={handleCloseDownloadModal} />
     </div>
   );
 }
