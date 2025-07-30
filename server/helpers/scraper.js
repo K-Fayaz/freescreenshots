@@ -306,6 +306,9 @@ function extractPeerlistPostData(htmlString) {
   let profileImg = null, username = null, profileHandle = null, contextLabel = null, title = null, content = null, upvotes = 0, comments = 0, reposts = 0, time = null, media = [], isVideo = false, embed = null, projectEmbed = null, linkEmbed = null;
   let pollEmbed = null;
   let articleEmbed = null;
+  let jobEmbed = null;
+  let reshareEmbed = null;
+  let profileEmbed = null;
 
   if (jsonLdScript) {
     try {
@@ -318,7 +321,7 @@ function extractPeerlistPostData(htmlString) {
       // Context label
       contextLabel = postData?.contextLabel || postData?.context || null;
       // Title
-      title = postData?.postTitle || postData?.postOG?.title || null;
+      title = postData?.postTitle || null;
       // Content
       content = postData?.caption || postData?.postOG?.description || null;
       // Upvotes, comments, reposts
@@ -350,11 +353,26 @@ function extractPeerlistPostData(htmlString) {
         const metaData = postData?.metaData || {};
         const options = metaData.option || {};
         const labels = Object.values(options).map(opt => opt.label).filter(Boolean);
+        
+        // Extract votes for each option
+        const votes = {};
+        let hasVotes = false;
+        
+        Object.keys(options).forEach(optionKey => {
+          const option = options[optionKey];
+          votes[optionKey] = option.votes || 0;
+          if (option.votes || option.votes === 0) {
+            hasVotes = true;
+          }
+        });
+
         pollEmbed = {
           type: "poll",
           endsOn: metaData.endOn,
           totalVotes: metaData.totalVotes,
-          labels
+          labels,
+          hasVotes,
+          votes
         };
       }
 
@@ -392,6 +410,33 @@ function extractPeerlistPostData(htmlString) {
           } : null
         };
       }
+      // Job embed detection
+      if (postData?.embed === 'JOB' && postData?.metaData) {
+        const meta = postData.metaData;
+        jobEmbed = {
+          type: 'job',
+          companyLogo: meta.company?.logo || null,
+          companyName: meta.companyName || meta.company?.name || null,
+          jobTitle: meta.jobTitle || null,
+          location: meta.location || null,
+          jobType: meta.jobType || null,
+          publishedAt: meta.publishedAt || null,
+          experience: meta.experience || null,
+          skills: Array.isArray(meta.skills) ? meta.skills : []
+        };
+      }
+      // User Profile embed detection
+      if (postData?.embed === 'USER_PROFILE' && postData?.metaData) {
+        const meta = postData.metaData;
+        profileEmbed = {
+          type: 'profile',
+          username: meta.displayName || null,
+          bio: meta.headline || null,
+          profilePicture: meta.profilePicture || null,
+          skills: Array.isArray(meta.skills) ? meta.skills.slice(0, 4) : []
+        };
+      }
+
       // Link embed
       if (media.length === 0 && postData?.metaData?.link) {
         linkEmbed = {
@@ -403,6 +448,60 @@ function extractPeerlistPostData(htmlString) {
           tldr: postData.metaData?.tldr || null
         };
       }
+
+      // Reshare embed detection (highest priority)
+      if (postData?.reshared && postData?.metaData) {
+        const meta = postData.metaData;
+        reshareEmbed = {
+          type: 'reshare',
+          resharedContext: meta.resharedContext || null,
+          postTitle: meta.postTitle || null,
+          content: meta.caption || null,
+          createdAt: meta.createdAt || null,
+          media: Array.isArray(meta.media) ? meta.media : [],
+          videos: Array.isArray(meta.videos) ? meta.videos : [],
+          username: meta.postedBy?.displayName || null,
+          profilePicture: meta.postedBy?.profilePicture || null
+        };
+      }
+
+      // Apply embed hierarchy: reshareEmbed > jobEmbed > articleEmbed > pollEmbed > projectEmbed > profileEmbed > linkEmbed
+      // Only keep the highest priority embed, set others to null
+      if (reshareEmbed) {
+        // If reshareEmbed exists, clear all lower priority embeds
+        jobEmbed = null;
+        articleEmbed = null;
+        pollEmbed = null;
+        projectEmbed = null;
+        profileEmbed = null;
+        linkEmbed = null;
+      } else if (jobEmbed) {
+        // If jobEmbed exists, clear all lower priority embeds
+        articleEmbed = null;
+        pollEmbed = null;
+        projectEmbed = null;
+        profileEmbed = null;
+        linkEmbed = null;
+      } else if (articleEmbed) {
+        // If articleEmbed exists (and no higher priority embeds), clear all lower priority embeds
+        pollEmbed = null;
+        projectEmbed = null;
+        profileEmbed = null;
+        linkEmbed = null;
+      } else if (pollEmbed) {
+        // If pollEmbed exists (and no higher priority embeds), clear lower priority embeds
+        projectEmbed = null;
+        profileEmbed = null;
+        linkEmbed = null;
+      } else if (projectEmbed) {
+        // If projectEmbed exists (and no higher priority embeds), clear lower priority embeds
+        profileEmbed = null;
+        linkEmbed = null;
+      } else if (profileEmbed) {
+        // If profileEmbed exists (and no higher priority embeds), clear linkEmbed
+        linkEmbed = null;
+      }
+      // If only linkEmbed exists, keep it as is
     } catch (e) {}
   }
 
@@ -422,7 +521,10 @@ function extractPeerlistPostData(htmlString) {
     pollEmbed,
     projectEmbed,
     linkEmbed,
-    articleEmbed
+    articleEmbed,
+    jobEmbed,
+    reshareEmbed,
+    profileEmbed
   };
 }
 

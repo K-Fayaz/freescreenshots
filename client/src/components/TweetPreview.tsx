@@ -84,7 +84,7 @@ const TweetPreview: React.FC<TweetPreviewProps> = ({
             postDetails.platform === 'x.com' ? (
               <Tweet details={postDetails.post} logo={logo} theme={theme} showMetrics={showMetrics} showViews={showViews}/>
             ) : postDetails.platform === 'peerlist.io' ? (
-              <PeerlistPost details={postDetails.post} theme={theme} logo={logo} />
+              <PeerlistPost details={postDetails.post} theme={theme} logo={logo} showMetrics={showMetrics} />
             ) : (
               <h1>hola</h1>
             )

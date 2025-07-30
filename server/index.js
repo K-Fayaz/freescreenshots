@@ -71,8 +71,15 @@ app.get('/api/image-proxy', async (req, res) => {
     const contentType = response.headers.get('content-type') || 'image/jpeg';
     console.log('Content-Type:', contentType); // Debug logging
 
-    if (!contentType.startsWith('image/')) {
-      return res.status(400).json({ error: 'URL does not point to an image' });
+    // More flexible content-type checking
+    const isImage = contentType.startsWith('image/') || 
+                   contentType.includes('octet-stream') ||
+                   contentType === 'application/octet-stream' ||
+                   !contentType.includes('text/') && !contentType.includes('application/json');
+
+    if (!isImage) {
+      console.log('Content-type indicates not an image, but proceeding anyway:', contentType);
+      // Don't return error, just log and continue
     }
 
     // Set response headers

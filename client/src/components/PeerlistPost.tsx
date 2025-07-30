@@ -8,6 +8,7 @@ interface PeerlistPostProps {
   details: any;
   theme: 'Light' | 'Dark';
   logo?: string;
+  showMetrics?: boolean;
 }
 
 // Helper to format time as relative (e.g., '5 minutes ago')
@@ -48,7 +49,7 @@ function getTimeLeft(endsOn: string) {
   return 'Less than a minute left';
 }
 
-const PeerlistPost = React.forwardRef<HTMLDivElement, PeerlistPostProps>(({ details, theme, logo }, ref) => {
+const PeerlistPost = React.forwardRef<HTMLDivElement, PeerlistPostProps>(({ details, theme, logo, showMetrics = true }, ref) => {
   if (!details) return null;
   return (
     <div ref={ref} className="p-5">
@@ -183,7 +184,7 @@ const PeerlistPost = React.forwardRef<HTMLDivElement, PeerlistPostProps>(({ deta
                 <img
                     src={details.linkEmbed.image}
                     alt={details.linkEmbed.title}
-                  className={`w-16 h-16 rounded-lg object-cover border ${theme === 'Dark' ? 'bg-zinc-800 border-zinc-700' : 'bg-gray-100 border-gray-200'}`}
+                  className={`w-auto max-w-30 h-16 rounded-lg object-cover border ${theme === 'Dark' ? 'bg-zinc-800 border-zinc-700' : 'bg-gray-100 border-gray-200'}`}
                   style={{ minWidth: 64, minHeight: 64 }}
                 />
               </div>
@@ -210,12 +211,12 @@ const PeerlistPost = React.forwardRef<HTMLDivElement, PeerlistPostProps>(({ deta
           style={{ minHeight: 64 }}
         >
           {/* Logo */}
-          <div className={`flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center mr-4 overflow-hidden ${theme === 'Dark' ? 'bg-black' : 'bg-gray-100'}`}>
+          <div className={`flex-shrink-0 w-16 h-16 rounded-lg flex items-center justify-center mr-4 overflow-hidden ${theme === 'Dark' ? 'bg-black' : 'bg-gray-100'}`}>
             <img
               src={details.projectEmbed.logo}
               alt={details.projectEmbed.title}
-              className="w-12 h-12 object-contain"
-              style={{ minWidth: 40, minHeight: 40 }}
+              className="object-contain"
+              // style={{ minWidth: 40, minHeight: 40 }}
             />
           </div>
           {/* Title & Tagline */}
@@ -263,15 +264,43 @@ const PeerlistPost = React.forwardRef<HTMLDivElement, PeerlistPostProps>(({ deta
         <div className={`mt-3 rounded-xl py-2 ${theme === 'Dark' ? 'bg-[#171717]' : 'bg-white'}`}
         >
           <div className="flex flex-col gap-2">
-            {details.pollEmbed.labels.map((label: string, idx: number) => (
-              <div
-                key={idx}
-                className={`w-full text-center py-2 text-sm font-semibold rounded-lg cursor-pointer transition-colors
-                  ${theme === 'Dark' ? 'bg-transparent border border-zinc-700 text-white hover:bg-zinc-800' : 'bg-transparent border border-gray-300 text-black hover:bg-gray-100'}`}
-              >
-                {label}
-              </div>
-            ))}
+            {details.pollEmbed.labels.map((label: string, idx: number) => {
+              const optionKey = `option${idx + 1}`;
+              const voteCount = details.pollEmbed.votes?.[optionKey] || 0;
+              const totalVotes = details.pollEmbed.totalVotes || 0;
+              const percentage = totalVotes > 0 ? Math.round((voteCount / totalVotes) * 100) : 0;
+              
+              return (
+                <div
+                  key={idx}
+                  className={`w-full py-2 px-3 text-sm font-semibold rounded-lg transition-colors relative
+                    ${theme === 'Dark' ? 'bg-transparent border border-zinc-700 text-white hover:bg-zinc-800' : 'bg-transparent border border-gray-300 text-black hover:bg-gray-100'}`}
+                >
+                  {details.pollEmbed.hasVotes ? (
+                    // Show vote results with percentages and progress bars
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3 flex-1">
+                        <span className="text-xs font-medium min-w-[30px]">{percentage}%</span>
+                        <span className="flex-1">{label}</span>
+                      </div>
+                      <div className="flex-1 max-w-[200px] ml-4">
+                        <div className={`h-1 rounded-full ${theme === 'Dark' ? 'bg-zinc-700' : 'bg-gray-200'}`}>
+                          <div 
+                            className={`h-1 rounded-full ${theme === 'Dark' ? 'bg-white' : 'bg-gray-600'}`}
+                            style={{ width: `${percentage}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    // Show regular poll options (current behavior)
+                    <div className="text-center">
+                      {label}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
           <div className="flex justify-between mt-3 text-xs" style={{ color: theme === 'Dark' ? '#b3b3b3' : '#555' }}>
             <span>Total {details.pollEmbed.totalVotes} votes</span>
@@ -356,11 +385,198 @@ const PeerlistPost = React.forwardRef<HTMLDivElement, PeerlistPostProps>(({ deta
         </div>
       )}
 
+      {/* Reshare Embed Card */}
+      {details.reshareEmbed && details.reshareEmbed.type === 'reshare' && (
+        <div className={`mt-3 rounded-xl p-4 ${theme === 'Dark' ? 'bg-[#1a1a1a] border border-[#2a2a2a]' : 'bg-white border border-gray-200'}`}>
+          {/* Top: Original Author Info */}
+          <div className="flex items-center mb-3">
+            <img 
+              src={details.reshareEmbed.profilePicture || emptyDP} 
+              alt="profile" 
+              className="rounded-full w-[40px] h-[40px] mr-3" 
+            />
+            <div className="flex flex-col">
+              <span className={`font-semibold text-[16px] ${theme === 'Dark' ? 'text-white' : 'text-black'}`}>
+                {details.reshareEmbed.username}
+              </span>
+              <div className="flex items-center mt-0.5">
+                <span className={`text-xs ${theme === 'Dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+                  #{details.reshareEmbed.resharedContext?.toLowerCase()}
+                </span>
+                <span className={`mx-0.5 ${theme === 'Dark' ? 'text-gray-400' : 'text-gray-500'}`} style={{ fontSize: '18px', lineHeight: '1' }}>&middot;</span>
+                <span className={`text-xs ${theme === 'Dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+                  {getRelativeTime(details.reshareEmbed.createdAt)}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Post Title */}
+          {details.reshareEmbed.postTitle && (
+            <div className={`font-semibold text-[15px] mb-2 ${theme === 'Dark' ? 'text-white' : 'text-black'}`}>
+              {details.reshareEmbed.postTitle}
+            </div>
+          )}
+
+          {/* Post Content */}
+          {details.reshareEmbed.content && (
+            <div className={`text-[15px] font-normal leading-snug mb-2 ${theme === 'Dark' ? 'text-white' : 'text-black'}`}>
+              <div
+                className={`peerlist-content whitespace-pre-line break-words overflow-x-auto`}
+                style={{ wordBreak: 'break-word', overflowWrap: 'break-word', maxWidth: '100%' }}
+                dangerouslySetInnerHTML={{ __html: details.reshareEmbed.content }}
+              />
+            </div>
+          )}
+
+          {/* Media from reshared post */}
+          {details.reshareEmbed.media && details.reshareEmbed.media.length > 0 && (
+            <div className="w-full my-3">
+              {details.reshareEmbed.media.length === 1 && (
+                <div className="relative w-full">
+                  <img src={details.reshareEmbed.media[0]} alt="media" className="w-full border border-white rounded-lg" />
+                  {details.reshareEmbed.videos && details.reshareEmbed.videos.length > 0 && (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="bg-black bg-opacity-60 rounded-full w-14 h-14 flex items-center justify-center">
+                        <FaPlay size={24} color="white" className="ml-1" />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+              {details.reshareEmbed.media.length === 2 && (
+                <div className="flex flex-row gap-1">
+                  <div className="relative w-1/2 h-[300px]">
+                    <img src={details.reshareEmbed.media[0]} alt="media1" className="w-full h-full object-cover rounded-lg" />
+                  </div>
+                  <div className="relative w-1/2 h-[300px]">
+                    <img src={details.reshareEmbed.media[1]} alt="media2" className="w-full h-full object-cover rounded-lg" />
+                  </div>
+                </div>
+              )}
+              {details.reshareEmbed.media.length === 3 && (
+                <div className="flex flex-row gap-2 w-full h-[300px]">
+                  <div className="w-1/2 h-full">
+                    <img src={details.reshareEmbed.media[0]} alt="media1" className="w-full h-full object-cover rounded-lg" />
+                  </div>
+                  <div className="w-1/2 h-full flex flex-col gap-2">
+                    <div className="h-1/2">
+                      <img src={details.reshareEmbed.media[1]} alt="media2" className="w-full h-full object-cover rounded-lg" />
+                    </div>
+                    <div className="h-1/2">
+                      <img src={details.reshareEmbed.media[2]} alt="media3" className="w-full h-full object-cover rounded-lg" />
+                    </div>
+                  </div>
+                </div>
+              )}
+              {details.reshareEmbed.media.length === 4 && (
+                <div className="grid grid-cols-2 grid-rows-2 gap-2 border border-white rounded-lg">
+                  {[0,1,2,3].map((idx) => (
+                    <div key={idx} className="relative w-full h-full">
+                      <img src={details.reshareEmbed.media[idx]} alt={`media${idx+1}`} className="w-full h-[150px] object-cover" />
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Job Embed Card */}
+      {details.jobEmbed && details.jobEmbed.type === 'job' && (
+        <div className={`mt-3 rounded-xl p-4 ${theme === 'Dark' ? 'bg-[#1a1a1a] border border-[#2a2a2a]' : 'bg-white border border-gray-200'}`}>
+          <div className="flex items-start gap-3">
+            {/* Company Logo */}
+            <div className="flex-shrink-0 w-12 h-12 rounded-full bg-white flex items-center justify-center overflow-hidden">
+              <img 
+                src={details.jobEmbed.companyLogo} 
+                alt={details.jobEmbed.companyName}
+                className="w-12 h-12 object-contain"
+              />
+            </div>
+            
+            {/* Job Details */}
+            <div className="flex-1 min-w-0">
+              {/* Job Title and Company */}
+              <div className={`font-bold text-base mb-1 ${theme === 'Dark' ? 'text-white' : 'text-black'}`}>
+                {details.jobEmbed.jobTitle} at {details.jobEmbed.companyName}
+              </div>
+              
+              {/* Job Details Line */}
+              <div className={`text-sm mb-3 ${theme === 'Dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                {details.jobEmbed.location} • {details.jobEmbed.jobType} • {details.jobEmbed.experience} • {getRelativeTime(details.jobEmbed.publishedAt)}
+              </div>
+              
+              {/* Skills */}
+              {details.jobEmbed.skills && details.jobEmbed.skills.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {details.jobEmbed.skills.map((skill: string, index: number) => (
+                    <span 
+                      key={index}
+                      className={`px-3 py-1 rounded-full text-xs font-medium ${theme === 'Dark' ? 'bg-gray-700 text-gray-200' : 'bg-gray-100 text-gray-700'}`}
+                    >
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Profile Embed Card */}
+      {details.profileEmbed && details.profileEmbed.type === 'profile' && (
+        <div className={`mt-3 rounded-xl p-4 ${theme === 'Dark' ? 'bg-[#1a1a1a] border border-[#2a2a2a]' : 'bg-white border border-gray-200'}`}>
+          <div className="flex items-start gap-3">
+            {/* Profile Picture */}
+            <div className="flex-shrink-0 w-14 h-14 rounded-full overflow-hidden">
+              <img 
+                src={details.profileEmbed.profilePicture || emptyDP} 
+                alt={details.profileEmbed.username}
+                className="w-14 h-14 object-cover"
+              />
+            </div>
+            
+            {/* Profile Details */}
+            <div className="flex-1 min-w-0">
+              {/* Name */}
+              <div className={`font-bold text-sm mb-1 ${theme === 'Dark' ? 'text-white' : 'text-black'}`}>
+                {details.profileEmbed.username}
+              </div>
+              
+              {/* Bio */}
+              {details.profileEmbed.bio && (
+                <div className={`text-xs mb-3 ${theme === 'Dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                  {details.profileEmbed.bio}
+                </div>
+              )}
+              
+              {/* Skills */}
+              {details.profileEmbed.skills && details.profileEmbed.skills.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {details.profileEmbed.skills.map((skill: string, index: number) => (
+                    <span 
+                      key={index}
+                      className={`px-3 py-1 rounded-full text-xs font-medium border ${theme === 'Dark' ? 'bg-[#1a1a1a] text-white border-gray-600' : 'bg-gray-100 text-gray-700 border-gray-300'}`}
+                    >
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Metrics */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 32, color: '#71767b', fontSize: 16, marginTop: 10 }}>
-        {/* Upvotes */}
-        <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="" ><path d="M6.09881 19C4.7987 18.8721 3.82475 18.4816 3.17157 17.8284C2 16.6569 2 14.7712 2 11V10.5C2 6.72876 2 4.84315 3.17157 3.67157C4.34315 2.5 6.22876 2.5 10 2.5H14C17.7712 2.5 19.6569 2.5 20.8284 3.67157C22 4.84315 22 6.72876 22 10.5V11C22 14.7712 22 16.6569 20.8284 17.8284C19.6569 19 17.7712 19 14 19C13.4395 19.0125 12.9931 19.0551 12.5546 19.155C11.3562 19.4309 10.2465 20.0441 9.14987 20.5789C7.58729 21.3408 6.806 21.7218 6.31569 21.3651C5.37769 20.6665 6.29454 18.5019 6.5 17.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" vectorEffect="non-scaling-stroke"></path></svg>
+      {showMetrics && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 32, color: '#71767b', fontSize: 16, marginTop: 10 }}>
+          {/* Upvotes */}
+          <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="" ><path d="M6.09881 19C4.7987 18.8721 3.82475 18.4816 3.17157 17.8284C2 16.6569 2 14.7712 2 11V10.5C2 6.72876 2 4.84315 3.17157 3.67157C4.34315 2.5 6.22876 2.5 10 2.5H14C17.7712 2.5 19.6569 2.5 20.8284 3.67157C22 4.84315 22 6.72876 22 10.5V11C22 14.7712 22 16.6569 20.8284 17.8284C19.6569 19 17.7712 19 14 19C13.4395 19.0125 12.9931 19.0551 12.5546 19.155C11.3562 19.4309 10.2465 20.0441 9.14987 20.5789C7.58729 21.3408 6.806 21.7218 6.31569 21.3651C5.37769 20.6665 6.29454 18.5019 6.5 17.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" vectorEffect="non-scaling-stroke"></path></svg>
             {details.comments || 0}
         </span>
         
@@ -374,6 +590,7 @@ const PeerlistPost = React.forwardRef<HTMLDivElement, PeerlistPostProps>(({ deta
             {details.upvotes || 0}
         </span>
       </div>
+      )}
     </div>
   );
 });
