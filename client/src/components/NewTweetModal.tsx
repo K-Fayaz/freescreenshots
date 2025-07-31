@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import axios from 'axios';
 import BASE_URL from '../config';
+import { useToast } from './ToastContext';
 
 interface NewTweetModalProps {
   isOpen: boolean;
@@ -12,6 +13,7 @@ interface NewTweetModalProps {
 
 const NewTweetModal: React.FC<NewTweetModalProps> = ({ isOpen, onClose, setPostDetails, setLoading }) => {
   const [url, setUrl] = useState('');
+  const { showToast,showError } = useToast();
 
   if (!isOpen) return null;
 
@@ -19,6 +21,11 @@ const NewTweetModal: React.FC<NewTweetModalProps> = ({ isOpen, onClose, setPostD
     e.preventDefault();
     // Handle URL submission here
     console.log('URL submitted:', url);
+
+    if (!url.includes("x.com") && !url.includes("peerlist.io")) {
+      showError("Invalid URL");
+      return;
+    }
 
     setLoading(true);
     let endpoint = `${BASE_URL}api/screenshots?url=${url}`;

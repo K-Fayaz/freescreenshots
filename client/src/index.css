@@ -21,3 +21,37 @@
 .tweet-content div {
     display: inline;
 }
+
+@keyframes toastEnter {
+    0% {
+        transform: translate(100%, 100%) scale(0.8);
+        opacity: 0;
+    }
+    50% {
+        transform: translate(-5%, -5%) scale(1.05);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translate(0, 0) scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes toastExit {
+    0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(100%, 100%) scale(0.8);
+        opacity: 0;
+    }
+}
+
+.animate-toast-enter {
+    animation: toastEnter 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.animate-toast-exit {
+    animation: toastExit 0.3s ease-in forwards;
+}

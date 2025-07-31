@@ -2,6 +2,7 @@ import React from 'react';
 import { Heart, MessageCircle, Repeat2 } from 'lucide-react';
 import Tweet from './Tweet';
 import PeerlistPost from './PeerlistPost';
+import PeerlistProfile from './PeerlistProfile';
 
 interface TweetPreviewProps {
   theme: 'Light' | 'Dark';
@@ -84,7 +85,11 @@ const TweetPreview: React.FC<TweetPreviewProps> = ({
             postDetails.platform === 'x.com' ? (
               <Tweet details={postDetails.post} logo={logo} theme={theme} showMetrics={showMetrics} showViews={showViews}/>
             ) : postDetails.platform === 'peerlist.io' ? (
-              <PeerlistPost details={postDetails.post} theme={theme} logo={logo} showMetrics={showMetrics} />
+              postDetails.type === 'post' ? (
+                <PeerlistPost details={postDetails.post} theme={theme} logo={logo} showMetrics={showMetrics} />
+                              ) : (
+                  <PeerlistProfile details={postDetails.post} theme={theme} logo={logo} showMetrics={showMetrics} />
+                )
             ) : (
               <h1>hola</h1>
             )

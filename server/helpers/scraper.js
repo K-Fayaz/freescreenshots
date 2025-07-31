@@ -962,10 +962,87 @@ function extractTweetDataNew(htmlString) {
     };
 }
 
+function extractPeerlistProfileData(htmlString) {
+  const $ = cheerio.load(htmlString);
+
+  // Try to get from JSON-LD if available
+  const jsonLdScript = $('script#__NEXT_DATA__').html();
+  
+  let displayName = null;
+  let profileHandle = null;
+  let followers = null;
+  let profilePicture = null;
+  let headline = null;
+  let verified = null;
+  let website = null;
+  let createdAt = null;
+  let skills = [];
+  let projects = [];
+
+  if (jsonLdScript) {
+    try {
+      const json = JSON.parse(jsonLdScript);
+      const userData = json?.props?.pageProps?.user;
+      
+      if (userData) {
+        // Extract basic profile information
+        displayName = userData.displayName || null;
+        profileHandle = userData.profileHandle || null;
+        profilePicture = userData.profilePicture || null;
+        headline = userData.headline || null;
+        verified = userData.verified || false;
+        website = userData.website || null;
+        createdAt = userData.createdAt || null;
+        
+        // Extract followers count
+        if (userData.networkCount && userData.networkCount.followers) {
+          followers = userData.networkCount.followers;
+        }
+        
+        // Extract skills - only the name part
+        if (userData.skills && Array.isArray(userData.skills)) {
+          skills = userData.skills.map(skill => skill.name || skill.label || skill.id).filter(Boolean);
+        }
+        
+        // Extract projects
+        if (userData.projects && Array.isArray(userData.projects)) {
+          projects = userData.projects.map(project => ({
+            title: project.title || null,
+            tagline: project.tagline || null,
+            logo: project.logo || null,
+            categories: Array.isArray(project.categories) 
+              ? project.categories.map(cat => cat.name).filter(Boolean)
+              : [],
+            commentCount: project.commentCount || 0,
+            upvotesCount: project.upvotesCount || 0,
+            bookmarkCount: project.bookmarkCount || 0
+          }));
+        }
+      }
+    } catch (e) {
+      console.error('Error parsing JSON-LD script:', e);
+    }
+  }
+
+  return {
+    displayName,
+    profileHandle,
+    followers,
+    profilePicture,
+    headline,
+    verified,
+    website,
+    createdAt,
+    skills,
+    projects
+  };
+}
+
 module.exports = {
     scrapeTweet,
     scrapePeerlistPost,
     extractTweetData,
     extractTweetDataNew,
-    extractPeerlistPostData
+    extractPeerlistPostData,
+    extractPeerlistProfileData
 }

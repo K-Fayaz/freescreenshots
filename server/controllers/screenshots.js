@@ -1,4 +1,4 @@
-const { scrapeTweet, scrapePeerlistPost, extractTweetData, extractTweetDataNew, extractPeerlistPostData } = require("../helpers/scraper");
+const { scrapeTweet, scrapePeerlistPost, extractTweetData, extractTweetDataNew, extractPeerlistPostData,extractPeerlistProfileData } = require("../helpers/scraper");
 
 
 const getDetails = async (req, res) => {
@@ -10,26 +10,37 @@ const getDetails = async (req, res) => {
   
       let html;
       let data;
+      let type;
   
       let platform = url.split('/')[2];
-      console.log(platform);
       
       if (platform.includes('x.com')) {
         html = await scrapeTweet(url);
         console.log(html)
         data = extractTweetDataNew(html);
+        type="post";
       }
       else if (platform.includes('peerlist.io')) {
+        
         html = await scrapePeerlistPost(url);
-        // console.log(html)
-        data = extractPeerlistPostData(html);
+
+        if (url.includes('peerlist.io/posts')) {
+          data = extractPeerlistPostData(html);
+          type="post";
+        } else {
+          data = extractPeerlistProfileData(html);
+          type="profile";
+        }
+      } else {
+        return res.status(400).json({ error: "Invalid URL" });
       }
   
   
       return res.status(200).json({
         status: "success",
         platform: platform,
-        data: data
+        data: data,
+        type:type
       });
     } catch (err) {
       console.error("Error:", err);

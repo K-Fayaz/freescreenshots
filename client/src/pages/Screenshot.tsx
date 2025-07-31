@@ -7,6 +7,7 @@ import DownloadSuccessModal from '../components/DownloadSuccessModal';
 import html2canvas from 'html2canvas';
 import { toPng } from 'html-to-image';
 import BASE_URL from '../config';
+import { ToastProvider } from '../components/ToastContext';
 
 // Define the color arrays here to sync with Sidebar
 const lightColors = [
@@ -350,17 +351,19 @@ function Screenshot() {
   );
 
   return (
-    <div className="h-screen flex flex-col bg-gray-50">
-      <Header onNewTweetClick={handleNewTweetClick} />
-      <div className="flex-1 flex">
-        <div className="flex-1">
-          {loading ? <Skeleton /> : !postDetails ? <EmptyState /> : <TweetPreview {...tweetPreviewProps} />}
+    <ToastProvider>
+      <div className="h-screen flex flex-col bg-gray-50">
+        <Header onNewTweetClick={handleNewTweetClick} />
+        <div className="flex-1 flex">
+          <div className="flex-1">
+            {loading ? <Skeleton /> : !postDetails ? <EmptyState /> : <TweetPreview {...tweetPreviewProps} />}
+          </div>
+          <Sidebar {...sidebarProps} />
         </div>
-        <Sidebar {...sidebarProps} />
+        <NewTweetModal isOpen={isModalOpen} onClose={handleCloseModal} setPostDetails={setPostDetails} setLoading={setLoading} />
+        <DownloadSuccessModal isOpen={isDownloadModalOpen} onClose={handleCloseDownloadModal} />
       </div>
-      <NewTweetModal isOpen={isModalOpen} onClose={handleCloseModal} setPostDetails={setPostDetails} setLoading={setLoading} />
-      <DownloadSuccessModal isOpen={isDownloadModalOpen} onClose={handleCloseDownloadModal} />
-    </div>
+    </ToastProvider>
   );
 }
 
