@@ -17,3 +17,7 @@
     display: inline;
     vertical-align: middle;
 }
+
+.tweet-content div {
+    display: inline;
+}

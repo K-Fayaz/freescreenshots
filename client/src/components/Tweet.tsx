@@ -2,6 +2,7 @@ import { BsTwitterX } from "react-icons/bs";
 import { FaTwitter } from "react-icons/fa";
 import { SiPeerlist } from "react-icons/si";
 import { PlayCircle } from "lucide-react";
+import { Play } from "lucide-react";
 
 interface TweetProps {
     details: any;
@@ -39,30 +40,75 @@ const Tweet: React.FC<TweetProps> = ({ details, logo, theme, showMetrics, showVi
             </div>
             {/* Tweet Content */}
             <div className="text-[15px] font-normal leading-snug mt-2">
-                <div
-                    className="tweet-content my-2 whitespace-pre-line"
-                    dangerouslySetInnerHTML={{ __html: details.tweetContent }}
-                />
-                {details?.tweetImage && (
-                    <div className="relative">
-                        {details.isVideo === true && (
-                            <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-black/60 p-3 flex items-center justify-center">
-                                <PlayCircle
-                                    className=""
-                                    color="#fff"
-                                    fill="none"
-                                    size={32}
-                                    strokeWidth={2.5}
-                                />
-                            </span>
-                        )}
-                        <img src={details.tweetImage} alt="tweet" className="w-full border border-white rounded-lg my-3" />
-                    </div>
-                )}
+                                 <div
+                     className="tweet-content my-2 whitespace-pre-line"
+                     dangerouslySetInnerHTML={{ __html: details.tweetContent }}
+                 />
+                                 {/* Video Poster */}
+                 {details.isVideo && details.video?.poster && (
+                     <div className="relative w-full my-3 rounded-lg">
+                         <img src={details.video.poster} alt="video poster" className={`w-full border rounded-lg ${theme === 'Dark' ? 'border-[#1f1f1f]' : 'border-gray-200'}`} />
+                         <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-black/60 p-3 flex items-center justify-center">
+                             <Play
+                                 className=""
+                                 color="#fff"
+                                 fill="none"
+                                 size={32}
+                                 strokeWidth={2.5}
+                             />
+                         </span>
+                     </div>
+                 )}
+                 {/* Tweet Images */}
+                 {details?.tweetImages && Array.isArray(details.tweetImages) && details.tweetImages.length > 0 && (
+                     <div className="w-full my-3 rounded-lg">
+                         {details.tweetImages.length === 1 && (
+                             <div className="relative w-full">
+                                 <img src={details.tweetImages[0]} alt="tweet" className={`w-full border rounded-lg ${theme === 'Dark' ? 'border-[#1f1f1f]' : 'border-gray-200'}`} />
+                             </div>
+                         )}
+                         {details.tweetImages.length === 2 && (
+                             <div className="flex flex-row gap-0.5">
+                                 <div className="relative w-1/2 h-[300px]">
+                                     <img src={details.tweetImages[0]} alt="tweet1" className="w-full h-full object-cover rounded-lg" />
+                                 </div>
+                                 <div className="relative w-1/2 h-[300px]">
+                                     <img src={details.tweetImages[1]} alt="tweet2" className="w-full h-full object-cover rounded-lg" />
+                                 </div>
+                             </div>
+                         )}
+                         {details.tweetImages.length === 3 && (
+                             <div className="flex flex-row gap-0.5 w-full h-[300px]">
+                                 {/* Left column: one tall image */}
+                                 <div className="w-1/2 h-full">
+                                     <img src={details.tweetImages[0]} alt="tweet1" className="w-full h-full object-cover rounded-lg" />
+                                 </div>
+                                 {/* Right column: two stacked images */}
+                                 <div className="w-1/2 h-full flex flex-col gap-0.5">
+                                     <div className="h-1/2">
+                                         <img src={details.tweetImages[1]} alt="tweet2" className="w-full h-full object-cover rounded-lg" />
+                                     </div>
+                                     <div className="h-1/2">
+                                         <img src={details.tweetImages[2]} alt="tweet3" className="w-full h-full object-cover rounded-lg" />
+                                     </div>
+                                 </div>
+                             </div>
+                         )}
+                         {details.tweetImages.length >= 4 && (
+                             <div className={`grid grid-cols-2 grid-rows-2 gap-0.5 border rounded-lg ${theme === 'Dark' ? 'border-[#1f1f1f]' : 'border-gray-200'}`}>
+                                 {[0,1,2,3].map((idx) => (
+                                     <div key={idx} className="relative w-full h-full">
+                                         <img src={details.tweetImages[idx]} alt={`tweet${idx+1}`} className="w-full h-[150px] object-cover" />
+                                     </div>
+                                 ))}
+                             </div>
+                         )}
+                     </div>
+                 )}
                 {/* Quoted Tweet */}
                 {details.isQuoted && details.quoted && (
                   <div
-                    className={`rounded-xl border mt-4 p-4 text-[14px] ${theme === 'Dark' ? 'border-gray-700 bg-[#181C20] text-gray-200' : 'border-gray-200 bg-gray-100 text-gray-900'}`}
+                    className={`rounded-xl border mt-4 p-4 text-[14px] ${theme === 'Dark' ? 'border-[#1f1f1f] bg-black text-gray-200' : 'border-gray-200 bg-gray-100 text-gray-900'}`}
                   >
                     <div className="flex items-center mb-2">
                       <img src={details.quoted.profileImg} alt="profile" className="rounded-full w-7 h-7 mr-2" />
@@ -84,22 +130,67 @@ const Tweet: React.FC<TweetProps> = ({ details, logo, theme, showMetrics, showVi
                       </div>
                     </div>
                     <div className="tweet-content my-1 whitespace-pre-line" dangerouslySetInnerHTML={{ __html: details.quoted.tweetContent }} />
-                    {details.quoted.tweetImage && (
-                      <div className="relative mt-2">
-                        {details.quoted.isVideo === true && (
-                          <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-black/60 p-2 flex items-center justify-center">
-                            <PlayCircle
-                              className=""
-                              color="#fff"
-                              fill="none"
-                              size={24}
-                              strokeWidth={2.5}
-                            />
-                          </span>
-                        )}
-                        <img src={details.quoted.tweetImage} alt="tweet" className="w-full border border-gray-800 rounded-lg my-2" />
-                      </div>
-                    )}
+                     {/* Quoted Tweet Video Poster */}
+                     {details.quoted.isVideo && details.quoted.video?.poster && (
+                       <div className="relative w-full  rounded-lg mt-2">
+                         <img src={details.quoted.video.poster} alt="quoted video poster" className={`w-full border rounded-lg my-2 ${theme === 'Dark' ? 'border-[#1f1f1f]' : 'border-gray-200'}`} />
+                         <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-black/60 p-2 flex items-center justify-center">
+                           <Play
+                             className=""
+                             color="#fff"
+                             fill="none"
+                             size={24}
+                             strokeWidth={2.5}
+                           />
+                         </span>
+                       </div>
+                     )}
+                     {/* Quoted Tweet Images */}
+                     {details.quoted?.tweetImages && Array.isArray(details.quoted.tweetImages) && details.quoted.tweetImages.length > 0 && (
+                       <div className="w-full rounded-lg mt-2">
+                         {details.quoted.tweetImages.length === 1 && (
+                           <div className="relative w-full">
+                             <img src={details.quoted.tweetImages[0]} alt="quoted tweet" className={`w-full border rounded-lg my-2 ${theme === 'Dark' ? 'border-[#1f1f1f]' : 'border-gray-200'}`} />
+                           </div>
+                         )}
+                         {details.quoted.tweetImages.length === 2 && (
+                           <div className="flex flex-row gap-0.5">
+                             <div className="relative w-1/2 h-[200px]">
+                               <img src={details.quoted.tweetImages[0]} alt="quoted tweet1" className="w-full h-full object-cover rounded-lg" />
+                             </div>
+                             <div className="relative w-1/2 h-[200px]">
+                               <img src={details.quoted.tweetImages[1]} alt="quoted tweet2" className="w-full h-full object-cover rounded-lg" />
+                             </div>
+                           </div>
+                         )}
+                         {details.quoted.tweetImages.length === 3 && (
+                           <div className="flex flex-row gap-2 w-full h-[200px]">
+                             {/* Left column: one tall image */}
+                             <div className="w-1/2 h-full">
+                               <img src={details.quoted.tweetImages[0]} alt="quoted tweet1" className="w-full h-full object-cover rounded-lg" />
+                             </div>
+                             {/* Right column: two stacked images */}
+                             <div className="w-1/2 h-full flex flex-col gap-0.5">
+                               <div className="h-1/2">
+                                 <img src={details.quoted.tweetImages[1]} alt="quoted tweet2" className="w-full h-full object-cover rounded-lg" />
+                               </div>
+                               <div className="h-1/2">
+                                 <img src={details.quoted.tweetImages[2]} alt="quoted tweet3" className="w-full h-full object-cover rounded-lg" />
+                               </div>
+                             </div>
+                           </div>
+                         )}
+                         {details.quoted.tweetImages.length >= 4 && (
+                           <div className={`grid grid-cols-2 grid-rows-2 gap-0.5 border rounded-lg ${theme === 'Dark' ? 'border-[#1f1f1f]' : 'border-gray-200'}`}>
+                             {[0,1,2,3].map((idx) => (
+                               <div key={idx} className="relative w-full h-full">
+                                 <img src={details.quoted.tweetImages[idx]} alt={`quoted tweet${idx+1}`} className="w-full h-[100px] object-cover" />
+                               </div>
+                             ))}
+                           </div>
+                         )}
+                       </div>
+                     )}
                   </div>
                 )}
             </div>

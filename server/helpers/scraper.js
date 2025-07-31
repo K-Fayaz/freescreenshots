@@ -150,30 +150,70 @@ function extractTweetData(htmlString) {
     const tweetContentElem = $('[data-testid="tweetText"]').eq(0);
     const tweetContent = tweetContentElem.length ? tweetContentElem.html() : null;
 
-    // Tweet Image (main)
-    let tweetImage = null;
+    // Tweet Images (main) - collect all images into an array
+    let tweetImages = [];
+    let video = null;
     let isVideo = false;
-    const tweetPhotoImg = $('[data-testid="tweetPhoto"] img').eq(0);
-    if (tweetPhotoImg.length) {
-      tweetImage = tweetPhotoImg.attr('src');
-    }
-    if (!tweetImage) {
-      const videoPoster = $('[data-testid="videoComponent"] video[poster]').eq(0).attr('poster');
-      if (videoPoster) {
-        tweetImage = videoPoster;
+    
+    // First, check if main tweet has a video component
+    const videoComponent = $('[data-testid="videoComponent"] video').eq(0);
+    if (videoComponent.length) {
+      const videoSrc = videoComponent.attr('src');
+      const videoPoster = videoComponent.attr('poster');
+      if (videoSrc || videoPoster) {
+        video = {
+          src: videoSrc || null,
+          poster: videoPoster || null
+        };
         isVideo = true;
       }
     }
-    if (!tweetImage) {
+    
+    // If no video component found, check for video thumbnails in main tweet
+    if (!video) {
       const videoThumbImg = $('[data-testid="card.layoutLarge.media"] img').eq(0);
       if (videoThumbImg.length) {
-        tweetImage = videoThumbImg.attr('src');
-        isVideo = true;
+        const src = videoThumbImg.attr('src');
+        if (src) {
+          video = {
+            src: null,
+            poster: src
+          };
+          isVideo = true;
+        }
       }
     }
-    if (!tweetImage) {
-      const fallbackImg = $('[data-testid="tweetPhoto"] img, img[alt="Image"]').filter((i, el) => $(el).attr('src')).eq(0);
-      if (fallbackImg.length) tweetImage = fallbackImg.attr('src');
+    
+    // Only collect images if there's no video in main tweet
+    if (!video) {
+      // Get all tweet photos (only from the main tweet, not quoted)
+      const tweetPhotoImgs = $('[data-testid="tweetPhoto"] img');
+      tweetPhotoImgs.each((i, el) => {
+        const src = $(el).attr('src');
+        if (src) {
+          // Only add if this image belongs to the main tweet (not quoted)
+          // Check if this image is NOT within the quoted tweet section (r-9aw3ui r-1s2bzr4)
+          const isMainTweetImage = $(el).closest('.r-9aw3ui.r-1s2bzr4').length === 0;
+          if (isMainTweetImage) {
+            tweetImages.push(src);
+          }
+        }
+      });
+      
+      // Fallback: check for any images with alt="Image" in main tweet
+      if (tweetImages.length === 0) {
+        const fallbackImgs = $('img[alt="Image"]').filter((i, el) => $(el).attr('src'));
+        fallbackImgs.each((i, el) => {
+          const src = $(el).attr('src');
+          if (src) {
+            // Only add if this image belongs to the main tweet
+            const isMainTweetImage = $(el).closest('.r-9aw3ui.r-1s2bzr4').length === 0;
+            if (isMainTweetImage) {
+              tweetImages.push(src);
+            }
+          }
+        });
+      }
     }
 
     // --- Extract metrics: replies, retweets, likes, views ---
@@ -258,43 +298,98 @@ function extractTweetData(htmlString) {
       // Tweet Content (quoted)
       const qTweetContentElem = $('[data-testid="tweetText"]').eq(1);
       const qTweetContent = qTweetContentElem.length ? qTweetContentElem.html() : null;
-      // Tweet Image (quoted)
-      let qTweetImage = null;
+      // Tweet Images (quoted) - collect all images into an array
+      let qTweetImages = [];
+      let qVideo = null;
       let qIsVideo = false;
-      const qTweetPhotoImg = $('[data-testid="tweetPhoto"] img').eq(1);
-      if (qTweetPhotoImg.length) {
-        qTweetImage = qTweetPhotoImg.attr('src');
-      }
-      if (!qTweetImage) {
-        const qVideoPoster = $('[data-testid="videoComponent"] video[poster]').eq(1).attr('poster');
-        if (qVideoPoster) {
-          qTweetImage = qVideoPoster;
+      
+      // Check for video components in quoted tweet
+      const qVideoComponent = $('[data-testid="videoComponent"] video').eq(1);
+      if (qVideoComponent.length) {
+        const qVideoSrc = qVideoComponent.attr('src');
+        const qVideoPoster = qVideoComponent.attr('poster');
+        if (qVideoSrc || qVideoPoster) {
+          qVideo = {
+            src: qVideoSrc || null,
+            poster: qVideoPoster || null
+          };
           qIsVideo = true;
         }
       }
-      if (!qTweetImage) {
+      
+      // If no video component found, check for video thumbnails in quoted tweet
+      if (!qVideo) {
         const qVideoThumbImg = $('[data-testid="card.layoutLarge.media"] img').eq(1);
         if (qVideoThumbImg.length) {
-          qTweetImage = qVideoThumbImg.attr('src');
-          qIsVideo = true;
+          const src = qVideoThumbImg.attr('src');
+          if (src) {
+            qVideo = {
+              src: null,
+              poster: src
+            };
+            qIsVideo = true;
+          }
         }
       }
-      if (!qTweetImage) {
-        const qFallbackImg = $('[data-testid="tweetPhoto"] img, img[alt="Image"]').filter((i, el) => $(el).attr('src')).eq(1);
-        if (qFallbackImg.length) qTweetImage = qFallbackImg.attr('src');
+      
+      // Only collect images if there's no video in quoted tweet
+      if (!qVideo) {
+        // Get all tweet photos for quoted tweet (only from the quoted tweet section)
+        const qTweetPhotoImgs = $('[data-testid="tweetPhoto"] img');
+        qTweetPhotoImgs.each((i, el) => {
+          const src = $(el).attr('src');
+          if (src) {
+            // Only add if this image belongs to the quoted tweet section (r-9aw3ui r-1s2bzr4)
+            const isQuotedTweetImage = $(el).closest('.r-9aw3ui.r-1s2bzr4').length > 0;
+            if (isQuotedTweetImage) {
+              qTweetImages.push(src);
+            }
+          }
+        });
+        
+        // Fallback: check for any images with alt="Image" in quoted tweet
+        if (qTweetImages.length === 0) {
+          const qFallbackImgs = $('img[alt="Image"]').filter((i, el) => $(el).attr('src'));
+          qFallbackImgs.each((i, el) => {
+            const src = $(el).attr('src');
+            if (src) {
+              // Only add if this image belongs to the quoted tweet
+              const isQuotedTweetImage = $(el).closest('.r-9aw3ui.r-1s2bzr4').length > 0;
+              if (isQuotedTweetImage) {
+                qTweetImages.push(src);
+              }
+            }
+          });
+        }
       }
       quoted = {
         username: qUsername,
         userHandle: qUserHandle,
         profileImg: qProfileImg,
         tweetContent: qTweetContent,
-        tweetImage: qTweetImage,
+        tweetImages: qTweetImages,
+        video: qVideo,
         isVideo: qIsVideo,
         time: qTime
       };
     }
 
-    return { username, userHandle, profileImg, tweetContent, tweetImage, replies, retweets, likes, views, isVideo, isQuoted, quoted, time };
+    return { 
+      username, 
+      userHandle, 
+      profileImg, 
+      tweetContent, 
+      tweetImages, 
+      video, 
+      replies, 
+      retweets, 
+      likes, 
+      views, 
+      isVideo, 
+      isQuoted, 
+      quoted, 
+      time
+    };
 }
 
 function extractPeerlistPostData(htmlString) {
@@ -528,9 +623,349 @@ function extractPeerlistPostData(htmlString) {
   };
 }
 
+function extractTweetDataNew(htmlString) {
+    const $ = cheerio.load(htmlString);
+
+    // Find the main tweet article
+    const tweetArticle = $('[data-testid="tweet"]');
+    if (!tweetArticle.length) {
+        throw new Error('Tweet article not found');
+    }
+
+    // Navigate to the div with 6 children as per user's detailed structure
+    let targetDiv = tweetArticle;
+    targetDiv = targetDiv.children().first(); // First div inside article
+    if (!targetDiv.length) return null;
+    
+    targetDiv = targetDiv.children().first(); // Second div
+    if (!targetDiv.length) return null;
+    
+    targetDiv = targetDiv.children().eq(2); // Third div (this should have 6 children)
+    if (!targetDiv.length) return null;
+
+    const children = targetDiv.children();
+    if (children.length < 6) {
+        console.warn(`Expected 6 children, found ${children.length}`);
+    }
+
+    // Extract main tweet content from the first child of targetDiv
+    const mainTweetContentDiv = children.eq(0);
+    const mainTweetText = mainTweetContentDiv.find('[data-testid="tweetText"]').first();
+    // console.log(mainTweetContentDiv)
+    const tweetContent = mainTweetText.length ? mainTweetText.html() : null;
+    // console.log("tweetContent: ",tweetContent);
+
+    // Extract main tweet media and quoted tweet from the second child of targetDiv
+    const mediaAndQuotedDiv = children.eq(1);
+    const mediaAndQuotedChildren = mediaAndQuotedDiv.children();
+    
+    // Main tweet media div has child divs:
+    // Could be 0, 1, or 2 children:
+    // - 0: No media, no quoted tweet
+    // - 1: Either main tweet media OR quoted tweet (need to check which)
+    // - 2: Main tweet media (first child) + quoted tweet (second child)
+    const mainTweetMediaDiv = mediaAndQuotedChildren.eq(0);
+    const mainTweetMediaChildren = mainTweetMediaDiv.children();
+    
+    let tweetImages = [];
+    let video = null;
+    let isVideo = false;
+    let isQuoted = false;
+    let quoted = null;
+    
+    if (mainTweetMediaChildren.length === 0) {
+        // No media, no quoted tweet
+        // Do nothing, all variables remain null/false
+    } else if (mainTweetMediaChildren.length === 1) {
+        // Only one child - need to determine if it's main tweet media or quoted tweet
+        const singleChild = mainTweetMediaChildren.eq(0);
+        
+                 // Check if this child is a quoted tweet by looking for profile details
+         // If it has profile details (User-Name or UserAvatar), it's a quoted tweet
+         // If it doesn't have profile details, it's main tweet media
+         const hasProfileDetails = singleChild.find('[data-testid="User-Name"]').length > 0 || 
+                                   singleChild.find('[data-testid^="UserAvatar-Container-"]').length > 0;
+         
+         if (!hasProfileDetails) {
+            // This is main tweet media
+            const mainTweetMediaContentDiv = singleChild;
+            
+            // Check for video in main tweet media
+            const mainTweetVideo = mainTweetMediaContentDiv.find('[data-testid="videoComponent"] video').first();
+            if (mainTweetVideo.length) {
+                const videoSrc = mainTweetVideo.attr('src');
+                const videoPoster = mainTweetVideo.attr('poster');
+                if (videoSrc || videoPoster) {
+                    video = { src: videoSrc || null, poster: videoPoster || null };
+                    isVideo = true;
+                }
+            }
+            
+            // Collect images from main tweet media
+            const mainTweetPhotos = mainTweetMediaContentDiv.find('[data-testid="tweetPhoto"] img');
+            mainTweetPhotos.each((i, el) => {
+                const src = $(el).attr('src');
+                if (src && !src.includes('amplify_video_thumb')) { 
+                    tweetImages.push(src); 
+                }
+            });
+
+            console.log("main Tweet images: ",tweetImages);
+          
+          } else {
+            // This is a quoted tweet (no main tweet media)
+            const quotedTweetDiv = singleChild;
+            const quotedTweetText = quotedTweetDiv.find('[data-testid="tweetText"]').first();
+            if (quotedTweetText.length) {
+                isQuoted = true;
+                const qTweetContent = quotedTweetText.html();
+                
+                // Extract quoted tweet user info
+                const qUsernameElem = quotedTweetDiv.find('[data-testid="User-Name"]').first();
+                let qUsername = null, qUserHandle = null, qTime = null;
+                if (qUsernameElem.length) {
+                    const spans = qUsernameElem.find('span');
+                    spans.each((i, el) => {
+                        const txt = $(el).text().trim();
+                        if (!qUsername && !txt.startsWith('@') && !txt.includes('·')) {
+                            qUsername = txt;
+                        }
+                        if (!qUserHandle && txt.startsWith('@')) {
+                            qUserHandle = txt;
+                        }
+                        if (!qTime && txt.includes('·')) {
+                            qTime = txt.replace('·', '').trim();
+                        }
+                    });
+                }
+                
+                // Extract quoted tweet profile image
+                const qProfileImgElem = quotedTweetDiv.find('[data-testid^="UserAvatar-Container-"] img').first();
+                const qProfileImg = qProfileImgElem.length ? qProfileImgElem.attr('src') : null;
+                
+                let qTweetImages = [];
+                let qVideo = null;
+                let qIsVideo = false;
+                
+                // Check for video in quoted tweet
+                const qVideoComponent = quotedTweetDiv.find('[data-testid="videoComponent"] video').first();
+                if (qVideoComponent.length) {
+                    const qVideoSrc = qVideoComponent.attr('src');
+                    const qVideoPoster = qVideoComponent.attr('poster');
+                    if (qVideoSrc || qVideoPoster) {
+                        qVideo = { src: qVideoSrc || null, poster: qVideoPoster || null };
+                        qIsVideo = true;
+                    }
+                }
+                
+                // If no video, collect images from quoted tweet
+                if (!qVideo) {
+                    const qTweetPhotos = quotedTweetDiv.find('[data-testid="tweetPhoto"] img');
+                    qTweetPhotos.each((i, el) => {
+                        const src = $(el).attr('src');
+                        if (src) { qTweetImages.push(src); }
+                    });
+                }
+                
+                quoted = { 
+                    username: qUsername, 
+                    userHandle: qUserHandle, 
+                    profileImg: qProfileImg, 
+                    tweetContent: qTweetContent, 
+                    tweetImages: qTweetImages, 
+                    video: qVideo, 
+                    isVideo: qIsVideo, 
+                    time: qTime 
+                };
+            }
+        }
+    } else if (mainTweetMediaChildren.length >= 2) {
+        // Two or more children: first is main tweet media, second is quoted tweet
+        const mainTweetMediaContentDiv = mainTweetMediaChildren.eq(0);
+        
+        // Check for video in main tweet media
+        const mainTweetVideo = mainTweetMediaContentDiv.find('[data-testid="videoComponent"] video').first();
+        if (mainTweetVideo.length) {
+            const videoSrc = mainTweetVideo.attr('src');
+            const videoPoster = mainTweetVideo.attr('poster');
+            if (videoSrc || videoPoster) {
+                video = { src: videoSrc || null, poster: videoPoster || null };
+                isVideo = true;
+            }
+        }
+
+        console.log("before : ",tweetImages)
+        
+        // Collect images from main tweet media
+        const mainTweetPhotos = mainTweetMediaContentDiv.find('[data-testid="tweetPhoto"] img');
+        mainTweetPhotos.each((i, el) => {
+            const src = $(el).attr('src');
+            if (src && !src.includes('amplify_video_thumb')) { 
+                tweetImages.push(src); 
+            }
+        });
+        console.log("After : ",tweetImages)
+
+        // Quoted tweet is in the second child
+        const quotedTweetDiv = mainTweetMediaChildren.eq(1);
+        const quotedTweetText = quotedTweetDiv.find('[data-testid="tweetText"]').first();
+        if (quotedTweetText.length) {
+            isQuoted = true;
+            const qTweetContent = quotedTweetText.html();
+            
+            // Extract quoted tweet user info
+            const qUsernameElem = quotedTweetDiv.find('[data-testid="User-Name"]').first();
+            let qUsername = null, qUserHandle = null, qTime = null;
+            if (qUsernameElem.length) {
+                const spans = qUsernameElem.find('span');
+                spans.each((i, el) => {
+                    const txt = $(el).text().trim();
+                    if (!qUsername && !txt.startsWith('@') && !txt.includes('·')) {
+                        qUsername = txt;
+                    }
+                    if (!qUserHandle && txt.startsWith('@')) {
+                        qUserHandle = txt;
+                    }
+                    if (!qTime && txt.includes('·')) {
+                        qTime = txt.replace('·', '').trim();
+                    }
+                });
+            }
+            
+            // Extract quoted tweet profile image
+            const qProfileImgElem = quotedTweetDiv.find('[data-testid^="UserAvatar-Container-"] img').first();
+            const qProfileImg = qProfileImgElem.length ? qProfileImgElem.attr('src') : null;
+            
+            let qTweetImages = [];
+            let qVideo = null;
+            let qIsVideo = false;
+            
+            // Check for video in quoted tweet
+            const qVideoComponent = quotedTweetDiv.find('[data-testid="videoComponent"] video').first();
+            if (qVideoComponent.length) {
+                const qVideoSrc = qVideoComponent.attr('src');
+                const qVideoPoster = qVideoComponent.attr('poster');
+                if (qVideoSrc || qVideoPoster) {
+                    qVideo = { src: qVideoSrc || null, poster: qVideoPoster || null };
+                    qIsVideo = true;
+                }
+            }
+            
+            // If no video, collect images from quoted tweet
+            if (!qVideo) {
+                const qTweetPhotos = quotedTweetDiv.find('[data-testid="tweetPhoto"] img');
+                qTweetPhotos.each((i, el) => {
+                    const src = $(el).attr('src');
+                    if (src) { qTweetImages.push(src); }
+                });
+            }
+            
+            quoted = { 
+                username: qUsername, 
+                userHandle: qUserHandle, 
+                profileImg: qProfileImg, 
+                tweetContent: qTweetContent, 
+                tweetImages: qTweetImages, 
+                video: qVideo, 
+                isVideo: qIsVideo, 
+                time: qTime 
+            };
+        }
+    }
+    console.log("quoted: ",quoted);
+    // Extract main tweet metadata (username, handle, profile image, time) from the overall tweetArticle
+    let username = null, userHandle = null, profileImg = null, time = null;
+    const usernameElem = tweetArticle.find('[data-testid="User-Name"]').first();
+    if (usernameElem.length) {
+        const spans = usernameElem.find('span');
+        spans.each((i, el) => {
+            const txt = $(el).text().trim();
+            if (!username && !txt.startsWith('@') && !txt.includes('·')) {
+                username = txt;
+            }
+            if (!userHandle && txt.startsWith('@')) {
+                userHandle = txt;
+            }
+        });
+    }
+    
+    const profileImgElem = tweetArticle.find('[data-testid^="UserAvatar-Container-"] img').first();
+    profileImg = profileImgElem.length ? profileImgElem.attr('src') : null;
+    
+    const timeElem = tweetArticle.find('time').first();
+    time = timeElem.length ? timeElem.text().trim() : null;
+
+    // Extract metrics (replies, retweets, likes, views) from the overall tweetArticle
+    let replies = null, retweets = null, likes = null, views = null;
+    const metricsGroup = tweetArticle.find('[role="group"]').first();
+    if (metricsGroup.length) {
+        // Replies
+        const replyBtn = metricsGroup.find('button[data-testid="reply"]').first();
+        if (replyBtn.length) {
+            const replySpan = replyBtn.find('span').first();
+            if (replySpan.length) replies = replySpan.text().trim();
+        }
+        // Retweets
+        const retweetBtn = metricsGroup.find('button[data-testid="retweet"]').first();
+        if (retweetBtn.length) {
+            const retweetSpan = retweetBtn.find('span').first();
+            if (retweetSpan.length) retweets = retweetSpan.text().trim();
+        }
+        // Likes
+        const likeBtn = metricsGroup.find('button[data-testid="like"]').first();
+        if (likeBtn.length) {
+            const likeSpan = likeBtn.find('span').first();
+            if (likeSpan.length) likes = likeSpan.text().trim();
+        }
+        // Views
+        let viewsCandidate = metricsGroup.find('span').filter((i, el) => $(el).text().trim().toLowerCase() === 'views').first();
+        if (viewsCandidate.length) {
+            const prev = viewsCandidate.prev();
+            if (prev.length && prev.text()) {
+                views = prev.text().trim();
+            } else if (viewsCandidate.parent().length) {
+                const numberSpan = viewsCandidate.parent().find('span').filter((i, el) => el !== viewsCandidate[0] && /[0-9]/.test($(el).text())).first();
+                if (numberSpan.length) views = numberSpan.text().trim();
+            }
+        }
+        
+        // If not found in metricsGroup, try global search
+        if (!views) {
+            viewsCandidate = $('span').filter((i, el) => $(el).text().trim().toLowerCase() === 'views').first();
+            if (viewsCandidate.length) {
+                const prev = viewsCandidate.prev();
+                if (prev.length && prev.text()) {
+                    views = prev.text().trim();
+                } else if (viewsCandidate.parent().length) {
+                    const numberSpan = viewsCandidate.parent().find('span').filter((i, el) => el !== viewsCandidate[0] && /[0-9]/.test($(el).text())).first();
+                    if (numberSpan.length) views = numberSpan.text().trim();
+                }
+            }
+        }
+    }
+
+    return { 
+        username, 
+        userHandle, 
+        profileImg, 
+        tweetContent, 
+        tweetImages, 
+        video, 
+        replies, 
+        retweets, 
+        likes, 
+        views, 
+        isVideo, 
+        isQuoted, 
+        quoted, 
+        time
+    };
+}
+
 module.exports = {
     scrapeTweet,
     scrapePeerlistPost,
     extractTweetData,
+    extractTweetDataNew,
     extractPeerlistPostData
 }
