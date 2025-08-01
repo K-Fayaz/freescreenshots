@@ -1,4 +1,4 @@
-const { scrapeTweet, scrapePeerlistPost, extractTweetData, extractTweetDataNew, extractPeerlistPostData,extractPeerlistProfileData } = require("../helpers/scraper");
+const { scrapeTweet, scrapePeerlistPost,extractTwitterProfileData, extractTweetData, extractTweetDataNew, extractPeerlistPostData,extractPeerlistProfileData,scrapeTweetProfile } = require("../helpers/scraper");
 
 
 const getDetails = async (req, res) => {
@@ -15,10 +15,17 @@ const getDetails = async (req, res) => {
       let platform = url.split('/')[2];
       
       if (platform.includes('x.com')) {
-        html = await scrapeTweet(url);
-        console.log(html)
-        data = extractTweetDataNew(html);
-        type="post";
+        if (url.includes('/status/')) {
+          type="post";
+          html = await scrapeTweet(url);
+          data = extractTweetDataNew(html);
+          console.log(html)
+        } else {
+          type="profile";
+          html = await scrapeTweetProfile(url);
+          data = extractTwitterProfileData(html);
+          console.log(data);
+        }
       }
       else if (platform.includes('peerlist.io')) {
         

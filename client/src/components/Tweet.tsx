@@ -40,7 +40,7 @@ const Tweet: React.FC<TweetProps> = ({ details, logo, theme, showMetrics, showVi
             </div>
             {/* Tweet Content */}
             <div className="text-[15px] font-normal leading-snug mt-2">
-                                 <div
+                <div
                      className="tweet-content my-2 whitespace-pre-line"
                      dangerouslySetInnerHTML={{ __html: details.tweetContent }}
                  />

@@ -60,6 +60,7 @@ function Screenshot() {
 
     setExporting(true);
     const originalSrcs: string[] = [];
+    const originalStyles: string[] = [];
     try {
       const imgElements = tweetRef.current.querySelectorAll('img');
       
@@ -184,17 +185,38 @@ function Screenshot() {
       console.log('Processing images...');
       const imagePromises = Array.from(imgElements).map(async (img, index) => {
         originalSrcs[index] = img.src;
+        originalStyles[index] = img.style.cssText;
+        
+        // Check if this is an emoji image
+        const isEmoji = img.src.includes('twimg.com/emoji') || 
+                       (img.alt && img.alt.match(/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/u));
+        
+        if (isEmoji) {
+          // For emojis, apply inline styles to ensure proper sizing during screenshot
+          img.style.width = '1.25em';
+          img.style.height = '1.25em';
+          img.style.display = 'inline';
+          img.style.verticalAlign = 'middle';
+          img.style.maxWidth = '1.25em';
+          img.style.maxHeight = '1.25em';
+          img.style.objectFit = 'contain';
+          
+          // Skip proxy processing for emojis - use original URL
+          console.log(`Skipping proxy for emoji ${index}: ${img.src}`);
+          return { index, dataUrl: img.src, success: true, isEmoji: true };
+        }
         
         try {
           const dataUrl = await fetchImageWithProxy(img.src);
           console.log(`Successfully processed image ${index}`);
-          return { index, dataUrl, success: true };
+          return { index, dataUrl, success: true, isEmoji: false };
         } catch (error) {
           console.warn(`Failed to process image ${index}:`, error);
           return { 
             index, 
             dataUrl: generatePlaceholderImage(), 
-            success: false 
+            success: false,
+            isEmoji: false
           };
         }
       });
@@ -204,8 +226,10 @@ function Screenshot() {
       // Update image sources
       imageResults.forEach(result => {
         if (imgElements[result.index]) {
-          imgElements[result.index].src = result.dataUrl;
-          console.log(`Updated image ${result.index}, success: ${result.success}`);
+          if (!result.isEmoji) {
+            imgElements[result.index].src = result.dataUrl;
+          }
+          console.log(`Updated image ${result.index}, success: ${result.success}, isEmoji: ${result.isEmoji}`);
         }
       });
 
@@ -227,8 +251,14 @@ function Screenshot() {
           fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
         },
         filter: (node) => {
-          // Only allow data URLs and blob URLs
+          // Allow emoji images to pass through without conversion
           if (node instanceof HTMLImageElement) {
+            const isEmoji = node.src.includes('twimg.com/emoji') || 
+                           (node.alt && node.alt.match(/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/u));
+            if (isEmoji) {
+              return true; // Allow emoji images to pass through
+            }
+            // For non-emoji images, only allow data URLs and blob URLs
             return node.src.startsWith('data:') || node.src.startsWith('blob:');
           }
           return true;
@@ -253,12 +283,15 @@ function Screenshot() {
       alert(`Export failed: ${error.message}. The screenshot was generated but some images may appear as placeholders due to CORS restrictions.`);
     } finally {
       setExporting(false);
-      // Restore original image sources
+      // Restore original image sources and styles
       const imgElements = tweetRef.current?.querySelectorAll('img');
       if (imgElements && originalSrcs.length > 0) {
         imgElements.forEach((img, i) => {
           if (originalSrcs[i]) {
             img.src = originalSrcs[i];
+          }
+          if (originalStyles[i] !== undefined) {
+            img.style.cssText = originalStyles[i];
           }
         });
       }

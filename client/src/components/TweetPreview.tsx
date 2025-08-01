@@ -1,6 +1,7 @@
 import React from 'react';
 import { Heart, MessageCircle, Repeat2 } from 'lucide-react';
 import Tweet from './Tweet';
+import TwitterUserProfile from './TwitterUserProfile';
 import PeerlistPost from './PeerlistPost';
 import PeerlistProfile from './PeerlistProfile';
 
@@ -85,7 +86,11 @@ const TweetPreview: React.FC<TweetPreviewProps> = ({
           {/* Render post details if available */}
           {postDetails && (
             postDetails.platform === 'x.com' ? (
-              <Tweet details={postDetails.post} logo={logo} theme={theme} showMetrics={showMetrics} showViews={showViews}/>
+              postDetails.type === 'post' ? (
+                <Tweet details={postDetails.post} logo={logo} theme={theme} showMetrics={showMetrics} showViews={showViews}/>
+              ) : (
+                <TwitterUserProfile details={postDetails.post} logo={logo} theme={theme} showMetrics={showMetrics} />
+              )
             ) : postDetails.platform === 'peerlist.io' ? (
               postDetails.type === 'post' ? (
                 <PeerlistPost details={postDetails.post} theme={theme} logo={logo} showMetrics={showMetrics} />

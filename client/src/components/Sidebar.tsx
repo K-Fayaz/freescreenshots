@@ -465,7 +465,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               </button>
             </div>
             {
-              postDetails && postDetails.platform === 'x.com' && (
+              postDetails && postDetails.platform === 'x.com' && postDetails.type !== "profile" && (
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-600">Show views</span>
                     <button

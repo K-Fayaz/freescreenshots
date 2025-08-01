@@ -23,7 +23,8 @@ async function scrapeTweet(url) {
             '--single-process',
             '--disable-background-timer-throttling',
             '--disable-backgrounding-occluded-windows',
-            '--disable-renderer-backgrounding'
+            '--disable-renderer-backgrounding',
+            '--ignore-certificate-errors'
         ],
         protocolTimeout: 180000, // 3 minutes
         timeout: 120000 // 2 minutes browser launch timeout
@@ -64,6 +65,68 @@ async function scrapeTweet(url) {
         throw err;
     }
 }
+
+async function scrapeTweetProfile(url) {
+  console.log('[scrapeTweet] Starting Puppeteer browser...');
+    const browser = await puppeteer.launch({
+        headless: "new",
+        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
+        args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--disable-extensions',
+            '--disable-gpu',
+            '--disable-web-security',
+            '--disable-features=VizDisplayCompositor',
+            '--no-first-run',
+            '--no-zygote',
+            '--single-process',
+            '--disable-background-timer-throttling',
+            '--disable-backgrounding-occluded-windows',
+            '--disable-renderer-backgrounding',
+            '--ignore-certificate-errors'
+        ],
+        protocolTimeout: 180000, // 3 minutes
+        timeout: 120000 // 2 minutes browser launch timeout
+    });
+    const page = await browser.newPage();
+    page.setDefaultTimeout(60000);
+    page.setDefaultNavigationTimeout(60000);
+
+    // Set a realistic user-agent and language
+    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36');
+    await page.setExtraHTTPHeaders({
+        'accept-language': 'en-US,en;q=0.9'
+    });
+
+    try {
+        console.log(`[scrapeTweet] Navigating to URL: ${url}`);
+        // FIXME: Navigation timeout of 30000 ms exceeded - Fix this error
+        await page.goto(url, { waitUntil: "networkidle2", timeout: 30000 });
+
+        const targetDiv = await page.$eval('#react-root', el => {
+            // Navigate through the DOM structure:
+            // react-root -> first child -> second child -> second child of second child
+            const firstChild = el.children[0];
+            if (!firstChild) return null;
+            
+            const secondLevelDiv = firstChild.children[0]; // second child of first child (2nd level)
+            if (!secondLevelDiv) return null;
+            
+            const targetElement = secondLevelDiv.children[1]; // second child of second level div
+            if (!targetElement) return null;
+            
+            return targetElement.outerHTML;
+        });
+
+        // console.log(targetDiv);
+        return targetDiv;
+    }
+    catch(err) {
+      console.log('[scrapeTweetProfile] Error during scraping:', err);
+    }
+}
   
 async function scrapePeerlistPost(url) {
     console.log('[scrapePeerlistPost] Starting Puppeteer browser...');
@@ -83,7 +146,8 @@ async function scrapePeerlistPost(url) {
             '--single-process',
             '--disable-background-timer-throttling',
             '--disable-backgrounding-occluded-windows',
-            '--disable-renderer-backgrounding'
+            '--disable-renderer-backgrounding',
+            '--ignore-certificate-errors'
         ],
         protocolTimeout: 180000, // 3 minutes
         timeout: 120000 // 2 minutes browser launch timeout
@@ -1039,11 +1103,88 @@ function extractPeerlistProfileData(htmlString) {
   };
 }
 
+function extractTwitterProfileData(htmlString) {
+  const $ = cheerio.load(htmlString);
+
+  // Extract profile name (display name) - looking for spans that don't start with @
+  let profileName = null;
+  $('[data-testid="UserName"] span').each((i, el) => {
+    const text = $(el).text().trim();
+    if (text && !text.startsWith('@') && !text.includes('·') && !profileName) {
+      profileName = text;
+    }
+  });
+
+  // Extract profile handle (@username) - looking for spans that start with @
+  let profileHandle = null;
+  $('[data-testid="UserName"] span').each((i, el) => {
+    const text = $(el).text().trim();
+    if (text && text.startsWith('@') && !profileHandle) {
+      profileHandle = text;
+    }
+  });
+
+  // Extract bio/description
+  const bioHTML = $('[data-testid="UserDescription"]').html() || null;
+
+  // Extract joined date
+  const joinedDateText = $('[data-testid="UserJoinDate"] span').last().text().trim();
+  const joinedDate = joinedDateText ? joinedDateText.replace('Joined ', '') : null;
+
+  // Extract total posts count
+  const postsText = $('h2[role="heading"] + div').text().trim();
+  const totalPosts = postsText || null;
+
+  // Extract followers count - get the raw text from the span
+  const followersText = $('a[href*="/verified_followers"] span').first().text().trim();
+  const followers = followersText || null;
+
+  // Extract following count - get the raw text from the span
+  const followingText = $('a[href*="/following"] span').first().text().trim();
+  const following = followingText || null;
+
+  // Extract profile picture URL
+  const profilePicture = $('[data-testid*="UserAvatar"] img').attr('src') || null;
+
+  // Extract banner image URL
+  const bannerImage = $('a[href*="/header_photo"] img').attr('src') || null;
+
+  // Extract verification status - look for SVG with aria-label="Verified account"
+  const verified = $('svg[aria-label="Verified account"]').length > 0;
+
+  // Extract user URL
+  const userUrl = $('[data-testid="UserUrl"]').text().trim() || null;
+
+  // Extract user location
+  const userLocation = $('[data-testid="UserLocation"]').text().trim() || null;
+
+  // Extract user professional category
+  const userProfessionalCategory = $('[data-testid="UserProfessionalCategory"]').text().trim() || null;
+
+  return {
+    profileName,
+    profileHandle,
+    bioHTML,
+    joinedDate,
+    totalPosts,
+    followers,
+    following,
+    profilePicture,
+    bannerImage,
+    verified,
+    userUrl,
+    userLocation,
+    userProfessionalCategory
+  };
+}
+
 module.exports = {
     scrapeTweet,
     scrapePeerlistPost,
     extractTweetData,
+    scrapeTweetProfile,
     extractTweetDataNew,
     extractPeerlistPostData,
-    extractPeerlistProfileData
+    extractTwitterProfileData,
+    extractPeerlistProfileData,
 }
