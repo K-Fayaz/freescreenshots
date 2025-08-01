@@ -967,6 +967,7 @@ function extractPeerlistProfileData(htmlString) {
 
   // Try to get from JSON-LD if available
   const jsonLdScript = $('script#__NEXT_DATA__').html();
+  console.log(jsonLdScript)
   
   let displayName = null;
   let profileHandle = null;
@@ -1009,7 +1010,7 @@ function extractPeerlistProfileData(htmlString) {
           projects = userData.projects.map(project => ({
             title: project.title || null,
             tagline: project.tagline || null,
-            logo: project.logo || null,
+            logo: project.logo || project?.images[0] || null,
             categories: Array.isArray(project.categories) 
               ? project.categories.map(cat => cat.name).filter(Boolean)
               : [],

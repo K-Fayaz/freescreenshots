@@ -20,6 +20,7 @@ interface TweetPreviewProps {
   postDetails: any;
   tweetRef?: React.RefObject<HTMLDivElement>;
   parentWidth: number;
+  showProjects: boolean;
 }
 
 const TweetPreview: React.FC<TweetPreviewProps> = ({
@@ -37,6 +38,7 @@ const TweetPreview: React.FC<TweetPreviewProps> = ({
   showViews,
   postDetails,
   tweetRef,
+  showProjects,
   parentWidth
 }) => {
   // Determine background for light mode
@@ -88,7 +90,7 @@ const TweetPreview: React.FC<TweetPreviewProps> = ({
               postDetails.type === 'post' ? (
                 <PeerlistPost details={postDetails.post} theme={theme} logo={logo} showMetrics={showMetrics} />
                               ) : (
-                  <PeerlistProfile details={postDetails.post} theme={theme} logo={logo} showMetrics={showMetrics} />
+                  <PeerlistProfile details={postDetails.post} theme={theme} logo={logo} showMetrics={showMetrics} showProjects={showProjects} />
                 )
             ) : (
               <h1>hola</h1>

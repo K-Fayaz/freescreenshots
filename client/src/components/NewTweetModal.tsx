@@ -40,10 +40,12 @@ const NewTweetModal: React.FC<NewTweetModalProps> = ({ isOpen, onClose, setPostD
     .then((response) => {
       let post = response.data.data;
       let platform = response.data.platform;
+      let type = response.data.type;
 
       setPostDetails({
         post,
-        platform
+        platform,
+        type: type
       });
       setLoading(false);
     })

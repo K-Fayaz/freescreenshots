@@ -29,6 +29,8 @@ interface SidebarProps {
   setShowMetrics: React.Dispatch<React.SetStateAction<boolean>>;
   showViews: boolean;
   setShowViews: React.Dispatch<React.SetStateAction<boolean>>;
+  showProjects: boolean;
+  setShowProjects: React.Dispatch<React.SetStateAction<boolean>>;
   postDetails: any;
   onExport: () => void;
   exporting: boolean;
@@ -48,7 +50,9 @@ const Sidebar: React.FC<SidebarProps> = ({
   timestamp, setTimestamp,
   showTimeAgo, setShowTimeAgo,
   showMetrics, setShowMetrics,
-  showViews, setShowViews,postDetails, onExport, exporting, parentWidth, setParentWidth
+  showViews, setShowViews,
+  showProjects, setShowProjects,
+  postDetails, onExport, exporting, parentWidth, setParentWidth
 }) => {
   // Theme-based color and gradient options
   const lightColors = [
@@ -342,6 +346,26 @@ const Sidebar: React.FC<SidebarProps> = ({
             </label>
           </div>
         </div>
+
+        {/* Have Projects for Peerlist Profile  */}
+        { 
+            postDetails && postDetails.platform === 'peerlist.io' && postDetails.type === "profile" && (
+                <div className="mb-6">
+                    <div className="flex items-center justify-between mb-3">
+                        <span className="text-sm font-medium text-gray-700">Projects</span>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                            <input
+                                type="checkbox"
+                                checked={showProjects}
+                                onChange={(e) => setShowProjects(e.target.checked)}
+                                className="sr-only peer"
+                            />
+                            <div className="w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                        </label>
+                    </div>
+                </div>
+            )
+        }
 
         {/* Font */}
         <div className="mb-6">

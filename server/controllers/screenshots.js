@@ -24,7 +24,7 @@ const getDetails = async (req, res) => {
         
         html = await scrapePeerlistPost(url);
 
-        if (url.includes('peerlist.io/posts')) {
+        if (url.includes('peerlist.io/scroll')) {
           data = extractPeerlistPostData(html);
           type="post";
         } else {

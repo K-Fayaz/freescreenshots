@@ -36,6 +36,7 @@ function Screenshot() {
   const [showTimeAgo, setShowTimeAgo] = useState(true);
   const [showMetrics, setShowMetrics] = useState(true);
   const [showViews, setShowViews] = useState(true);
+  const [showProjects, setShowProjects] = useState(true);
   const [postDetails,setPostDetails] = useState(null);
   const [parentWidth, setParentWidth] = useState(460);
 
@@ -266,8 +267,17 @@ function Screenshot() {
 
   // Update selectedColor when theme changes 
   React.useEffect(() => {
-    setSelectedColor(theme === 'Light' ? lightColors[0] : darkColors[0]);
-  }, [theme]);
+    if (theme === 'Light') {
+      setSelectedColor(lightColors[0]);
+    } else {
+      // Use different dark colors based on platform
+      if (postDetails && (postDetails as any).platform === 'peerlist.io') {
+        setSelectedColor('#171717'); // Peerlist dark color
+      } else {
+        setSelectedColor('#000000'); // X/Twitter dark color
+      }
+    }
+  }, [theme, postDetails]);
 
   // Props to pass down
   const sidebarProps = {
@@ -283,6 +293,7 @@ function Screenshot() {
     showTimeAgo, setShowTimeAgo,
     showMetrics, setShowMetrics,
     showViews, setShowViews,
+    showProjects, setShowProjects,
     postDetails,
     onExport: handleExport,
     exporting,
@@ -301,6 +312,7 @@ function Screenshot() {
     showTimeAgo,
     showMetrics,
     showViews,
+    showProjects,
     tweetRef,
     postDetails,
     parentWidth,
