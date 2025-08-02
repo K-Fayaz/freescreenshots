@@ -4,6 +4,8 @@ import Tweet from './Tweet';
 import TwitterUserProfile from './TwitterUserProfile';
 import PeerlistPost from './PeerlistPost';
 import PeerlistProfile from './PeerlistProfile';
+import ThreadsPost from './ThreadsPost';
+import ThreadsFeed from './ThreadsFeed';
 
 interface TweetPreviewProps {
   theme: 'Light' | 'Dark';
@@ -48,6 +50,10 @@ const TweetPreview: React.FC<TweetPreviewProps> = ({
   if (postDetails && postDetails.platform === 'peerlist.io' && theme === 'Dark') {
     parentBg = selectedColor === '#171717' || !selectedColor ? '#171717' : selectedColor;
     childBg = '#171717';
+    childText = 'text-white';
+  } else if (postDetails && postDetails.platform === 'www.threads.com' && theme === 'Dark') {
+    parentBg = selectedColor === '#181818' || !selectedColor ? '#181818' : selectedColor;
+    childBg = '#181818';
     childText = 'text-white';
   } else if (theme === 'Light') {
     if (isGradient) {
@@ -97,6 +103,17 @@ const TweetPreview: React.FC<TweetPreviewProps> = ({
                               ) : (
                   <PeerlistProfile details={postDetails.post} theme={theme} logo={logo} showMetrics={showMetrics} showProjects={showProjects} />
                 )
+            ) : postDetails.platform === 'www.threads.com' ? (
+              postDetails.type === 'post' ? (
+                // Check if postDetails.post is an array (multiple posts) or single post
+                Array.isArray(postDetails.post) ? (
+                  <ThreadsFeed posts={postDetails.post} theme={theme} logo={logo} showMetrics={showMetrics} />
+                ) : (
+                  <ThreadsPost details={postDetails.post} theme={theme} logo={logo} showMetrics={showMetrics}/>
+                )
+              ) : (
+                <h1>Threads Profile</h1>
+              )
             ) : (
               <h1>hola</h1>
             )

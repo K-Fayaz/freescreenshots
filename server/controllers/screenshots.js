@@ -1,5 +1,20 @@
-const { scrapeTweet, scrapePeerlistPost,extractTwitterProfileData, extractTweetData, extractTweetDataNew, extractPeerlistPostData,extractPeerlistProfileData,scrapeTweetProfile } = require("../helpers/scraper");
+const { 
+  scrapePeerlistPost, 
+  extractPeerlistPostData,
+  extractPeerlistProfileData 
+} = require("../helpers/Peerlist.scraper");
 
+const {
+  scrapeTweet,
+  scrapeTweetProfile,
+  extractTweetDataNew,
+  extractTwitterProfileData
+} = require("../helpers/Twitter.scraper");
+
+const {
+  scrapeThreadsPosts,
+  extractThreadsPostsData
+} = require("../helpers/Threads.scraper");
 
 const getDetails = async (req, res) => {
     try {
@@ -24,7 +39,7 @@ const getDetails = async (req, res) => {
           type="profile";
           html = await scrapeTweetProfile(url);
           data = extractTwitterProfileData(html);
-          console.log(data);
+          // console.log(data);
         }
       }
       else if (platform.includes('peerlist.io')) {
@@ -38,7 +53,13 @@ const getDetails = async (req, res) => {
           data = extractPeerlistProfileData(html);
           type="profile";
         }
-      } else {
+      } 
+      else if (platform.includes('threads.com')) {
+        type="post";
+        html = await scrapeThreadsPosts(url);
+        data = await extractThreadsPostsData(html,url);
+      }
+      else {
         return res.status(400).json({ error: "Invalid URL" });
       }
   
