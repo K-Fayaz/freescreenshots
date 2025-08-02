@@ -19,7 +19,7 @@ const getDetails = async (req, res) => {
           type="post";
           html = await scrapeTweet(url);
           data = extractTweetDataNew(html);
-          console.log(html)
+          // console.log(html)
         } else {
           type="profile";
           html = await scrapeTweetProfile(url);

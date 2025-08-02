@@ -461,7 +461,7 @@ function extractPeerlistPostData(htmlString) {
 
   // Try to get from JSON-LD if available
   const jsonLdScript = $('script#__NEXT_DATA__').html();
-  console.log(jsonLdScript);
+  // console.log(jsonLdScript);
   let profileImg = null, username = null, profileHandle = null, contextLabel = null, title = null, content = null, upvotes = 0, comments = 0, reposts = 0, time = null, media = [], isVideo = false, embed = null, projectEmbed = null, linkEmbed = null;
   let pollEmbed = null;
   let articleEmbed = null;
@@ -774,7 +774,7 @@ function extractTweetDataNew(htmlString) {
                 }
             });
 
-            console.log("main Tweet images: ",tweetImages);
+            // console.log("main Tweet images: ",tweetImages);
           
           } else {
             // This is a quoted tweet (no main tweet media)
@@ -858,7 +858,7 @@ function extractTweetDataNew(htmlString) {
             }
         }
 
-        console.log("before : ",tweetImages)
+        // console.log("before : ",tweetImages)
         
         // Collect images from main tweet media
         const mainTweetPhotos = mainTweetMediaContentDiv.find('[data-testid="tweetPhoto"] img');
@@ -868,7 +868,7 @@ function extractTweetDataNew(htmlString) {
                 tweetImages.push(src); 
             }
         });
-        console.log("After : ",tweetImages)
+        // console.log("After : ",tweetImages)
 
         // Quoted tweet is in the second child
         const quotedTweetDiv = mainTweetMediaChildren.eq(1);
@@ -936,7 +936,7 @@ function extractTweetDataNew(htmlString) {
             };
         }
     }
-    console.log("quoted: ",quoted);
+    // console.log("quoted: ",quoted);
     // Extract main tweet metadata (username, handle, profile image, time) from the overall tweetArticle
     let username = null, userHandle = null, profileImg = null, time = null;
     const usernameElem = tweetArticle.find('[data-testid="User-Name"]').first();
@@ -1031,7 +1031,7 @@ function extractPeerlistProfileData(htmlString) {
 
   // Try to get from JSON-LD if available
   const jsonLdScript = $('script#__NEXT_DATA__').html();
-  console.log(jsonLdScript)
+  // console.log(jsonLdScript)
   
   let displayName = null;
   let profileHandle = null;
