@@ -464,7 +464,7 @@ function extractTweetData(htmlString) {
         }
       }
       quoted = {
-        username: qUsername,
+        username: qUsername || qUserHandle,
         userHandle: qUserHandle,
         profileImg: qProfileImg,
         tweetContent: qTweetContent,
@@ -603,6 +603,7 @@ function extractTweetDataNew(htmlString) {
                         if (!qUserHandle && txt.startsWith('@')) {
                             qUserHandle = txt;
                         }
+                        
                         if (!qTime && txt.includes('·')) {
                             qTime = txt.replace('·', '').trim();
                         }
@@ -638,7 +639,7 @@ function extractTweetDataNew(htmlString) {
                 }
                 
                 quoted = { 
-                    username: qUsername, 
+                    username: qUsername || qUserHandle, 
                     userHandle: qUserHandle, 
                     profileImg: qProfileImg, 
                     tweetContent: qTweetContent, 
@@ -731,7 +732,7 @@ function extractTweetDataNew(htmlString) {
             }
             
             quoted = { 
-                username: qUsername, 
+                username: qUsername || qUserHandle, 
                 userHandle: qUserHandle, 
                 profileImg: qProfileImg, 
                 tweetContent: qTweetContent, 
@@ -815,7 +816,7 @@ function extractTweetDataNew(htmlString) {
     }
 
     return { 
-        username, 
+        username: username || userHandle, 
         userHandle, 
         profileImg, 
         tweetContent, 

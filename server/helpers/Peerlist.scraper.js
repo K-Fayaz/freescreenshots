@@ -336,7 +336,7 @@ function extractPeerlistProfileData(htmlString) {
           projects = userData.projects.map(project => ({
             title: project.title || null,
             tagline: project.tagline || null,
-            logo: project.logo || project?.images[0] || null,
+            logo: project?.logo || (project?.images && project.images.length > 0 ? project.images[0] : null) || null,
             categories: Array.isArray(project.categories) 
               ? project.categories.map(cat => cat.name).filter(Boolean)
               : [],

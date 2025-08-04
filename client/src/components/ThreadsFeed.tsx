@@ -19,12 +19,14 @@ const ThreadsFeed = React.forwardRef<HTMLDivElement, ThreadsFeedProps>(
             {/* Thread connection line - only show if not the last post */}
             {index < posts.length - 1 && (
               <div 
-                className={`absolute left-5 top-[40px] w-0.5 h-full z-0 ${
+                className={`absolute z-0 ${
                   theme === 'Dark' ? 'bg-gray-600' : 'bg-gray-300'
                 }`}
                 style={{ 
-                  height: 'calc(100% - 20px)',
-                  top: '40px'
+                  left: '38px', // 16px (padding) + 20px (center of 40px profile picture)
+                  top: '76px', // 16px (padding) + 40px (profile picture height) + 20px (gap below profile)
+                  width: '1px',
+                  height: 'calc(100% - 45px - 30px)' // Account for padding, profile height, and 20px gap at bottom
                 }}
               />
             )}
@@ -36,6 +38,7 @@ const ThreadsFeed = React.forwardRef<HTMLDivElement, ThreadsFeedProps>(
                 theme={theme}
                 logo={logo}
                 showMetrics={showMetrics}
+                isFeed={true}
               />
             </div>
           </div>

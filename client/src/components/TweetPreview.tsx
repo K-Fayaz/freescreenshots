@@ -6,6 +6,7 @@ import PeerlistPost from './PeerlistPost';
 import PeerlistProfile from './PeerlistProfile';
 import ThreadsPost from './ThreadsPost';
 import ThreadsFeed from './ThreadsFeed';
+import ThreadsProfile from './ThreadsProfile';
 
 interface TweetPreviewProps {
   theme: 'Light' | 'Dark';
@@ -83,7 +84,7 @@ const TweetPreview: React.FC<TweetPreviewProps> = ({
   };
   const fontClass = fontMap[font] || 'font-sans';
   return (
-    <div className="bg-gray-100 min-h-screen grid place-items-center">
+    <div className="bg-gray-100 min-h-screen overflow-y-auto grid place-items-center">
       <div style={{ background: parentBg, padding }} className='shadow-lg transition-all duration-400' ref={tweetRef}>
         <div
           className={`h-auto rounded-md transition-all duration-500 ${childBg} ${childText} ${fontClass}`}
@@ -105,14 +106,14 @@ const TweetPreview: React.FC<TweetPreviewProps> = ({
                 )
             ) : postDetails.platform === 'www.threads.com' ? (
               postDetails.type === 'post' ? (
-                // Check if postDetails.post is an array (multiple posts) or single post
-                Array.isArray(postDetails.post) ? (
+                // Check if postDetails has multiple posts or single post
+                postDetails.post.length > 1 ? (
                   <ThreadsFeed posts={postDetails.post} theme={theme} logo={logo} showMetrics={showMetrics} />
                 ) : (
-                  <ThreadsPost details={postDetails.post} theme={theme} logo={logo} showMetrics={showMetrics}/>
+                  <ThreadsPost details={postDetails.post[0]} theme={theme} logo={logo} showMetrics={showMetrics} isFeed={false}/>
                 )
               ) : (
-                <h1>Threads Profile</h1>
+                <ThreadsProfile details={postDetails.post} theme={theme} logo={logo} />
               )
             ) : (
               <h1>hola</h1>

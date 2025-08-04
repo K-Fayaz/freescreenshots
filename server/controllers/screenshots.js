@@ -13,7 +13,9 @@ const {
 
 const {
   scrapeThreadsPosts,
-  extractThreadsPostsData
+  scrapeThreadsProfile,
+  extractThreadsPostsData,
+  extractThreadsProfileData
 } = require("../helpers/Threads.scraper");
 
 const getDetails = async (req, res) => {
@@ -55,9 +57,15 @@ const getDetails = async (req, res) => {
         }
       } 
       else if (platform.includes('threads.com')) {
-        type="post";
-        html = await scrapeThreadsPosts(url);
-        data = await extractThreadsPostsData(html,url);
+        if (url.includes('/post')) {
+          type="post";
+          html = await scrapeThreadsPosts(url);
+          data = await extractThreadsPostsData(html,url);
+        } else {
+          type = "profile";
+          html = await scrapeThreadsProfile(url);
+          data = await extractThreadsProfileData(html,url);
+        }
       }
       else {
         return res.status(400).json({ error: "Invalid URL" });
