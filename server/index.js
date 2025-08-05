@@ -1,19 +1,54 @@
 require("dotenv").config();
+require("./models/index");
 
-const cors     = require("cors");
-const express  = require("express");
-const path     = require("path");
-const https    = require("https");
-const app      = express();
+const cors           = require("cors");
+const express        = require("express");
+const path           = require("path");
+const https          = require("https");
+const passport       = require('passport');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+
+const app            = express();
 
 // Middleware
 app.use(express.json());
+app.use(passport.initialize());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
+passport.use(new GoogleStrategy({
+  clientID: process.env.GOOGLE_OAUTH_CLIENT_ID,
+  clientSecret: process.env.GOOGLE_OAUTH_CLIENT_SECRET,
+  callbackURL: process.env.NODE_ENV === 'production' 
+    ? "https://journaltotweet.com/auth/google/callback"
+    : "http://localhost:8080/api/auth/google/callback",
+}, async (accessToken, refreshToken, profile, done) => {
+  try {
+
+    console.log("profile details: ");
+    console.log(profile);
+    let userData = {
+      email: profile.emails[0].value,
+      name: profile.displayName,
+      firstName: profile.name.givenName,
+      lastName: profile.name.familyName,
+      profile: profile?.photos[0]?.value || null,
+    }
+    
+    return done(null, userData);
+  } catch (error) {
+    return done(error, null);
+  }
+}));
+
 // API routes
-let screenshotRoutes = require("./routes/screenshot");
+let userRoutes        = require("./routes/user");
+let screenshotRoutes  = require("./routes/screenshot");
+let googleOAuthRoutes = require("./routes/GoogleOAuth");
+
 app.use('/api', screenshotRoutes);
+app.use('/api/auth',googleOAuthRoutes);
+app.use('/api/user',userRoutes);
 
 // Health check endpoint for Cloud Run
 app.get('/api/health', (req, res) => {

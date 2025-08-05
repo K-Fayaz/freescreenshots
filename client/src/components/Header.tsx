@@ -1,6 +1,7 @@
 import React from 'react';
-import { Plus } from 'lucide-react';
+import { Plus, Home } from 'lucide-react';
 import { BsTwitterX } from "react-icons/bs";
+import { useNavigate } from 'react-router-dom';
 import avatar1 from '../assets/avatar1.png';
 import axios from "axios";
 
@@ -9,10 +10,19 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ onNewTweetClick }) => {
+  const navigate = useNavigate();
+
   return (
     <header className="bg-white border-b border-gray-200 px-6 py-3">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
+          <button 
+            onClick={() => navigate('/')}
+            className="flex items-center space-x-2 text-gray-600 hover:text-gray-900"
+          >
+            <Home size={20} />
+            <span>Home</span>
+          </button>
           <button 
             onClick={onNewTweetClick}
             className="flex items-center space-x-2 text-gray-600 hover:text-gray-900"

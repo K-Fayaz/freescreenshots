@@ -505,7 +505,12 @@ const PeerlistPost = React.forwardRef<HTMLDivElement, PeerlistPostProps>(({ deta
               
               {/* Job Details Line */}
               <div className={`text-sm mb-3 ${theme === 'Dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                {details.jobEmbed.location} • {details.jobEmbed.jobType} • {details.jobEmbed.experience} • {getRelativeTime(details.jobEmbed.publishedAt)}
+                {[
+                  details.jobEmbed.location,
+                  details.jobEmbed.jobType,
+                  details.jobEmbed.experience,
+                  getRelativeTime(details.jobEmbed.publishedAt)
+                ].filter(Boolean).join(' • ')}
               </div>
               
               {/* Skills */}
