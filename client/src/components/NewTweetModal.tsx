@@ -22,7 +22,7 @@ const NewTweetModal: React.FC<NewTweetModalProps> = ({ isOpen, onClose, setPostD
     // Handle URL submission here
     console.log('URL submitted:', url);
 
-    if (!url.includes("x.com") && !url.includes("peerlist.io") && !url.includes("threads.com")) {
+    if (!url.includes("x.com") && !url.includes("peerlist.io") && !url.includes("threads.com") && !url.includes('reddit.com')) {
       showError("Invalid URL");
       return;
     }

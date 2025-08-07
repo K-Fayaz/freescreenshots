@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { User, LogOut, Settings } from 'lucide-react';
 import axios from 'axios';
 import BASE_URL from '@/config';
@@ -96,7 +96,7 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <div className="flex-shrink-0">
+          <div className="flex-shrink-0 cursor-pointer" onClick={() => navigate('/')}>
             <h1 className="text-2xl font-bold text-gray-900">
               <span className="text-blue-600">Zap</span>shot
             </h1>
@@ -153,24 +153,30 @@ const Navbar = () => {
                 </button>
                 
                 <div className="absolute top-full left-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                  <a
-                    href="#twitter-video-downloader"
+                  <Link
+                    to="/twitter-video-downloader"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
                   >
                     Twitter Video Downloader
-                  </a>
-                  <a
-                    href="#threads-video-downloader"
+                  </Link>
+                  <Link
+                    to="/threads-video-downloader"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
                   >
                     Threads Video Downloader
-                  </a>
+                  </Link>
                   <a
                     href="#meme-maker"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
                   >
                     Meme Maker
                   </a>
+                  {/* <a
+                    href="/twitter-banner-maker"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+                  >
+                    Twitter Banner Maker
+                  </a> */}
                 </div>
               </div>
             </div>
@@ -287,24 +293,30 @@ const Navbar = () => {
                   Tools
                 </div>
                 <div className="space-y-1">
-                  <a
-                    href="#twitter-video-downloader"
+                  <Link
+                    to="/twitter-video-downloader"
                     className="block px-3 py-2 text-base text-gray-700 hover:bg-gray-100 rounded-md transition-colors duration-200"
                   >
                     Twitter Video Downloader
-                  </a>
-                  <a
-                    href="#threads-video-downloader"
+                  </Link>
+                  <Link
+                    to="/threads-video-downloader"
                     className="block px-3 py-2 text-base text-gray-700 hover:bg-gray-100 rounded-md transition-colors duration-200"
                   >
                     Threads Video Downloader
-                  </a>
+                  </Link>
                   <a
                     href="#meme-maker"
                     className="block px-3 py-2 text-base text-gray-700 hover:bg-gray-100 rounded-md transition-colors duration-200"
                   >
                     Meme Maker
                   </a>
+                  {/* <a
+                    href="/twitter-banner-maker"
+                    className="block px-3 py-2 text-base text-gray-700 hover:bg-gray-100 rounded-md transition-colors duration-200"
+                  >
+                    Twitter Banner Maker
+                  </a> */}
                 </div>
               </div>
 

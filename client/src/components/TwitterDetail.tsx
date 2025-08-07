@@ -10,6 +10,34 @@ import TwitterUserProfile from './TwitterUserProfile';
 const TwitterDetail = () => {
   const [activeTab, setActiveTab] = useState('Tweet');
 
+  const handleFetchVideo = async (tweetUrl: string) => {
+    try {
+      const res = await fetch('/api/tools/twitter/download', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tweetUrl }),
+      });
+
+      if (!res.ok) {
+        const error = await res.text();
+        console.error(error);
+        return;
+      }
+
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'twitter_video.mp4'; // Or dynamic name
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <div id="x" className="w-full py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

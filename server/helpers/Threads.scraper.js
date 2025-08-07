@@ -352,7 +352,7 @@ async function extractThreadsPostsData(htmlString,url) {
         externalLinks,
         postUrl,
         postId,
-        quoted // Add the quoted post data
+        quoted: quoted?.username && quoted?.profilePhoto ? quoted : null
       };
       
       posts.push(post);
@@ -751,10 +751,36 @@ async function extractThreadsProfileData(htmlString, url) {
     }
 }
 
+
+async function getThreadsVideo(url) {
+    try {
+        // Scrape the HTML content of the Threads post
+        const htmlString = await scrapeThreadsPosts(url);
+        // Extract post data (including videos)
+        const postDataArr = await extractThreadsPostsData(htmlString, url);
+        console.log(postDataArr);
+        // postDataArr can be an array or object, normalize to array
+        const posts = Array.isArray(postDataArr) ? postDataArr : [postDataArr];
+        // Find the first post with a video
+        for (const post of posts) {
+            if (post.videos && post.videos.length > 0) {
+                // Return the first video src
+                return post.videos[0].src;
+            }
+        }
+        // No video found
+        return null;
+    } catch (error) {
+        console.error('[getThreadsVideo] Error:', error);
+        return null;
+    }
+}
+
 module.exports = {
     scrapeThreadsPosts,
     extractThreadsPostsData,
     scrapeThreadsProfile,
-    extractThreadsProfileData
+    extractThreadsProfileData,
+    getThreadsVideo
 }
   

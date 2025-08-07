@@ -25,7 +25,6 @@ passport.use(new GoogleStrategy({
 }, async (accessToken, refreshToken, profile, done) => {
   try {
 
-    console.log("profile details: ");
     console.log(profile);
     let userData = {
       email: profile.emails[0].value,
@@ -45,10 +44,12 @@ passport.use(new GoogleStrategy({
 let userRoutes        = require("./routes/user");
 let screenshotRoutes  = require("./routes/screenshot");
 let googleOAuthRoutes = require("./routes/GoogleOAuth");
+let toolsRoutes       = require("./routes/tools");
 
 app.use('/api', screenshotRoutes);
 app.use('/api/auth',googleOAuthRoutes);
 app.use('/api/user',userRoutes);
+app.use('/api/tools',toolsRoutes);
 
 // Health check endpoint for Cloud Run
 app.get('/api/health', (req, res) => {

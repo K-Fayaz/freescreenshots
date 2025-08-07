@@ -1,7 +1,12 @@
+const fs = require('fs');
+const path = require('path');
+const axios = require("axios");
+const cheerio = require('cheerio');
+const fetch = require('node-fetch');
+const { v4: uuidv4 } = require('uuid');
+const { exec } = require('child_process');
 const puppeteer = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
-const cheerio = require('cheerio');
-const axios = require("axios");
 
 puppeteer.use(StealthPlugin());
 
@@ -212,6 +217,66 @@ async function scrapeTweetThreads(url) {
     } catch (err) {
         await browser.close();
         console.log('[scrapeTweetThreads] Error during scraping:', err);
+        throw err;
+    }
+}
+
+async function scrapeTweetHTML(url) {
+    console.log('[scrapeTweetHTML] Starting Puppeteer browser...');
+    const browser = await puppeteer.launch({
+        headless: "new",
+        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
+        args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--disable-extensions',
+            '--disable-gpu',
+            '--disable-web-security',
+            '--disable-features=VizDisplayCompositor',
+            '--no-first-run',
+            '--no-zygote',
+            '--single-process',
+            '--disable-background-timer-throttling',
+            '--disable-backgrounding-occluded-windows',
+            '--disable-renderer-backgrounding',
+            '--ignore-certificate-errors'
+        ],
+        protocolTimeout: 180000, // 3 minutes
+        timeout: 120000 // 2 minutes browser launch timeout
+    });
+    const page = await browser.newPage();
+    page.setDefaultTimeout(60000);
+    page.setDefaultNavigationTimeout(60000);
+
+    // Set a realistic user-agent and language
+    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36');
+    await page.setExtraHTTPHeaders({
+        'accept-language': 'en-US,en;q=0.9'
+    });
+
+    try {
+        console.log(`[scrapeTweetHTML] Navigating to URL: ${url}`);
+        await page.goto(url, { waitUntil: "networkidle2", timeout: 30000 });
+
+        // Wait for the body element to be present
+        await page.waitForSelector("body", { timeout: 15000 });
+
+        // Optionally, try to close login modal if it appears
+        try {
+            await page.click('div[role="dialog"] div[aria-label="Close"]', { timeout: 3000 });
+        } catch (e) {
+            // Modal not present, ignore
+        }
+
+        const fullHtml = await page.content();
+
+        await browser.close();
+        console.log('[scrapeTweetHTML] Scraping completed successfully.');
+        return fullHtml;
+    } catch (err) {
+        await browser.close();
+        console.log('[scrapeTweetHTML] Error during scraping:', err);
         throw err;
     }
 }
@@ -908,11 +973,122 @@ function extractTwitterProfileData(htmlString) {
     };
 }
 
+
+async function downloadFile(url, dest) {
+  const writer = fs.createWriteStream(dest);
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Failed to download ${url}`);
+  await new Promise((resolve, reject) => {
+    res.body.pipe(writer);
+    res.body.on('error', reject);
+    writer.on('finish', resolve);
+  });
+}
+
+async function combineAudioVideoFromUrls(urls) {
+  const videoUrl = urls.find(url => /vid\/.*1280x720.*\.mp4/.test(url)) || urls.find(url => /vid\/.*\.mp4/.test(url));
+  const audioUrl = urls.find(url => /aud\/.*128000.*\.mp4/.test(url)) || urls.find(url => /aud\/.*\.mp4/.test(url));
+
+  if (!videoUrl || !audioUrl) throw new Error('Suitable video or audio stream not found');
+
+  const tempDir = path.join(__dirname, '../tmp');
+  if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir);
+
+  const id = uuidv4();
+  const videoPath = path.join(tempDir, `${id}_video.mp4`);
+  const audioPath = path.join(tempDir, `${id}_audio.mp4`);
+  const outputPath = path.join(tempDir, `${id}_merged.mp4`);
+
+  // Download both streams
+  await downloadFile(videoUrl, videoPath);
+  await downloadFile(audioUrl, audioPath);
+
+  // Merge via ffmpeg
+  await new Promise((resolve, reject) => {
+    exec(
+      `ffmpeg -i "${videoPath}" -i "${audioPath}" -c:v copy -c:a aac -strict experimental "${outputPath}"`,
+      (err) => {
+        if (err) return reject(err);
+        resolve();
+      }
+    );
+  });
+
+  // Optional: delete temp files here if you don’t need them later
+  fs.unlinkSync(videoPath);
+  fs.unlinkSync(audioPath);
+
+  return { outputPath };
+}
+
+/**
+ * Scrape Twitter video URLs by intercepting network responses.
+ * Returns an array of video URLs (mp4/m3u8) found during page load.
+ */
+async function scrapeTweetVideoUrls(url) {
+  const puppeteer = require('puppeteer-extra');
+  const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+  // await new Promise(resolve => setTimeout(resolve, 10000));
+  puppeteer.use(StealthPlugin());
+  const browser = await puppeteer.launch({
+      headless: "new",
+      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
+      args: [
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
+          '--disable-extensions',
+          '--disable-gpu',
+          '--disable-web-security',
+          '--disable-features=VizDisplayCompositor',
+          '--no-first-run',
+          '--no-zygote',
+          '--single-process',
+          '--disable-background-timer-throttling',
+          '--disable-backgrounding-occluded-windows',
+          '--disable-renderer-backgrounding',
+          '--ignore-certificate-errors'
+      ],
+      protocolTimeout: 180000,
+      timeout: 120000
+  });
+  const page = await browser.newPage();
+  page.setDefaultTimeout(60000);
+  page.setDefaultNavigationTimeout(60000);
+  await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36');
+  await page.setExtraHTTPHeaders({ 'accept-language': 'en-US,en;q=0.9' });
+  await page.setRequestInterception(true);
+  page.on('request', req => req.continue());
+  const foundVideoUrls = new Set();
+  page.on('response', async res => {
+      try {
+          const resUrl = res.url();
+          if (
+              resUrl.includes('video.twimg.com') &&
+              (resUrl.endsWith('.mp4') || resUrl.includes('.m3u8'))
+          ) {
+              foundVideoUrls.add(resUrl);
+          }
+      } catch (e) {}
+  });
+  try {
+      await page.goto(url, { waitUntil: 'networkidle2' });
+      await new Promise(resolve => setTimeout(resolve, 10000));
+  } finally {
+      await browser.close();
+  }
+  return Array.from(foundVideoUrls);
+}
+
+
 module.exports = {
     scrapeTweet,
     scrapeTweetProfile,
     scrapeTweetThreads,
     extractTweetData,
     extractTweetDataNew,
-    extractTwitterProfileData
+    extractTwitterProfileData,
+    scrapeTweetHTML,
+    scrapeTweetVideoUrls, // <-- export the new function,
+    combineAudioVideoFromUrls
 }
