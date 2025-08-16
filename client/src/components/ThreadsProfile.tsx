@@ -6,9 +6,10 @@ interface ThreadsProfileProps {
     details: any;
     theme: 'Light' | 'Dark';
     logo?: string;
+    userType: any;
 }
 
-const ThreadsProfile = React.forwardRef<HTMLDivElement, ThreadsProfileProps>(({details, theme, logo}, ref) => {
+const ThreadsProfile = React.forwardRef<HTMLDivElement, ThreadsProfileProps>(({details, theme, userType, logo}, ref) => {
     useEffect(() => {
         console.log(details);
     },[]);
@@ -72,6 +73,16 @@ const ThreadsProfile = React.forwardRef<HTMLDivElement, ThreadsProfileProps>(({d
                     )}
                 </div>
             </div>
+
+            {
+                userType?.type == 'free' && (
+                    <div className="text-center mt-4">
+                    <span className="text-gray-500 text-sm">
+                        made with <span className="text-red-500">❤</span> by <span className="">ZapShot.in</span>
+                    </span>
+                    </div>
+                )
+            }
         </div>
     )
 });

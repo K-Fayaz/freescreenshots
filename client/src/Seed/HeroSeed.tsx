@@ -578,11 +578,45 @@ let PeerlistQuotedEmbed = {
     type: "post"
 }
 
+
+let TwitterQuotedPost2 = {
+    platform: "x.com",
+    data: {
+        username: "Rob Hallam",
+        userHandle: "@robj3d3",
+        profileImg: "https://pbs.twimg.com/profile_images/1763174758416588801/DMB7OfRz_normal.png",
+        tweetContent: "<span class=\"css-1jxf684 r-bcqeeo r-1ttztb7 r-qvutc0 r-poiln3\">One X DM changed everything </span><img alt=\"🥹\" draggable=\"false\" src=\"https://abs-0.twimg.com/emoji/v2/svg/1f979.svg\" class=\"r-4qtqp9 r-dflpy8 r-k4bwe5 r-1kpi4qh r-pp5qcn r-h9hxbl\">",
+        tweetImages: [],
+        video: null,
+        replies: "24",
+        retweets: "2",
+        likes: "73",
+        views: "7,157",
+        isVideo: false,
+        isQuoted: true,
+        quoted: {
+            username: "Tibo",
+            userHandle: "@tibo_maker",
+            profileImg: "https://pbs.twimg.com/profile_images/1631931185180934144/59z_ZFKm_mini.jpg",
+            tweetContent: "<span class=\"css-1jxf684 r-bcqeeo r-1ttztb7 r-qvutc0 r-poiln3\">so you guys asked for more details \n\n1. SuperX was built as a Chrome extension by </span><span class=\"r-18u37iz\"><span dir=\"ltr\" class=\"css-1jxf684 r-bcqeeo r-1ttztb7 r-qvutc0 r-poiln3\">@hieuSSR</span></span><span class=\"css-1jxf684 r-bcqeeo r-1ttztb7 r-qvutc0 r-poiln3\"> \n2. I joined later as a partner \n3. we started building the webapp\n4. Hieu felt demotivated, I bought back his shares\n5. Feb 2025, </span><span class=\"r-18u37iz\"><span dir=\"ltr\" class=\"css-1jxf684 r-bcqeeo r-1ttztb7 r-qvutc0 r-poiln3\">@robj3d3</span></span><span class=\"css-1jxf684 r-bcqeeo r-1ttztb7 r-qvutc0 r-poiln3\"> joined\n6. took 6 months to revamp the product - </span><span class=\"css-1jxf684 r-bcqeeo r-1ttztb7 r-qvutc0 r-poiln3\"> x.com/tibo_maker/sta…</span>",
+            tweetImages: [
+                "https://pbs.twimg.com/media/GyN6xx2WAAA4T1M?format=jpg&name=small"
+            ],
+            video: null,
+            isVideo: false,
+            time: ""
+        },
+        time: "Aug 13"
+    },
+    type: "post"
+}
+
 export {
     threadsSeed,
     TwitterSeed,
     PeerlistSeed,
     TwitterPostSeed,
+    TwitterQuotedPost2,
     PeerlistPostSeed,
     ThreadsQuotedPost,
     ThreadsProfilSeed,

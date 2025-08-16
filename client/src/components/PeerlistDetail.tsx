@@ -6,7 +6,7 @@ import { UserIcon } from "../Icons/User";
 import { LinkIcon } from "../Icons/Link"
 import { ArrowBigUpIcon } from "../Icons/Project";
 import { ChartBarDecreasingIcon } from "../Icons/ChartBar";
-import { TwitterPostSeed, TwitterSeed, PeerlistProfileData, PeerlistPostSeed,PeerlistLinkEmbed,PeerlistProjectEmbed,PeerlistPollEmbed,PeerlistArticleEmbed,PeerlistQuotedEmbed } from "../Seed/HeroSeed";
+import { PeerlistProfileData, PeerlistPostSeed,PeerlistLinkEmbed,PeerlistProjectEmbed,PeerlistPollEmbed,PeerlistArticleEmbed,PeerlistQuotedEmbed } from "../Seed/HeroSeed";
 import Tweet from './Tweet';
 import TwitterUserProfile from './TwitterUserProfile';
 import PeerlistProfile from './PeerlistProfile';

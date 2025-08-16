@@ -9,6 +9,7 @@ interface PeerlistPostProps {
   theme: 'Light' | 'Dark';
   logo?: string;
   showMetrics?: boolean;
+  userType: any;
 }
 
 // Helper to format time as relative (e.g., '5 minutes ago')
@@ -49,7 +50,7 @@ function getTimeLeft(endsOn: string) {
   return 'Less than a minute left';
 }
 
-const PeerlistPost = React.forwardRef<HTMLDivElement, PeerlistPostProps>(({ details, theme, logo, showMetrics = true }, ref) => {
+const PeerlistPost = React.forwardRef<HTMLDivElement, PeerlistPostProps>(({ details, theme, logo, userType, showMetrics = true }, ref) => {
   if (!details) return null;
   return (
     <div ref={ref} className="p-5">
@@ -596,6 +597,16 @@ const PeerlistPost = React.forwardRef<HTMLDivElement, PeerlistPostProps>(({ deta
         </span>
       </div>
       )}
+
+      {
+        userType?.type == 'free' && (
+          <div className="text-center mt-3">
+            <span className="text-gray-500 text-sm">
+              made with <span className="text-red-500">❤</span> by <span className="">ZapShot.in</span>
+            </span>
+          </div>
+        )
+      }
     </div>
   );
 });

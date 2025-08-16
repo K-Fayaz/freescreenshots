@@ -21,7 +21,9 @@ const getUserDetails = async(req,res) => {
         return res.status(200).json({
             status: true,
             username: user.username,
-            profile: user.profilePhoto
+            profile: user.profilePhoto,
+            type: user.subscription,
+            credits: user.credits,
         });
     }
     catch(err){

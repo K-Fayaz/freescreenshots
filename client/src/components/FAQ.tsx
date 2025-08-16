@@ -36,9 +36,9 @@ const FAQ = () => {
   };
 
   return (
-    <div className="w-full py-20 bg-white">
+    <div className="w-full py-20">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-10 text-center">Frequently Asked Questions</h2>
+        <h2 className="text-2xl md:text-4xl md:text-5xl font-bold text-gray-900 mb-10 text-center">Frequently Asked Questions</h2>
         <div className="space-y-4">
           {faqData.map((item, idx) => (
             <div key={idx} className="border border-gray-200 rounded-xl bg-gray-50 overflow-hidden">
@@ -48,7 +48,7 @@ const FAQ = () => {
                 aria-expanded={openIndex === idx}
                 aria-controls={`faq-answer-${idx}`}
               >
-                <span className="text-lg font-medium text-gray-900">{item.question}</span>
+                <span className="text-sm md:text-lg font-medium text-gray-900">{item.question}</span>
                 <svg
                   className={`w-5 h-5 ml-4 transform transition-transform duration-200 ${openIndex === idx ? 'rotate-180' : ''}`}
                   fill="none"
@@ -62,7 +62,7 @@ const FAQ = () => {
               {openIndex === idx && (
                 <div
                   id={`faq-answer-${idx}`}
-                  className="px-6 pb-6 text-gray-700 text-base animate-fadeIn"
+                  className="px-6 pb-6 text-gray-700 text-sm md:text-base animate-fadeIn"
                 >
                   {item.answer}
                 </div>

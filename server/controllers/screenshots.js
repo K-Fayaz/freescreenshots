@@ -18,6 +18,11 @@ const {
   extractThreadsProfileData
 } = require("../helpers/Threads.scraper");
 
+const {
+  scrapeRedditPost,
+  extractRedditPostData
+} = require("../helpers/Reddit.scraper");
+
 const getDetails = async (req, res) => {
     try {
       const { url } = req.query;
@@ -65,7 +70,18 @@ const getDetails = async (req, res) => {
           type = "profile";
           html = await scrapeThreadsProfile(url);
           data = await extractThreadsProfileData(html,url);
-        }
+        } 
+      } else if (platform.includes('reddit.com')) {
+        let html = await scrapeRedditPost(url);
+        let data = extractRedditPostData(html);
+
+        // console.log(html);
+
+        return res.status(200).json({
+          status: true,
+          platform,
+          data,
+        });
       }
       else {
         return res.status(400).json({ error: "Invalid URL" });

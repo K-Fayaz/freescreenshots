@@ -1,4 +1,5 @@
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
+const { type } = require("os");
 const { Schema } = mongoose;
 
 const userSchema = new Schema({
@@ -17,6 +18,15 @@ const userSchema = new Schema({
     profilePhoto: {
         type:String,
         required: false
+    },
+    subscription: {
+        type: String,
+        enum: ["free", "premium"],
+        default: "free",
+    },
+    credits: {
+        type: Number,
+        default: 0,
     }
 });
 

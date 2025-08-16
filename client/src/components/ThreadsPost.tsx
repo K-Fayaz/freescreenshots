@@ -10,6 +10,7 @@ interface ThreadsPostProps {
     logo?: string;
     showMetrics?: boolean;
     isFeed: boolean;
+    userType: any;
 }
 
 // Helper to format time as relative (e.g., '5 minutes ago')
@@ -36,11 +37,11 @@ function getRelativeTime(isoString: string) {
   return `${weeks}w`;
   }
 
-const ThreadsPost = React.forwardRef<HTMLDivElement, ThreadsPostProps>(({ details, theme, logo, showMetrics = true, isFeed }, ref) => {
+const ThreadsPost = React.forwardRef<HTMLDivElement, ThreadsPostProps>(({ details, theme, logo, userType,showMetrics = true, isFeed }, ref) => {
   if (!details) return null;
 
     return (
-    <div ref={ref} className={`p-8 ${isFeed ? 'pr-12 pl-5 py-5' : ''}`}>
+    <div ref={ref} className={`px-8 py-4 ${isFeed ? 'pr-12 pl-5 py-5' : ''}`}>
       {/* Top: Profile */}
       <div className="flex items-center mb-3">
         <img 
@@ -404,6 +405,16 @@ const ThreadsPost = React.forwardRef<HTMLDivElement, ThreadsPostProps>(({ detail
           </div>
         )}
       </div>
+
+      {
+        userType?.type == 'free' && (
+          <div className="text-center mt-3">
+            <span className="text-gray-500 text-sm">
+              made with <span className="text-red-500">❤</span> by <span className="">ZapShot.in</span>
+            </span>
+          </div>
+        )
+      }
     </div>
   );
 });

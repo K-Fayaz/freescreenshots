@@ -6,10 +6,11 @@ interface ThreadsFeedProps {
   theme: 'Light' | 'Dark';
   logo?: string;
   showMetrics?: boolean;
+  userType: any;
 }
 
 const ThreadsFeed = React.forwardRef<HTMLDivElement, ThreadsFeedProps>(
-  ({ posts, theme, logo, showMetrics = true }, ref) => {
+  ({ posts, theme, logo, userType,showMetrics = true }, ref) => {
     if (!posts || posts.length === 0) return null;
 
     return (
@@ -39,10 +40,20 @@ const ThreadsFeed = React.forwardRef<HTMLDivElement, ThreadsFeedProps>(
                 logo={logo}
                 showMetrics={showMetrics}
                 isFeed={true}
+                userType={{}}
               />
             </div>
           </div>
         ))}
+        {
+          userType?.type == 'free' && (
+            <div className="text-center">
+              <span className="text-gray-500 text-sm">
+                made with <span className="text-red-500">❤</span> by <span className="">ZapShot.in</span>
+              </span>
+            </div>
+          )
+        }
       </div>
     );
   }

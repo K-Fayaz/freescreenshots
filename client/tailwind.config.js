@@ -12,7 +12,8 @@ export default {
         rubik: ["Rubik", "sans-serif"],
         geistMono: ["Geist Mono", "monospace"],
         poppins: [ "Poppins", "sans-serif"],
-        imbMono: ["IBM Plex Mono", "monospace"]
+        imbMono: ["IBM Plex Mono", "monospace"],
+        cursive: [ "Edu NSW ACT Cursive", "cursive"]
       },
       typography: {
         DEFAULT: {

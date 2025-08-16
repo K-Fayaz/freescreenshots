@@ -832,7 +832,7 @@ function extractTweetDataNew(htmlString) {
     time = timeElem.length ? timeElem.text().trim() : null;
 
     // Extract metrics (replies, retweets, likes, views) from the overall tweetArticle
-    let replies = null, retweets = null, likes = null, views = null;
+    let replies = null, retweets = null, likes = null, views = null, bookmarks = null;
     const metricsGroup = tweetArticle.find('[role="group"]').first();
     if (metricsGroup.length) {
         // Replies
@@ -852,6 +852,12 @@ function extractTweetDataNew(htmlString) {
         if (likeBtn.length) {
             const likeSpan = likeBtn.find('span').first();
             if (likeSpan.length) likes = likeSpan.text().trim();
+        }
+
+        const bookmarkButton = metricsGroup.find('button[data-testid="bookmark"]').first();
+        if (bookmarkButton.length) {
+            const bookmarkSpan = bookmarkButton.find('span').first();
+            if (bookmarkSpan.length) bookmarks = bookmarkSpan.text().trim();
         }
         // Views
         let viewsCandidate = metricsGroup.find('span').filter((i, el) => $(el).text().trim().toLowerCase() === 'views').first();
@@ -890,6 +896,7 @@ function extractTweetDataNew(htmlString) {
         replies, 
         retweets, 
         likes, 
+        bookmarks,
         views, 
         isVideo, 
         isQuoted, 

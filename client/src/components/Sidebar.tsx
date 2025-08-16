@@ -4,6 +4,8 @@ import { FaTwitter } from "react-icons/fa";
 import { BsTwitterX } from "react-icons/bs";
 import { SiPeerlist } from "react-icons/si";
 import { FaThreads } from "react-icons/fa6";
+import styles from './RedditPost.module.css';
+import RedditSnooIcon from './RedditSnooIcon';
 
 interface SidebarProps {
   theme: 'Light' | 'Dark';
@@ -95,17 +97,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   const [customGradientFrom, setCustomGradientFrom] = React.useState('#4F46E5');
   const [customGradientTo, setCustomGradientTo] = React.useState('#9333EA');
   return (
-    <div className="w-110 bg-white border-l border-gray-200 h-screen overflow-y-auto overflow-x-hidden relative">
+    <div className="w-[95%] md:w-[400px] bg-white border-l border-gray-200 overflow-y-auto md:overflow-x-hidden relative">
       <div className="p-6">
-        {/* Tab Selection */}
-        {/* <div className="flex space-x-1 mb-6">
-          <button
-            className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium bg-blue-50 text-blue-600`}
-          >
-            Image
-          </button>
-        </div> */}
-
         {/* Theme Selection */}
         <div className="mb-6">
           <div className="flex space-x-2">
@@ -263,7 +256,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* Width Selection */}
-        <div className="mb-6">
+        <div className="mb-6 overflow-x-auto">
           <div className="flex items-center justify-between mb-3">
             <span className="text-sm font-medium text-gray-700">Parent Width</span>
           </div>
@@ -345,6 +338,20 @@ const Sidebar: React.FC<SidebarProps> = ({
                   <FaThreads size={24} />
                 </span>
               </label>
+            ) : postDetails.platform === "reddit.com" || postDetails.platform === "www.reddit.com" ? (
+                <label className="flex flex-col items-center cursor-pointer">
+                  <input
+                    type="radio"
+                    name="logo"
+                    value="Reddit"
+                    checked={logo === 'Reddit'}
+                    onChange={() => setLogo('Reddit')}
+                    className="hidden"
+                  />
+                  <span className={`p-2 rounded-lg border-2 ${logo === 'Reddit' ? 'border-blue-500' : 'border-gray-200'}`}>
+                    <RedditSnooIcon />
+                  </span>
+                </label>              
             ) : null
           )}
             <label className="flex flex-col items-center cursor-pointer">

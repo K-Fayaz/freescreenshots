@@ -10,9 +10,10 @@ interface TweetProps {
     logo: string;
     theme: 'Light' | 'Dark';
     showMetrics: boolean;
+    userType: any;
 }
 
-const TwitterUserProfile: React.FC<TweetProps> = ({ details, logo, theme, showMetrics }) => {
+const TwitterUserProfile: React.FC<TweetProps> = ({ details, logo, theme, showMetrics,userType }) => {
 
     // Extract links from bioHTML
     const extractLinks = (bioHTML: string) => {
@@ -36,17 +37,17 @@ const TwitterUserProfile: React.FC<TweetProps> = ({ details, logo, theme, showMe
     const bioText = details?.bioHTML ? extractBioText(details.bioHTML) : '';
 
     return (
-        <div className={`w-full mx-auto ${theme === 'Dark' ? 'bg-black text-white' : 'bg-white text-black'}`}>
+        <div className={`w-full mx-auto rounded-md ${theme === 'Dark' ? 'bg-black text-white' : 'bg-white text-black'}`}>
                          {/* Banner */}
-             <div className="relative h-34 bg-white">
+             <div className="relative h-34 bg-white rounded-t-md overflow-hidden">
                  {details?.bannerImage ? (
                      <img 
                          src={details.bannerImage} 
                          alt="Profile banner" 
-                         className="w-full h-full object-cover"
+                         className="w-full h-full object-cover rounded-t-md overflow-hidden"
                      />
                  ) : (
-                     <div className="w-full h-32 bg-[#323639]"></div>
+                     <div className="w-full h-32 bg-[#323639] overflow-hidden"></div>
                  )}
              </div>
 
@@ -100,7 +101,7 @@ const TwitterUserProfile: React.FC<TweetProps> = ({ details, logo, theme, showMe
                 {
                     details?.userProfessionalCategory && 
                     <div className='flex gap-2 mt-4 mb-2'>
-                        <div className='flex items-center gap-0.5 text-gray-400 text-sm'>
+                        <div className={`flex items-center gap-0.5 ${theme === 'Dark' ? 'text-gray-400': 'text-slate-700'} text-sm`}>
                             <LuBriefcaseBusiness className='w-4 h-4'/>
                             <span>{details?.userProfessionalCategory || 'Unknown'}</span>
                         </div>
@@ -111,7 +112,7 @@ const TwitterUserProfile: React.FC<TweetProps> = ({ details, logo, theme, showMe
                 <div className="flex flex-wrap gap-3">
                     {
                         details?.userLocation && 
-                        <div className='flex items-center gap-1 text-gray-400 text-sm'>
+                        <div className={`flex items-center gap-1 ${theme === 'Dark' ? 'text-gray-400': 'text-slate-700'} text-sm`}>
                             <MapPin className='w-4 h-4'/>
                             <span>{details?.userLocation || 'Unknown'}</span>
                         </div>
@@ -119,7 +120,7 @@ const TwitterUserProfile: React.FC<TweetProps> = ({ details, logo, theme, showMe
 
                     {
                         details?.userUrl && 
-                        <div className='flex items-center gap-1 text-gray-400 text-sm'>
+                        <div className={`flex items-center gap-1 ${theme === 'Dark' ? 'text-gray-400': 'text-slate-700'} text-sm`}>
                             <Link className='w-4 h-4'/>
                             <span className='text-blue-500'>{details?.userUrl || 'Unknown'}</span>
                         </div>
@@ -127,7 +128,7 @@ const TwitterUserProfile: React.FC<TweetProps> = ({ details, logo, theme, showMe
 
                     {
                         details?.joinedDate && 
-                        <div className='flex items-center gap-1 text-gray-400 text-sm'>
+                        <div className={`flex items-center gap-1 ${theme === 'Dark' ? 'text-gray-400': 'text-slate-700'} text-sm`}>
                                 <CalendarDays className='w-4 h-4'/>
                             <span>Joined {details?.joinedDate || 'Unknown'}</span>
                         </div>
@@ -138,14 +139,14 @@ const TwitterUserProfile: React.FC<TweetProps> = ({ details, logo, theme, showMe
                 {/* Following/Followers */}
                 {
                     showMetrics && (
-                        <div className="flex flex-wrap gap-3 text-sm mt-4 pb-4">
+                        <div className="flex flex-wrap gap-3 text-sm mt-4 mb-4 pb-4">
                             <div className="flex gap-1">
                                 <span className="font-bold">{details?.following || 0}</span>
-                                <span className="text-gray-400">Following</span>
+                                <span className={`${theme === 'Dark' ? 'text-gray-400': 'text-slate-700'}`}>Following</span>
                             </div>
                             <div className="flex gap-1">
                                 <span className="font-bold">{details?.followers || 0}</span>
-                                <span className="text-gray-400">Followers</span>
+                                <span className={`${theme === 'Dark' ? 'text-gray-400': 'text-slate-700'}`}>Followers</span>
                             </div>
                             <div className='flex gap-1'>
                                 <span className="font-bold">{details?.totalPosts || 0}</span>
@@ -155,6 +156,15 @@ const TwitterUserProfile: React.FC<TweetProps> = ({ details, logo, theme, showMe
                     )
                 }
             </div>
+            {
+              userType?.type == 'free' && (
+                <div className="text-center pb-3">
+                  <span className="text-gray-500 text-sm">
+                    made with <span className="text-red-500">❤</span> by <span className="">ZapShot.in</span>
+                  </span>
+                </div>
+              )
+            }
         </div>
     );
 };

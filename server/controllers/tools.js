@@ -1,10 +1,19 @@
 const fs = require("fs");
+const ffmpeg = require("fluent-ffmpeg");
+const path = require("path");
+const { exec } = require('child_process');
+const YTDlpWrap = require('yt-dlp-wrap').default;
 
 const {
     getThreadsVideo,
     scrapeThreadsPosts,
     extractThreadsPostsData,
 } = require("../helpers/Threads.scraper");
+
+const {
+    scrapeRedditPost,
+    extractRedditPostData,
+} = require("../helpers/Reddit.scraper");
 
 const { scrapeTweetHTML, scrapeTweetVideoUrls, combineAudioVideoFromUrls } = require("../helpers/Twitter.scraper");
 
@@ -108,8 +117,124 @@ const TwitterDownload = async (req, res) => {
     }
 }
 
+const getRedditVideo = async(req,res) => {
+    try {
+        const { url } = req.query;
+        if (!url) {
+            return res.status(400).json({ error: "Missing tweet URL" });
+        }
+    
+        let html;
+        let data;
+    
+        let platform = url.split('/')[2]; 
+
+        if (!platform.includes('reddit.com')) {
+            return res.status(400).json({
+                status: false,
+                message:"Invalid URL"
+            });
+        }
+
+        html = await scrapeRedditPost(url);
+        data = extractRedditPostData(html);
+        let videos = data.videos || [];
+
+        // console.log(html);
+
+        return res.status(200).json({
+          status: true,
+          platform,
+          videos: videos,
+        });
+    }
+    catch(err) {
+        console.log(err);
+        res.status(500).json({
+            status: false,
+            message:"Something went wrong!"
+        });
+    }
+}
+
+const videoDownload = async (req,res) => {
+    try {
+        const videoUrl = decodeURIComponent(req?.query?.url);
+        console.log("Video URL:", videoUrl);
+
+        if (!videoUrl) {
+            return res.status(400).json({
+                status: false,
+                message:"Missing video URL"
+            });
+        }   
+
+        const outputPath = path.join(__dirname, "temp.mp4");
+
+        ffmpeg(videoUrl)
+            .addOption('-protocol_whitelist', 'file,http,https,tcp,tls')
+            .addOption('-allowed_extensions', 'ALL')
+            .outputOptions('-c copy')
+            .on("end", () => {
+                res.download(outputPath, "video.mp4", () => {
+                    // Optional: clean up temp file
+                    fs.unlinkSync(outputPath);
+                });
+            })
+            .on("error", err => {
+                console.error("Error:", err.message);
+                res.status(500).json({status: false,message:"Download failed"});
+            })
+            .save(outputPath);
+
+    }
+    catch(err) {
+        return res.status(500).json({
+            status: false,
+            message:"Something went wrong!"
+        });
+    }
+
+}
+
+const downloadRedditVideo = async (req, res) => {
+    try {
+        const videoUrl = req?.query?.url;
+        const outputPath = path.join(__dirname, "video.%(ext)s");
+
+        const ytDlpWrap = new YTDlpWrap();
+
+         await ytDlpWrap.execPromise([
+            videoUrl,
+            '-o', outputPath,
+            '--no-playlist'
+        ]);
+        
+        // Find the downloaded file
+        const files = fs.readdirSync(__dirname).filter(f => f.startsWith('video.'));
+        if (files.length > 0) {
+            const actualPath = path.join(__dirname, files[0]);
+            res.download(actualPath, "video.mp4", () => {
+                fs.unlinkSync(actualPath);
+            });
+        }
+
+    }
+    catch(err) {
+        console.log(err);
+        return res.status(500).json({
+            status: false,
+            message: err?.message ||"Something went wrong!" 
+        });
+    }
+
+}
+
 module.exports = {
     ThreadsVideoDownloader,
     TwitterVideoDownloader,
-    TwitterDownload
+    TwitterDownload,
+    getRedditVideo,
+    videoDownload,
+    downloadRedditVideo
 }

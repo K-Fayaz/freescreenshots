@@ -36,19 +36,13 @@ const Header: React.FC<HeaderProps> = ({ onNewTweetClick }) => {
           </div> */}
         </div>
         
-        <button 
+        {/* <button 
           onClick={() => window.open('https://x.com/fayaxtwt/', '_blank')}
           className="flex items-center space-x-2 text-gray-600 hover:text-gray-900"
         >
-          {/* <img 
-            src={avatar1} 
-            alt="Profile" 
-            className="w-10 h-10 rounded-full object-cover border boder-1 border-black"
-          /> */}
-          {/* <span>Meet the creator</span> */}
           <BsTwitterX size={20} />
           <span>@fayaxtwt</span>
-        </button>
+        </button> */}
       </div>
     </header>
   );

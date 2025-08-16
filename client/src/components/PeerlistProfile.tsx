@@ -11,9 +11,10 @@ interface PeerlistProfileProps {
   logo: string;
   showMetrics: boolean;
   showProjects: boolean;
+  userType: any;
 }
 
-const PeerlistProfile: React.FC<PeerlistProfileProps> = ({ details, theme, logo, showMetrics, showProjects }) => {
+const PeerlistProfile: React.FC<PeerlistProfileProps> = ({ details, theme, logo, showMetrics,userType, showProjects }) => {
 
     // useEffect(() => {
     //     console.log(details);
@@ -176,6 +177,16 @@ const PeerlistProfile: React.FC<PeerlistProfileProps> = ({ details, theme, logo,
                         theme === 'Dark' ? <img src={PeerListLogoDark} alt="PeerList Logo" className="w-[110px] h-[60px]" /> : <img src={PeerListLogoLight} alt="PeerList Logo" className="w-[110px] h-[60px]" />
                     }
                 </div>
+            }
+
+            {
+              userType?.type == 'free' && (
+                <div className="text-center">
+                  <span className="text-gray-500 text-sm">
+                    made with <span className="text-red-500">❤</span> by <span className="">ZapShot.in</span>
+                  </span>
+                </div>
+              )
             }
         </div>
   )

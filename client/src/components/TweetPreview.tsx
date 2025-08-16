@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Heart, MessageCircle, Repeat2 } from 'lucide-react';
 import Tweet from './Tweet';
 import TwitterUserProfile from './TwitterUserProfile';
@@ -7,6 +7,9 @@ import PeerlistProfile from './PeerlistProfile';
 import ThreadsPost from './ThreadsPost';
 import ThreadsFeed from './ThreadsFeed';
 import ThreadsProfile from './ThreadsProfile';
+import RedditPost from './RedditPost';
+import BASE_URL from '@/config';
+import axios from 'axios';
 
 interface TweetPreviewProps {
   theme: 'Light' | 'Dark';
@@ -25,6 +28,11 @@ interface TweetPreviewProps {
   tweetRef?: React.RefObject<HTMLDivElement>;
   parentWidth: number;
   showProjects: boolean;
+}
+
+interface userType {
+  type:string;
+  credits: number;  
 }
 
 const TweetPreview: React.FC<TweetPreviewProps> = ({
@@ -83,40 +91,74 @@ const TweetPreview: React.FC<TweetPreviewProps> = ({
     imbMono: 'font-imbMono',
   };
   const fontClass = fontMap[font] || 'font-sans';
+
+  const [userType, setUserType] = React.useState<userType | null>(null);
+
+
+  useEffect(() => {
+    let url = `${BASE_URL}api/user/get`;
+
+    axios({
+      method:"GET",
+      url: url,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        "Content-Type": "application/json",
+      }
+    })
+    .then((response) => {
+      // console.log(response);
+      setUserType({
+        type: response?.data?.type,
+        credits: response?.data?.credits
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+    })
+  }, []);
+
   return (
-    <div className="bg-gray-100 min-h-screen overflow-y-auto grid place-items-center">
+    <div className="overflow-y-auto grid place-items-center">
       <div style={{ background: parentBg, padding }} className='shadow-lg transition-all duration-400' ref={tweetRef}>
         <div
-          className={`h-auto rounded-md transition-all duration-500 ${childBg} ${childText} ${fontClass}`}
+          className={`h-auto transition-all duration-500 ${childBg} ${childText} ${fontClass}`}
           style={{ width: parentWidth + 'px', ...(theme === 'Dark' ? { background: childBg, color: '#fff' } : {}) }}
         >
           {/* Render post details if available */}
           {postDetails && (
             postDetails.platform === 'x.com' ? (
               postDetails.type === 'post' ? (
-                <Tweet details={postDetails.post} logo={logo} theme={theme} showMetrics={showMetrics} showViews={showViews}/>
+                <Tweet details={postDetails.post} logo={logo} theme={theme} showMetrics={showMetrics} showViews={showViews} userType={userType}/>
               ) : (
-                <TwitterUserProfile details={postDetails.post} logo={logo} theme={theme} showMetrics={showMetrics} />
+                <TwitterUserProfile details={postDetails.post} logo={logo} theme={theme} showMetrics={showMetrics} userType={userType}/>
               )
             ) : postDetails.platform === 'peerlist.io' ? (
               postDetails.type === 'post' ? (
-                <PeerlistPost details={postDetails.post} theme={theme} logo={logo} showMetrics={showMetrics} />
-                              ) : (
-                  <PeerlistProfile details={postDetails.post} theme={theme} logo={logo} showMetrics={showMetrics} showProjects={showProjects} />
-                )
+                <PeerlistPost details={postDetails.post} theme={theme} logo={logo} showMetrics={showMetrics} userType={userType}/>
+              ) : (
+                <PeerlistProfile details={postDetails.post} theme={theme} logo={logo} showMetrics={showMetrics} showProjects={showProjects} userType={userType}/>
+              )
             ) : postDetails.platform === 'www.threads.com' ? (
               postDetails.type === 'post' ? (
-                // Check if postDetails has multiple posts or single post
                 postDetails.post.length > 1 ? (
-                  <ThreadsFeed posts={postDetails.post} theme={theme} logo={logo} showMetrics={showMetrics} />
+                  <ThreadsFeed posts={postDetails.post} theme={theme} logo={logo} showMetrics={showMetrics} userType={userType}/>
                 ) : (
-                  <ThreadsPost details={postDetails.post[0]} theme={theme} logo={logo} showMetrics={showMetrics} isFeed={false}/>
+                  <ThreadsPost details={postDetails.post[0]} theme={theme} logo={logo} showMetrics={showMetrics} isFeed={false} userType={userType}/>
                 )
               ) : (
-                <ThreadsProfile details={postDetails.post} theme={theme} logo={logo} />
+                <ThreadsProfile details={postDetails.post} theme={theme} logo={logo} userType={userType} />
               )
+            ) : postDetails.platform === 'reddit.com' || postDetails.platform === 'www.reddit.com' ? (
+              <RedditPost
+                details={postDetails.post}
+                theme={theme}
+                logo={logo}
+                showMetrics={showMetrics}
+                userType={userType}
+              />
             ) : (
-              <h1>hola</h1>
+              <h1>Could not Find this platform! Please Report this!</h1>
             )
           )}
         </div>

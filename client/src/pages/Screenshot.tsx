@@ -4,10 +4,12 @@ import TweetPreview from '../components/TweetPreview';
 import Sidebar from '../components/Sidebar';
 import NewTweetModal from '../components/NewTweetModal';
 import DownloadSuccessModal from '../components/DownloadSuccessModal';
-import html2canvas from 'html2canvas';
-import { toPng } from 'html-to-image';
 import BASE_URL from '../config';
 import { ToastProvider } from '../components/ToastContext';
+import { useLocation } from "react-router-dom";
+import axios from 'axios';
+import { useToast } from '../components/ToastContext';
+
 
 // Define the color arrays here to sync with Sidebar
 const lightColors = [
@@ -22,6 +24,13 @@ function Screenshot() {
   const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [exporting, setExporting] = useState(false);
+
+  // Get url from parameters
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const paramUrl = queryParams.get("url");
+  const { showToast,showError } = useToast();
+  
 
   // Shared state for Sidebar and TweetPreview
   const [theme, setTheme] = useState<'Light' | 'Dark'>('Dark');
@@ -53,6 +62,43 @@ function Screenshot() {
 
   const handleCloseDownloadModal = () => {
     setIsDownloadModalOpen(false);
+  };
+
+  const handleParamUrlSubmit = (posturl:string) => {
+    // Handle URL submission here
+    console.log('URL submitted:', posturl);
+
+    if (!posturl.includes("x.com") && !posturl.includes("peerlist.io") && !posturl.includes("threads.com") && !posturl.includes('reddit.com')) {
+      showError("Invalid URL");
+      return;
+    }
+
+    setLoading(true);
+    let endpoint = `${BASE_URL}api/screenshots?url=${posturl}`;
+
+    axios({
+      method:"POST",
+      url: endpoint,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then((response) => {
+      let post = response.data.data;
+      let platform = response.data.platform;
+      let type = response.data.type;
+
+      setPostDetails({
+        post,
+        platform,
+        type: type
+      });
+      setLoading(false);
+    })
+    .catch((err) => {
+      console.log(err);
+      setLoading(false);
+    })
   };
 
   const handleExport = async () => {
@@ -314,6 +360,13 @@ function Screenshot() {
     }
   }, [theme, postDetails]);
 
+  React.useEffect(()=>{
+    // If paramUrl is present, submit it
+    if (paramUrl) {
+      handleParamUrlSubmit(paramUrl);
+    }
+  },[]);
+
   // Props to pass down
   const sidebarProps = {
     theme, setTheme,
@@ -355,8 +408,8 @@ function Screenshot() {
 
   // Skeleton component for loading
   const Skeleton = () => (
-    <div className="bg-gray-100 min-h-screen grid place-items-center">
-      <div className="bg-black rounded-md shadow-lg w-[460px] h-[220px] flex flex-col items-center justify-center">
+    <div className="bg-red-400 grid place-items-center">
+      <div className="bg-black rounded-md shadow-lg w-[95%] my-10 md:my-0 md:w-[460px] h-[220px] flex flex-col items-center justify-center">
         <div className="flex items-center mb-4 w-full px-8">
           <div className="w-10 h-10 bg-gray-700 rounded-full mr-4 animate-pulse" />
           <div className="flex-1">
@@ -386,8 +439,8 @@ function Screenshot() {
 
   // Common empty state card
   const EmptyState = () => (
-    <div className="bg-gray-100 min-h-screen grid place-items-center">
-      <div className="w-[460px] bg-white rounded-xl shadow-lg flex flex-col items-center justify-center p-10 border border-gray-200">
+    <div className="grid place-items-center">
+      <div className="w-[95%] my-5 md:my-0 md:w-[460px] bg-white rounded-xl shadow-lg flex flex-col items-center justify-center p-10 border border-gray-200">
         <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-blue-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M17 8h2a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2v-8a2 2 0 012-2h2M12 12v.01M12 16h.01M8 12h.01M16 12h.01" />
         </svg>
@@ -399,16 +452,16 @@ function Screenshot() {
 
   return (
     <ToastProvider>
-      <div className="h-screen flex flex-col bg-gray-50">
+      <div className="flex flex-col bg-gray-50">
         <Header onNewTweetClick={handleNewTweetClick} />
-        <div className="flex-1 flex">
+        <div className="flex-1 flex md:flex-row flex-col">
           <div className="flex-1">
             {loading ? <Skeleton /> : !postDetails ? <EmptyState /> : <TweetPreview {...tweetPreviewProps} />}
           </div>
           <Sidebar {...sidebarProps} />
         </div>
         <NewTweetModal isOpen={isModalOpen} onClose={handleCloseModal} setPostDetails={setPostDetails} setLoading={setLoading} />
-        <DownloadSuccessModal isOpen={isDownloadModalOpen} onClose={handleCloseDownloadModal} />
+        {/* <DownloadSuccessModal isOpen={isDownloadModalOpen} onClose={handleCloseDownloadModal} /> */}
       </div>
     </ToastProvider>
   );
