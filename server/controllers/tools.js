@@ -33,7 +33,7 @@ const ThreadsVideoDownloader = async (req,res) => {
         let html = await scrapeThreadsPosts(url);
         let data = await extractThreadsPostsData(html,url);
 
-        let video = data[0].videos[0].src;
+        let video = data[0]?.videos[0]?.src || null;
     
         return res.status(200).json({ video: video });
     }
@@ -58,9 +58,9 @@ const TwitterVideoDownloader = async (req,res) => {
     
         // Use the new network interception scraper
         const videoUrls = await scrapeTweetVideoUrls(url);
-        if (videoUrls.length === 0) {
-            return res.status(404).json({ status: false, message: "No video URLs found." });
-        }
+        // if (videoUrls.length === 0) {
+        //     return res.status(200).json({ status: false, message: "No video URLs found." });
+        // }
 
         console.log(videoUrls)
 

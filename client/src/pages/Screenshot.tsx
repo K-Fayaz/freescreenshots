@@ -455,7 +455,7 @@ function Screenshot() {
       <div className="flex flex-col bg-gray-50">
         <Header onNewTweetClick={handleNewTweetClick} />
         <div className="flex-1 flex md:flex-row flex-col">
-          <div className="flex-1">
+          <div className="flex-1 grid place-items-center">
             {loading ? <Skeleton /> : !postDetails ? <EmptyState /> : <TweetPreview {...tweetPreviewProps} />}
           </div>
           <Sidebar {...sidebarProps} />

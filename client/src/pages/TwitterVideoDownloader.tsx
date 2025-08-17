@@ -7,11 +7,13 @@ import axios from 'axios';
 import BASE_URL from '@/config';
 import { useToast } from '../components/ToastContext';
 import Hls from "hls.js";
+import { X } from 'lucide-react';
 
 const TwitterVideoDownloader = () => {
   const [postUrl, setPostUrl] = useState('');
   const [isDownloading, setIsDownloading] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
+  const [fetched,setFetched] = useState(false);
   const { showToast, showError } = useToast();
   const [scrapedVideos,setScrapedVideos] = useState<string[]>([]);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -34,7 +36,7 @@ const TwitterVideoDownloader = () => {
         console.log(response);
         let videos = response?.data?.videos || [];
         setScrapedVideos(videos);
-
+        setFetched(true);
       }
     })
     .catch((err) => {
@@ -93,6 +95,14 @@ const TwitterVideoDownloader = () => {
     setIsDownloading(false)
   }
 
+  const resetPage = () => {
+    setFetched(false);
+    setIsDownloading(false);
+    setIsFetching(false);
+    setScrapedVideos([]);
+    setPostUrl('');
+  }
+
   return (
     <>
       <Navbar />
@@ -102,19 +112,27 @@ const TwitterVideoDownloader = () => {
             <h1 className="text-2xl md:text-4xl font-bold text-center mb-2">Twitter Video Downloader</h1>
             <p className="mb-6 text-gray-600 text-center text-sm md:text-lg mt-5">Fast and free Twitter video downloader. Save videos from Twitter in HD MP4 format with one click.</p>
             <form onSubmit={handleFetchTwo} className="flex flex-col items-center md:flex-row gap-2 md:max-w-2xl mx-auto">
-              <input
-                type="text"
-                value={postUrl}
-                onChange={handleInputChange}
-                placeholder="Paste Twitter video URL here"
-                className="flex-1 border border-gray-300 rounded-lg px-4 py-3 text-base md:text-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-                required
-              />
+              <div className='relative'>
+                <input
+                  type="text"
+                  value={postUrl}
+                  onChange={handleInputChange}
+                  disabled={fetched || isFetching}
+                  placeholder="Paste Twitter video URL here"
+                  className={`flex-1 border border-gray-300 rounded-lg px-4 py-3 text-base md:text-lg focus:outline-none focus:ring-2 focus:ring-blue-400 ${fetched || isFetching ? 'text-gray-300 text-sm' : ''}`}
+                  required
+                />
+                {
+                  fetched && !isDownloading && (
+                    <X size={18} onClick={resetPage} className='absolute top-5 right-2 font-bold rounded-full text-gray-700 hover:rounded-full hover:bg-gray-400 hover:p-0.5 cursor-pointer' />
+                  )
+                }
+              </div>
               <button
                 type="submit"
-                disabled={!!scrapedVideos?.length || isDownloading || isFetching}
+                disabled={!!scrapedVideos?.length || isDownloading || isFetching || fetched}
                 className={`bg-blue-600 text-white rounded-lg px-6 py-3 text-base md:text-lg font-semibold transition flex items-center gap-2 ${
-                  !!scrapedVideos?.length || isDownloading || isFetching ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'
+                  !!scrapedVideos?.length || isDownloading || isFetching || fetched ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'
                 }`}
               >
                 <Download className="w-5 h-5" />
@@ -138,6 +156,13 @@ const TwitterVideoDownloader = () => {
                       </button>
                   </div>
               )
+          }
+          {
+            fetched && !isFetching && scrapedVideos.length === 0 && (
+              <div className="text-red-500 mt-5">
+                <h1 className='md:text-xl'>No videos found for the provided URL. </h1>
+              </div>
+            )
           }
         </div>
         <Footer />

@@ -37,14 +37,14 @@ const TwitterUserProfile: React.FC<TweetProps> = ({ details, logo, theme, showMe
     const bioText = details?.bioHTML ? extractBioText(details.bioHTML) : '';
 
     return (
-        <div className={`w-full mx-auto rounded-md ${theme === 'Dark' ? 'bg-black text-white' : 'bg-white text-black'}`}>
+        <div className={`w-full mx-auto ${theme === 'Dark' ? 'bg-black text-white' : 'bg-white text-black'}`}>
                          {/* Banner */}
-             <div className="relative h-34 bg-white rounded-t-md overflow-hidden">
+             <div className="relative h-34 bg-white overflow-hidden">
                  {details?.bannerImage ? (
                      <img 
                          src={details.bannerImage} 
                          alt="Profile banner" 
-                         className="w-full h-full object-cover rounded-t-md overflow-hidden"
+                         className="w-full h-full object-cover overflow-hidden"
                      />
                  ) : (
                      <div className="w-full h-32 bg-[#323639] overflow-hidden"></div>
@@ -139,7 +139,7 @@ const TwitterUserProfile: React.FC<TweetProps> = ({ details, logo, theme, showMe
                 {/* Following/Followers */}
                 {
                     showMetrics && (
-                        <div className="flex flex-wrap gap-3 text-sm mt-4 mb-4 pb-4">
+                        <div className="flex flex-wrap gap-3 text-sm mt-4 pb-4">
                             <div className="flex gap-1">
                                 <span className="font-bold">{details?.following || 0}</span>
                                 <span className={`${theme === 'Dark' ? 'text-gray-400': 'text-slate-700'}`}>Following</span>

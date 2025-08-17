@@ -8,6 +8,7 @@ import { useToast } from '../components/ToastContext';
 import BASE_URL from '@/config';
 import axios from 'axios';
 import Hls from "hls.js";
+import { X } from 'lucide-react';
 
 const RedditVideoDownloader = () => {
     const [postUrl, setPostUrl] = useState('');
@@ -17,6 +18,7 @@ const RedditVideoDownloader = () => {
     const { showToast, showError } = useToast();
     const [scrapedVideos,setScrapedVideos] = useState<string[]>([]);
     const videoRef = useRef<HTMLVideoElement>(null);
+    const [fetched,setFetched] = useState(false);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setPostUrl(e.target.value);
@@ -45,6 +47,7 @@ const RedditVideoDownloader = () => {
             if (response.status === 200) {
                 let videos = response?.data?.videos || [];
                 setScrapedVideos(videos);
+                setFetched(true);
             } else {
                 showError('Failed to fetch video. Please try again.');
             }
@@ -105,6 +108,14 @@ const RedditVideoDownloader = () => {
         setIsDownloading(false);
     }
 
+    const resetPage = () => {
+        setFetched(false);
+        setIsDownloading(false);
+        setIsFetching(false);
+        setScrapedVideos([]);
+        setPostUrl('');
+    }
+
   return (
     <>
       <Navbar />
@@ -114,14 +125,22 @@ const RedditVideoDownloader = () => {
             <h1 className="text-2xl md:text-4xl font-bold text-center mb-2">Reddit Video Downloader</h1>
             <p className="mb-6 text-gray-600 text-center text-sm md:text-lg mt-5">Fast and free Reddit video downloader. Save videos from Reddit in HD MP4 format with one click.</p>
             <form onSubmit={handleFetchVideo} className="flex flex-col items-center md:flex-row gap-2 md:max-w-2xl mx-auto">
-              <input
-                type="text"
-                value={postUrl}
-                onChange={handleInputChange}
-                placeholder="Paste Reddit post URL here"
-                className="flex-1 border border-gray-300 rounded-lg px-4 py-3 text-base md:text-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-                required
-              />
+              <div className='relative'>
+                <input
+                  type="text"
+                  value={postUrl}
+                  disabled={fetched || isFetching}
+                  onChange={handleInputChange}
+                  placeholder="Paste Reddit post URL here"
+                  className={`flex-1 border border-gray-300 rounded-lg px-4 py-3 text-base md:text-lg focus:outline-none focus:ring-2 focus:ring-blue-400 ${fetched || isFetching ? 'text-gray-300 text-sm' : ''}`}
+                  required
+                />
+                {
+                  fetched && !isDownloading && (
+                    <X size={18} onClick={resetPage} className='absolute top-5 right-2 font-bold rounded-full text-gray-700 hover:rounded-full hover:bg-gray-400 hover:p-0.5 cursor-pointer' />
+                  )
+                }
+              </div>
               <button
                 type="submit"
                 disabled={!!video || isDownloading || isFetching}
@@ -137,7 +156,7 @@ const RedditVideoDownloader = () => {
           {
               scrapedVideos.length > 0 && (
                   <div className='max-w-5xl flex flex-col mt-5 items-center justify-between gap-5 p-5'>
-                      <video ref={videoRef} controls={false} autoPlay className="mt-5 rounded-lg shadow-lg"></video>
+                      <video ref={videoRef} muted controls={false} className="mt-5 rounded-lg shadow-lg"></video>
 
                       <button 
                         onClick={handleVideoDownload} 
@@ -151,6 +170,15 @@ const RedditVideoDownloader = () => {
                   </div>
               )
           }
+
+          {
+            fetched && !isFetching && scrapedVideos.length === 0 && (
+              <div className="text-red-500 mt-5">
+                <h1 className='md:text-xl'>No videos found for the provided URL. </h1>
+              </div>
+            )
+          }
+
         </div>
         <Footer />
       </div>

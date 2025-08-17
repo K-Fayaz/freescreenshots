@@ -7,6 +7,7 @@ import axios from 'axios';
 import BASE_URL from '@/config';
 import { ToastProvider } from '../components/ToastContext';
 import { useToast } from '../components/ToastContext';
+import { X } from 'lucide-react';
 
 const ThreadsVideoDownloader = () => {
   const [postUrl, setPostUrl] = useState('');
@@ -14,6 +15,7 @@ const ThreadsVideoDownloader = () => {
   const [isDownloading,setIsDownloading] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
   const { showToast,showError } = useToast();
+  const [fetched,setFetched] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPostUrl(e.target.value);
@@ -65,6 +67,7 @@ const ThreadsVideoDownloader = () => {
     .then((res) => {
       if (res.status == 200) {
         setVideo(res.data.video);
+        setFetched(true);
       }
     })
     .catch((err) => {
@@ -76,6 +79,14 @@ const ThreadsVideoDownloader = () => {
     });
   };
 
+  const resetPage = () => {
+    setFetched(false);
+    setIsDownloading(false);
+    setIsFetching(false);
+    setPostUrl('');
+    setVideo('');
+  }
+
   return (
       <>
         <Navbar />
@@ -85,14 +96,20 @@ const ThreadsVideoDownloader = () => {
               <h1 className="text-2xl md:text-4xl font-bold text-center mb-2">Threads Video Downloader</h1>
               <p className="mb-6 text-gray-600 text-center text-sm md:text-lg mt-5">Fast and free Threads video downloader. Save videos from Threads in HD MP4 format with one click.</p>
               <form onSubmit={handleFetchVideo} className="flex flex-col items-center md:flex-row gap-2 md:max-w-2xl mx-auto">
-                <input
-                  type="text"
-                  value={postUrl}
-                  onChange={handleInputChange}
-                  placeholder="Paste video Tweet URL here"
-                  className="flex-1 border border-gray-300 rounded-lg px-4 py-3 text-base md:text-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-                  required
-                />
+                <div className='relative'>
+                  <input
+                    type="text"
+                    value={postUrl}
+                    onChange={handleInputChange}
+                    disabled={fetched || isFetching}
+                    placeholder="Paste video Tweet URL here"
+                    className={`flex-1 border border-gray-300 rounded-lg px-4 py-3 text-base md:text-lg focus:outline-none focus:ring-2 focus:ring-blue-400 ${fetched || isFetching ? 'text-gray-300 text-sm' : ''}`}
+                    required
+                  />
+                  {fetched && !isDownloading && (
+                    <X size={18} onClick={resetPage} className='absolute top-5 right-2 font-bold rounded-full text-gray-700 hover:rounded-full hover:bg-gray-400 hover:p-0.5 cursor-pointer' />
+                  )}
+                </div>
                 <button
                   type="submit"
                   disabled={!!video || isDownloading || isFetching}
@@ -106,7 +123,8 @@ const ThreadsVideoDownloader = () => {
               </form>
             </div>
               {video && (
-              <div className="grid place-items-center space-y-4 mt-5">
+              <div className="grid place-items-center space-y-4 my-5">
+                <video src={video} muted controls={false} autoPlay={true} className="h-auto max-h-[300px] mt-5 rounded-lg shadow-lg"></video>
                 <button 
                   onClick={handleDownload}
                   disabled={isDownloading}
@@ -121,6 +139,13 @@ const ThreadsVideoDownloader = () => {
                 </button>
               </div>
             )}
+            {
+            fetched && !isFetching && !video && (
+              <div className="text-red-500 mt-5 mb-4">
+                <h1 className='md:text-xl'>No videos found for the provided URL. </h1>
+              </div>
+            )
+          }
           </div>
           <Footer />
         </div>
