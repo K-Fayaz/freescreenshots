@@ -1,3 +1,5 @@
+const User = require("../models/User");
+
 const { 
   scrapePeerlistPost, 
   extractPeerlistPostData,
@@ -25,7 +27,8 @@ const {
 
 const getDetails = async (req, res) => {
     try {
-      const { url } = req.query;
+      const { url,userId } = req.query;
+
       if (!url) {
         return res.status(400).json({ error: "Missing tweet URL" });
       }
@@ -86,7 +89,20 @@ const getDetails = async (req, res) => {
       else {
         return res.status(400).json({ error: "Invalid URL" });
       }
+
+      if (userId) {
+        let user = await User.findById(userId);
+        if (user && user.subscription === "premium") {
+          user.credits -= 1;
+          await user.save();
+        }
   
+        if (user.credits <= 0 && user.subscription === "premium") {
+          user.subscription = "free";
+          user.credits = 0;
+          await user.save();
+        }
+      }
   
       return res.status(200).json({
         status: "success",

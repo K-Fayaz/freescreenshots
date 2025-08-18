@@ -15,6 +15,10 @@
 @tailwind components;
 @tailwind utilities;
 
+.tweet-content {
+    /* white-space: pre; */
+}
+
 .tweet-content img[alt][src*="twimg.com/emoji"] {
     width: 1.25em;
     height: 1.25em;

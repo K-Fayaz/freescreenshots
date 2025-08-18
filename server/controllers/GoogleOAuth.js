@@ -4,7 +4,9 @@ const SECRET = process.env.SECRET || "thisisasecret";
 
 const callBack = async (req,res) => {
   let userDetails = req.user;
-  let state = req.query.state;
+  let next = req.query.state;
+
+  console.log('next:', next);
 
   let client_url = process.env.CLIENT_REDIRECT_URL;
 
@@ -13,15 +15,15 @@ const callBack = async (req,res) => {
   if (user) {
     const result = await loginUser(userDetails);
     if (result.success) {
-      return res.redirect(`${client_url}/signin?status=true&token=${result.token}&id=${result.id}&success=true`);
+      return res.redirect(`${client_url}/signin?status=true&token=${result.token}&id=${result.id}&success=true${next ? `&next=${next}` : ''}`);
     } else {
       return res.redirect(`${client_url}/signin?status=false&message=${result.message}`);
     } 
   }
   else {
-    const result = await signupUser(userDetails,state);
+    const result = await signupUser(userDetails);
     if (result.success) {
-      return res.redirect(`${client_url}/signin?status=true&token=${result.token}&id=${result.id}&success=true`);
+      return res.redirect(`${client_url}/signin?status=true&token=${result.token}&id=${result.id}&success=true${next ? `&next=${next}` : ''}`);
     } else {
       return res.redirect(`${client_url}/signin?status=false&message=${result.message}`);
     }
@@ -59,7 +61,7 @@ const loginUser = async (userDetails) => {
   }
 }
 
-const signupUser = async (userDetails,timezone) => { 
+const signupUser = async (userDetails) => { 
   try {
     // Check if user already exists
     let existingUser = await User.findOne({ email: userDetails.email });

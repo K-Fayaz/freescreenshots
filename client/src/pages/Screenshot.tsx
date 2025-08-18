@@ -9,6 +9,7 @@ import { ToastProvider } from '../components/ToastContext';
 import { useLocation } from "react-router-dom";
 import axios from 'axios';
 import { useToast } from '../components/ToastContext';
+import GetProModal from '@/components/GetProModal';
 
 
 // Define the color arrays here to sync with Sidebar
@@ -29,7 +30,9 @@ function Screenshot() {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const paramUrl = queryParams.get("url");
+  const paramDisplay = queryParams.get("display");
   const { showToast,showError } = useToast();
+  const [isProModalOpen, setIsProModalOpen] = useState(false);
   
 
   // Shared state for Sidebar and TweetPreview
@@ -48,6 +51,13 @@ function Screenshot() {
   const [showProjects, setShowProjects] = useState(true);
   const [postDetails,setPostDetails] = useState(null);
   const [parentWidth, setParentWidth] = useState(460);
+
+  React.useEffect(() => {
+    if (paramDisplay === 'pricing') {
+      setIsProModalOpen(true);
+      return;
+    }
+  },[]);
 
   // Ref for the tweet card
   const tweetRef = useRef<HTMLDivElement>(null);
@@ -462,6 +472,7 @@ function Screenshot() {
         </div>
         <NewTweetModal isOpen={isModalOpen} onClose={handleCloseModal} setPostDetails={setPostDetails} setLoading={setLoading} />
         {/* <DownloadSuccessModal isOpen={isDownloadModalOpen} onClose={handleCloseDownloadModal} /> */}
+        <GetProModal isOpen={isProModalOpen} onClose={() => setIsProModalOpen(false)} />
       </div>
     </ToastProvider>
   );

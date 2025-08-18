@@ -27,8 +27,10 @@ const NewTweetModal: React.FC<NewTweetModalProps> = ({ isOpen, onClose, setPostD
       return;
     }
 
+    let userId = localStorage.getItem('user') || undefined;
+
     setLoading(true);
-    let endpoint = `${BASE_URL}api/screenshots?url=${url}`;
+    let endpoint = `${BASE_URL}api/screenshots?url=${url}&userId=${userId}`;
 
     axios({
       method:"POST",

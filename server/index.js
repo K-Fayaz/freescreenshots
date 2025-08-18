@@ -7,8 +7,76 @@ const path           = require("path");
 const https          = require("https");
 const passport       = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const User            = require("./models/User");
+
+
+// Polar SH integration
+const { Polar }                                   = require("@polar-sh/sdk");
+const { Webhooks }                                = require("@polar-sh/express");
+const { validateEvent, WebhookVerificationError } = require('@polar-sh/sdk/webhooks')
+
 
 const app            = express();
+
+app.post(
+  '/polar/webhooks',
+  express.raw({ type: 'application/json' }),
+  async (req, res) => {
+    try {
+      const event = validateEvent(
+        req.body, 
+        req.headers,
+        process.env['POLAR_WEBHOOK_SECRET'] ?? '',
+      );
+      // Process the event
+      console.log("Received event:", event);
+
+      if (event.type === 'order.paid') {
+        console.log("Inside the webhook");
+        
+        console.log("event.data: ",event.data);
+        
+        const userId = event.data?.metadata?.user;
+        
+        if (!userId) {
+          console.log("Ignoring event without user metadata:", event);
+          return res.status(202).send('');
+        }
+
+        console.log("logging id here: ",userId);
+        let user = await User.findById(userId);
+        console.log("User is: ",user);
+
+        // update user sunscription
+        if (!user) {
+          console.log("No user found for this id: ",userId);
+          return res.status(404).send({
+            status:false,
+            message:"No user found for this id"
+          });
+        }
+
+        user.subscription = "premium";
+        user.credits += 1000; // Add 1000 credits on subscription
+
+        await user.save();
+        console.log("User subscription updated successfully!");
+      }
+
+      console.log("Webhook processed successfully!");
+      res.status(202).send({
+        status:true,
+        message:"Subscription is updated!"
+      });
+
+    } catch (error) {
+      if (error instanceof WebhookVerificationError) {
+        res.status(403).send('Webhook verification failed');
+      }
+      throw error;
+    }
+  }
+);
 
 // Middleware
 app.use(express.json());
@@ -45,6 +113,57 @@ let userRoutes        = require("./routes/user");
 let screenshotRoutes  = require("./routes/screenshot");
 let googleOAuthRoutes = require("./routes/GoogleOAuth");
 let toolsRoutes       = require("./routes/tools");
+
+const polar = new Polar({
+    accessToken: process.env.POLAR_ACCESS_TOKEN,
+    // server:"sandbox",
+});
+
+const local = "http://localhost:5173/screenshot";
+
+app.post('/api/polar-checkout',async (req,res) => {
+    try {
+        const { id } = req.body;
+        console.log("req.body is: ",req.body);
+        if (!id) {
+            res.status(400).json({
+                status: false,
+                message: "User id was missing!"
+            });
+            return;
+        }
+
+        let user = await User.findById(id);
+
+        if (!user) {
+          return res.status(400).json({
+            status: false,
+            message:"No user found for this email"
+          });
+        }
+
+        const checkout = await polar.checkouts.create({
+            products: [ process.env.POLAR_PRODUCT_ID ],
+            successUrl: local,
+            customerEmail: user.email || "",
+            metadata: { user: id },
+            customerMetadata: { user: id }
+        });
+
+        // console.log("checkout content: ", checkout);
+        res.status(200).json({
+            status: true,
+            checkoutUrl: checkout?.url
+        });
+    }   
+    catch(err) {
+        console.log(err);
+        res.status(500).json({
+            status: false,
+            message:"Something went wrong!"
+        });
+    }
+});
 
 app.use('/api', screenshotRoutes);
 app.use('/api/auth',googleOAuthRoutes);

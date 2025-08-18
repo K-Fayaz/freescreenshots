@@ -1,5 +1,7 @@
 import React from 'react';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import BASE_URL from '@/config';
 
 const plans = [
   {
@@ -30,6 +32,53 @@ const plans = [
 
 const Pricing = () => {
   const navigate = useNavigate();
+
+  const handlePlanClick = (planName:string) => {
+    
+    // User is logged in and clicks on 'Free model Get Started button'
+    if (planName === 'Free' && localStorage.getItem('token')) {
+      return navigate('/screenshot');
+    }
+
+    // User is logged in and clicks on 'buy pro' button 
+    if (planName !== 'Free' && localStorage.getItem('token')) {
+
+      let url = `${BASE_URL}api/polar-checkout`;
+
+      axios({
+        method: "POST",
+        url: url,
+        data: {
+          id: localStorage.getItem('user'),
+        },
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then((response) => {
+        let url = response.data.checkoutUrl;
+        if (url) {
+          window.location.href = url;
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {
+        return;
+      })
+    }
+
+    if (planName === 'Free') {  
+      navigate('/signin');
+      return;
+    }
+
+    let token = localStorage.getItem('token');
+    if (!token) {
+      return navigate('/signin?next=pricing');
+    }
+  }
   return (
     <div className="w-full py-20 bg-white">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -41,11 +90,6 @@ const Pricing = () => {
               key={plan.name}
               className={`rounded-3xl border border-gray-100 bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 p-8 shadow-xl flex flex-col items-center transition-transform duration-200 hover:scale-[1.02] ${plan.highlight ? 'border-black shadow-black/10' : ''}`}
             >
-              {/* <div className="mb-6 w-full flex justify-start">
-                <span className="inline-block px-4 py-1 text-xs font-semibold rounded-full bg-gray-200 text-gray-700 tracking-wide mb-2">
-                  {plan.name.toUpperCase()}
-                </span>
-              </div> */}
               <div className="w-full flex flex-col items-start mb-6">
                 <div
                   className={`w-full rounded-2xl p-6 flex flex-col items-start ${plan.name === 'Free'
@@ -57,7 +101,7 @@ const Pricing = () => {
                   <div className="text-3xl font-extrabold text-black drop-shadow">{plan.price}</div>
                 </div>
                 <button
-                  onClick={() => navigate('/signin')}
+                  onClick={() => handlePlanClick(plan.name)}
                   className="w-full py-3 rounded-full font-semibold bg-black text-white hover:bg-gray-900 transition-colors duration-200 mt-5"
                 >
                   {plan.cta}

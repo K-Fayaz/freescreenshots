@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { FcGoogle } from 'react-icons/fc';
 import axios from "axios";
 import BASE_URL from '@/config';
@@ -8,6 +8,8 @@ const AuthPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [error, setError] = useState<string | null>(null);
+  const queryParams = new URLSearchParams(location.search);
+  const nextUrl = queryParams.get("next");
 
   const errorMessageMap: Record<string, string> = {
     'invalid_callback': 'Invalid callback from X. Please try logging in again.',
@@ -27,6 +29,7 @@ const AuthPage = () => {
     const token = params.get('token');
     const success = params.get('success');
     const id = params.get('id');
+    const next = params.get('next');
     // const email = params.get('email');
     
     // Handle Google OAuth success callback
@@ -35,6 +38,10 @@ const AuthPage = () => {
       localStorage.setItem('user', id || '');
       // localStorage.setItem('email', email || '');
       // localStorage.setItem('isEmailVerified', 'true');
+      if (next) {
+        navigate(`/screenshot?display=${next}`);
+        return;
+      }
       navigate('/screenshot');
       return;
     }
@@ -49,7 +56,7 @@ const AuthPage = () => {
   const handleGoogleSignIn = () => {
     // Determine the correct endpoint based on login/signup mode
     // const endpoint = isLogin ? 'login' : `signup?timezone=${userTimezone}`;
-    let url = `${BASE_URL}api/auth/google/signin`;
+    let url = `${BASE_URL}api/auth/google/signin?next=${nextUrl || ''}`;
 
     // For Google OAuth, we redirect directly to the Google auth URL
     window.location.href = url;
@@ -109,22 +116,6 @@ const AuthPage = () => {
             <FcGoogle className="w-6 h-6" />
             <span>Continue with Google</span>
           </button>
-
-                     {/* Terms and Privacy */}
-           {/* <div className="mt-6 text-center">
-             <p className="text-xs text-gray-500 text-wrap">
-               By continuing, you agree to our{' '}
-               <a href="#" className="text-blue-600 hover:text-blue-700 underline">
-                 Terms of Service
-               </a>{' '}
-               and
-             </p>
-             <p className="text-xs text-gray-500">
-               <a href="#" className="text-blue-600 hover:text-blue-700 underline">
-                 Privacy Policy
-               </a>
-             </p>
-           </div> */}
         </div>
       </div>
     </div>
