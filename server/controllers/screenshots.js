@@ -90,7 +90,8 @@ const getDetails = async (req, res) => {
         return res.status(400).json({ error: "Invalid URL" });
       }
 
-      if (userId) {
+      if (userId && userId !== "undefined" && userId !== "") {
+        console.log("user id is: ",userId)
         let user = await User.findById(userId);
         if (user && user.subscription === "premium") {
           user.credits -= 1;
