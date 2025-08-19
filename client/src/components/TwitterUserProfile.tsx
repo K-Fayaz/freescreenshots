@@ -94,7 +94,7 @@ const TwitterUserProfile: React.FC<TweetProps> = ({ details, logo, theme, showMe
                 </div>
 
                 <div
-                     className="my-2 whitespace-pre-line"
+                     className="tweet-content my-2 whitespace-pre-line"
                      dangerouslySetInnerHTML={{ __html: details.bioHTML }}
                  />
 
