@@ -15,8 +15,12 @@
   margin-bottom: 0.5rem;
 }
 .redditPostContent {
-  font-size: 1rem;
+  font-size: 0.9rem;
   line-height: 1.7;
+}
+
+.redditPostContent a {
+  color: #5873a1;
 }
 
 .reddit-flair-wrapper .flair-content {

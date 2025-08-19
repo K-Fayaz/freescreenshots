@@ -57,8 +57,8 @@ const TweetPreview: React.FC<TweetPreviewProps> = ({
   const isGradient = selectedColor.startsWith('linear-gradient');
   let parentBg, childBg, childText;
   if (postDetails && postDetails.platform === 'peerlist.io' && theme === 'Dark') {
-    parentBg = selectedColor === '#171717' || !selectedColor ? '#171717' : selectedColor;
-    childBg = '#171717';
+    parentBg = selectedColor === '#000' || !selectedColor ? '#171717' : selectedColor;
+    childBg = '#000';
     childText = 'text-white';
   } else if (postDetails && postDetails.platform === 'www.threads.com' && theme === 'Dark') {
     parentBg = selectedColor === '#181818' || !selectedColor ? '#181818' : selectedColor;

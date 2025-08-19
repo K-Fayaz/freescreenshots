@@ -62,9 +62,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     '#ffffff', '#f3f4f6', '#e0e7ff', '#bae6fd', '#fef9c3', '#fca5a5', '#7C3AED'
   ];
   const darkColors = [
-    postDetails && postDetails.platform === 'peerlist.io' ? '#171717' : 
-    postDetails && postDetails.platform === 'www.threads.com' ? '#181818' : '#000000',
-    '#1F2937', '#374151', '#111827', '#334155', '#0f172a', '#9333EA'
+    '#000000','#1F2937', '#374151', '#111827', '#334155', '#0f172a', '#9333EA'
   ];
   const lightGradients = [
     'linear-gradient(90deg, #e0e7ff 0%, #bae6fd 100%)',

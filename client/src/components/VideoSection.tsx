@@ -1,5 +1,3 @@
-import React from 'react';
-import threadsVideo from '../assets/threads-repost.mp4';
 
 const VideoSection = () => {
   return (

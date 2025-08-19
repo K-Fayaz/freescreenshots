@@ -359,14 +359,14 @@ function Screenshot() {
     if (theme === 'Light') {
       setSelectedColor(lightColors[0]);
     } else {
-      // Use different dark colors based on platform
-      if (postDetails && (postDetails as any).platform === 'peerlist.io') {
-        setSelectedColor('#171717'); // Peerlist dark color
-      } else if (postDetails && (postDetails as any).platform === 'www.threads.com') {
-        setSelectedColor('#181818'); // Threads dark color
-      } else {
-        setSelectedColor('#000000'); // X/Twitter dark color
-      }
+      // // Use different dark colors based on platform
+      // if (postDetails && (postDetails as any).platform === 'peerlist.io') {
+      //   setSelectedColor('#171717'); // Peerlist dark color
+      // } else if (postDetails && (postDetails as any).platform === 'www.threads.com') {
+      //   setSelectedColor('#181818'); // Threads dark color
+      // } else {
+      // }
+      setSelectedColor('#000000'); // X/Twitter dark color
     }
   }, [theme, postDetails]);
 

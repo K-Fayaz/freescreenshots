@@ -4,6 +4,9 @@ import { BiUpvote } from 'react-icons/bi';
 import { FaRegComment } from "react-icons/fa";
 import styles from './RedditPost.module.css';
 import RedditSnooIcon from './RedditSnooIcon';
+import { TbAward } from "react-icons/tb";
+import { RiShareForwardLine } from "react-icons/ri";
+
 
 interface RedditPostProps {
   details: any;
@@ -16,7 +19,7 @@ interface RedditPostProps {
 
 const RedditPost: React.FC<RedditPostProps> = ({ details = {}, theme, showMetrics, logo, userType }) => {
   const isDark = theme === 'Dark';
-  const iconTextColor = isDark ? 'text-neutral-400' : 'text-neutral-500';
+  const iconTextColor = isDark ? 'text-white' : 'text-white';
   const subredditIcon = details?.subredditIcon || '';
   const subreddit = details?.subreddit || '';
   const timeAgo = details?.timeAgo || '';
@@ -202,21 +205,28 @@ const RedditPost: React.FC<RedditPostProps> = ({ details = {}, theme, showMetric
       />
       {/* Metrics */}
       {showMetrics && (
-        <div className="flex items-center gap-6 mt-4">
-          <div className={`flex items-center gap-1 ${iconTextColor}`}>
+        <div className="flex items-center gap-3 mt-4 mb-2">
+          <div className={`flex items-center gap-1 ${iconTextColor} bg-[#d93804] rounded-full px-4 py-1`}>
             <BiUpvote size={20} />
             <span className="font-medium">{score}</span>
           </div>
-          <div className={`flex items-center gap-1 ${iconTextColor}`}>
+          <div className={`flex items-center gap-1 ${iconTextColor} bg-[#1a272d] rounded-full px-4 py-1`}>
             <FaRegComment size={20} />
             <span className="font-medium">{commentCount}</span>
+          </div>
+          <div className={`flex items-center gap-1 ${iconTextColor} bg-[#1a272d] rounded-full px-4 py-1 font-medium`}>
+            <TbAward  size={24}/>
+          </div>
+          <div className={`flex items-center gap-1 ${iconTextColor} bg-[#1a272d] rounded-full px-4 py-1 font-medium`}>
+            <RiShareForwardLine  size={25}/>
+            <span className="font-medium">Share</span>
           </div>
         </div>
       )}
 
       {
         (!userType || userType?.type == 'free') && (
-          <div className="text-center">
+          <div className="text-center mt-4">
             <span className="text-gray-500 text-sm">
               made with <span className="text-red-500">❤</span> by <span className="">ZapShot.in</span>
             </span>
