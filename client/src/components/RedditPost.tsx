@@ -225,7 +225,7 @@ const RedditPost: React.FC<RedditPostProps> = ({ details = {}, theme, showMetric
       )}
 
       {
-        (!userType || userType?.type == 'free') && (
+        (userType == null || userType == undefined || userType?.type == 'free') && (
           <div className="text-center mt-4">
             <span className="text-gray-500 text-sm">
               made with <span className="text-red-500">❤</span> by <span className="">ZapShot.in</span>

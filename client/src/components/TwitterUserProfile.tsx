@@ -157,7 +157,7 @@ const TwitterUserProfile: React.FC<TweetProps> = ({ details, logo, theme, showMe
                 }
             </div>
             {
-              userType?.type == 'free' && (
+              (userType == null || userType == undefined || userType?.type == 'free') && (
                 <div className="text-center pb-3">
                   <span className="text-gray-500 text-sm">
                     made with <span className="text-red-500">❤</span> by <span className="">ZapShot.in</span>

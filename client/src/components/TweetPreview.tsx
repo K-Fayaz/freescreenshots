@@ -61,8 +61,8 @@ const TweetPreview: React.FC<TweetPreviewProps> = ({
     childBg = '#000';
     childText = 'text-white';
   } else if (postDetails && postDetails.platform === 'www.threads.com' && theme === 'Dark') {
-    parentBg = selectedColor === '#181818' || !selectedColor ? '#181818' : selectedColor;
-    childBg = '#181818';
+    parentBg = selectedColor === '#000' || !selectedColor ? '#000' : selectedColor;
+    childBg = '#000';
     childText = 'text-white';
   } else if (theme === 'Light') {
     if (isGradient) {
@@ -115,6 +115,7 @@ const TweetPreview: React.FC<TweetPreviewProps> = ({
     })
     .catch((err) => {
       console.log(err);
+      setUserType(null)
     })
   }, []);
 

@@ -407,7 +407,7 @@ const ThreadsPost = React.forwardRef<HTMLDivElement, ThreadsPostProps>(({ detail
       </div>
 
       {
-        userType?.type == 'free' && (
+        (userType == null || userType == undefined || userType?.type == 'free') && (
           <div className="text-center mt-3">
             <span className="text-gray-500 text-sm">
               made with <span className="text-red-500">❤</span> by <span className="">ZapShot.in</span>

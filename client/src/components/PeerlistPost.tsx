@@ -166,7 +166,7 @@ const PeerlistPost = React.forwardRef<HTMLDivElement, PeerlistPostProps>(({ deta
       )}
       {/* Link Embed Card */}
       {details?.linkEmbed && (
-        <div className={`rounded-xl overflow-hidden mt-3 ${theme === 'Dark' ? 'bg-zinc-900 border border-zinc-800' : 'bg-white border border-gray-200'}`}
+        <div className={`rounded-xl overflow-hidden mt-3 ${theme === 'Dark' ? 'bg-[#0f0f0f] border border-zinc-800' : 'bg-white border border-gray-200'}`}
              style={{ boxShadow: theme === 'Dark' ? '0 1px 2px 0 #0002' : '0 1px 2px 0 #0001' }}>
         <a
             href={details.linkEmbed.link}
@@ -197,7 +197,7 @@ const PeerlistPost = React.forwardRef<HTMLDivElement, PeerlistPostProps>(({ deta
             <div className={`border-t flex ${theme === 'Dark' ? 'border-zinc-800' : 'border-gray-200'}`}
             >
               <div className={`border-l-4 pl-3 py-3 flex-1 ${theme === 'Dark' ? 'border-green-600 bg-transparent' : 'border-green-500 bg-transparent'}`}>
-                <span className={`inline-block px-2 py-0.5 rounded text-xs font-semibold mb-2 ${theme === 'Dark' ? 'bg-gray-800 text-gray-400' : 'bg-green-100 text-green-700'}`}>TL;DR by Peerlist</span>
+                <span className={`inline-block px-2 py-0.5 rounded text-xs font-semibold mb-2 ${theme === 'Dark' ? 'bg-[#0f0f0f] text-gray-400' : 'bg-green-100 text-green-700'}`}>TL;DR by Peerlist</span>
                 <div className={`text-sm mt-1 ${theme === 'Dark' ? 'text-gray-100' : 'text-gray-800'}`}>{details.linkEmbed.tldr}</div>
               </div>
             </div>
@@ -208,7 +208,7 @@ const PeerlistPost = React.forwardRef<HTMLDivElement, PeerlistPostProps>(({ deta
       {/* Project Embed Card */}
       {details.projectEmbed && details.projectEmbed.type === 'project' && (
         <div
-          className={`flex items-center rounded-xl p-3 mt-4 border ${theme === 'Dark' ? 'bg-[#18191B] border-[#232428]' : 'bg-white border-gray-200'}`}
+          className={`flex items-center rounded-xl p-3 mt-4 border ${theme === 'Dark' ? 'bg-[#0f0f0f] border-[#232428]' : 'bg-white border-gray-200'}`}
           style={{ minHeight: 64 }}
         >
           {/* Logo */}
@@ -262,7 +262,7 @@ const PeerlistPost = React.forwardRef<HTMLDivElement, PeerlistPostProps>(({ deta
 
       {/* Poll Embed Card */}
       {details?.pollEmbed && (
-        <div className={`mt-3 rounded-xl py-2 ${theme === 'Dark' ? 'bg-[#171717]' : 'bg-white'}`}
+        <div className={`mt-3 rounded-xl py-2 `}
         >
           <div className="flex flex-col gap-2">
             {details.pollEmbed.labels.map((label: string, idx: number) => {
@@ -275,7 +275,7 @@ const PeerlistPost = React.forwardRef<HTMLDivElement, PeerlistPostProps>(({ deta
                 <div
                   key={idx}
                   className={`w-full py-2 px-3 text-sm font-semibold rounded-lg transition-colors relative
-                    ${theme === 'Dark' ? 'bg-transparent border border-zinc-700 text-white hover:bg-zinc-800' : 'bg-transparent border border-gray-300 text-black hover:bg-gray-100'}`}
+                    ${theme === 'Dark' ? 'bg-transparent border border-zinc-700 text-white' : 'bg-transparent border border-gray-300 text-black'}`}
                 >
                   {details.pollEmbed.hasVotes ? (
                     // Show vote results with percentages and progress bars
@@ -312,7 +312,7 @@ const PeerlistPost = React.forwardRef<HTMLDivElement, PeerlistPostProps>(({ deta
 
       {/* Article Embed Card */}
       {details.articleEmbed && details.articleEmbed.type === 'article' && (
-        <div className={`${theme == 'Dark' ? 'bg-[#333333]' : 'bg-[#f1f4f9]'} pt-2 px-1 pb-1 rounded-xl`}>
+        <div className={`${theme == 'Dark' ? 'bg-[#0f0f0f]' : 'bg-[#f1f4f9]'} pt-2 px-1 pb-1 rounded-xl`}>
           <div className="flex items-center min-w-0 mb-1 p-0.5">
               <img src={details.articleEmbed.creator?.profilePicture} alt={details.articleEmbed.creator?.displayName} className="w-5 h-5 rounded-full mr-2 object-cover" />
               <span className={`text-xs font-medium truncate ${theme === 'Dark' ? 'text-gray-200' : 'text-gray-800'}`}>{details.articleEmbed.creator?.displayName}</span>
@@ -337,7 +337,7 @@ const PeerlistPost = React.forwardRef<HTMLDivElement, PeerlistPostProps>(({ deta
                 ARTICLES
               </span>
             </div>
-          <div className={`flex rounded-xl mt-3 rounded ${theme === 'Dark' ? 'bg-zinc-900' : 'bg-white'}`}
+          <div className={`flex rounded-xl mt-3 rounded ${theme === 'Dark' ? 'bg-black' : 'bg-white'}`}
           >
             {/* Left: Article Info */}
             <div className="flex-1 flex flex-col justify-between p-4 min-w-0">
@@ -388,7 +388,7 @@ const PeerlistPost = React.forwardRef<HTMLDivElement, PeerlistPostProps>(({ deta
 
       {/* Reshare Embed Card */}
       {details.reshareEmbed && details.reshareEmbed.type === 'reshare' && (
-        <div className={`mt-3 rounded-xl p-4 ${theme === 'Dark' ? 'bg-[#1a1a1a] border border-[#2a2a2a]' : 'bg-white border border-gray-200'}`}>
+        <div className={`mt-3 rounded-xl p-4 ${theme === 'Dark' ? 'bg-black border border-[#2a2a2a]' : 'bg-white border border-gray-200'}`}>
           {/* Top: Original Author Info */}
           <div className="flex items-center mb-3">
             <img 
@@ -486,7 +486,7 @@ const PeerlistPost = React.forwardRef<HTMLDivElement, PeerlistPostProps>(({ deta
 
       {/* Job Embed Card */}
       {details.jobEmbed && details.jobEmbed.type === 'job' && (
-        <div className={`mt-3 rounded-xl p-4 ${theme === 'Dark' ? 'bg-[#1a1a1a] border border-[#2a2a2a]' : 'bg-white border border-gray-200'}`}>
+        <div className={`mt-3 rounded-xl p-4 ${theme === 'Dark' ? 'bg-black border border-[#2a2a2a]' : 'bg-white border border-gray-200'}`}>
           <div className="flex items-start gap-3">
             {/* Company Logo */}
             <div className="flex-shrink-0 w-12 h-12 rounded-full bg-white flex items-center justify-center overflow-hidden">
@@ -534,7 +534,7 @@ const PeerlistPost = React.forwardRef<HTMLDivElement, PeerlistPostProps>(({ deta
 
       {/* Profile Embed Card */}
       {details.profileEmbed && details.profileEmbed.type === 'profile' && (
-        <div className={`mt-3 rounded-xl p-4 ${theme === 'Dark' ? 'bg-[#1a1a1a] border border-[#2a2a2a]' : 'bg-white border border-gray-200'}`}>
+        <div className={`mt-3 rounded-xl p-4 ${theme === 'Dark' ? 'bg-black border border-[#2a2a2a]' : 'bg-white border border-gray-200'}`}>
           <div className="flex items-start gap-3">
             {/* Profile Picture */}
             <div className="flex-shrink-0 w-14 h-14 rounded-full overflow-hidden">
@@ -599,7 +599,7 @@ const PeerlistPost = React.forwardRef<HTMLDivElement, PeerlistPostProps>(({ deta
       )}
 
       {
-        userType?.type == 'free' && (
+        (userType == null || userType == undefined || userType?.type == 'free') && (
           <div className="text-center mt-3">
             <span className="text-gray-500 text-sm">
               made with <span className="text-red-500">❤</span> by <span className="">ZapShot.in</span>

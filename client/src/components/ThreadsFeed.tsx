@@ -46,8 +46,8 @@ const ThreadsFeed = React.forwardRef<HTMLDivElement, ThreadsFeedProps>(
           </div>
         ))}
         {
-          userType?.type == 'free' && (
-            <div className="text-center">
+          (userType == null || userType == undefined || userType?.type == 'free') && (
+            <div className="text-center pb-5">
               <span className="text-gray-500 text-sm">
                 made with <span className="text-red-500">❤</span> by <span className="">ZapShot.in</span>
               </span>

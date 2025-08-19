@@ -60,6 +60,7 @@ async function scrapeTweet(url) {
         }
 
         const tweetHtml = await page.$eval("article", el => el.outerHTML);
+        // fs.writeFileSync('./text2.html', tweetHtml);
 
         await browser.close();
         console.log('[scrapeTweet] Scraping completed successfully.');
@@ -614,8 +615,8 @@ function extractTweetDataNew(htmlString) {
     } else if (mainTweetMediaChildren.length === 1) {
         // Only one child - need to determine if it's main tweet media or quoted tweet
         const singleChild = mainTweetMediaChildren.eq(0);
-        
-                 // Check if this child is a quoted tweet by looking for profile details
+
+         // Check if this child is a quoted tweet by looking for profile details
          // If it has profile details (User-Name or UserAvatar), it's a quoted tweet
          // If it doesn't have profile details, it's main tweet media
          const hasProfileDetails = singleChild.find('[data-testid="User-Name"]').length > 0 || 
@@ -624,6 +625,7 @@ function extractTweetDataNew(htmlString) {
          if (!hasProfileDetails) {
             // This is main tweet media
             const mainTweetMediaContentDiv = singleChild;
+            console.log("main tweet");
             
             // Check for video in main tweet media
             const mainTweetVideo = mainTweetMediaContentDiv.find('[data-testid="videoComponent"] video').first();
@@ -644,8 +646,6 @@ function extractTweetDataNew(htmlString) {
                     tweetImages.push(src); 
                 }
             });
-
-            // console.log("main Tweet images: ",tweetImages);
           
           } else {
             // This is a quoted tweet (no main tweet media)
@@ -657,7 +657,7 @@ function extractTweetDataNew(htmlString) {
                 
                 // Extract quoted tweet user info
                 const qUsernameElem = quotedTweetDiv.find('[data-testid="User-Name"]').first();
-                let qUsername = null, qUserHandle = null, qTime = null;
+                let qUsername = null, qUserHandle = null, qTime = null,qVerified = false;
                 if (qUsernameElem.length) {
                     const spans = qUsernameElem.find('span');
                     spans.each((i, el) => {
@@ -669,12 +669,20 @@ function extractTweetDataNew(htmlString) {
                             qUserHandle = txt;
                         }
                         
-                        if (!qTime && txt.includes('·')) {
-                            qTime = txt.replace('·', '').trim();
-                        }
+                        // if (!qTime && txt.includes('·')) {
+                        //     qTime = txt.replace('·', '').trim();
+                        // }
+                        const qTimeElem = tweetArticle.find('time').first();
+                        if (qTimeElem.length) qTime = qTimeElem.text().trim();
+                        console.log("qTime: ",qTime);
                     });
                 }
-                
+
+                // Check if the user is verified
+                const qVerifiedElem = quotedTweetDiv.find('[data-testid="User-Name"] svg[aria-label="Verified account"]');
+                if (qVerifiedElem.length) {
+                  qVerified = true;
+                }
                 // Extract quoted tweet profile image
                 const qProfileImgElem = quotedTweetDiv.find('[data-testid^="UserAvatar-Container-"] img').first();
                 const qProfileImg = qProfileImgElem.length ? qProfileImgElem.attr('src') : null;
@@ -711,7 +719,8 @@ function extractTweetDataNew(htmlString) {
                     tweetImages: qTweetImages, 
                     video: qVideo, 
                     isVideo: qIsVideo, 
-                    time: qTime 
+                    time: qTime,
+                    verified: qVerified
                 };
             }
         }
@@ -751,7 +760,7 @@ function extractTweetDataNew(htmlString) {
             
             // Extract quoted tweet user info
             const qUsernameElem = quotedTweetDiv.find('[data-testid="User-Name"]').first();
-            let qUsername = null, qUserHandle = null, qTime = null;
+            let qUsername = null, qUserHandle = null, qTime = null, qVerified = false;
             if (qUsernameElem.length) {
                 const spans = qUsernameElem.find('span');
                 spans.each((i, el) => {
@@ -762,10 +771,19 @@ function extractTweetDataNew(htmlString) {
                     if (!qUserHandle && txt.startsWith('@')) {
                         qUserHandle = txt;
                     }
-                    if (!qTime && txt.includes('·')) {
-                        qTime = txt.replace('·', '').trim();
-                    }
+                    // if (!qTime && txt.includes('·')) {
+                    //     qTime = txt.replace('·', '').trim();
+                    // }
+                    const qTimeElem = tweetArticle.find('time').first();
+                    if (qTimeElem.length) qTime = qTimeElem.text().trim();
+                    console.log("qTime: ",qTime); 
                 });
+            }
+
+            // Check if the user is verified
+            const qVerifiedElem = quotedTweetDiv.find('[data-testid="User-Name"] svg[aria-label="Verified account"]');
+            if (qVerifiedElem.length) {
+              qVerified = true;
             }
             
             // Extract quoted tweet profile image
@@ -804,13 +822,14 @@ function extractTweetDataNew(htmlString) {
                 tweetImages: qTweetImages, 
                 video: qVideo, 
                 isVideo: qIsVideo, 
-                time: qTime 
+                time: qTime,
+                verified: qVerified
             };
         }
     }
     // console.log("quoted: ",quoted);
     // Extract main tweet metadata (username, handle, profile image, time) from the overall tweetArticle
-    let username = null, userHandle = null, profileImg = null, time = null;
+    let username = null, userHandle = null, profileImg = null, time = null, verified = false;
     const usernameElem = tweetArticle.find('[data-testid="User-Name"]').first();
     if (usernameElem.length) {
         const spans = usernameElem.find('span');
@@ -824,12 +843,58 @@ function extractTweetDataNew(htmlString) {
             }
         });
     }
+
+    // Check for verified badge
+    const mainTweetUser = tweetArticle.find('[data-testid="User-Name"]').first();
+    const verifiedBadge = mainTweetUser.find('svg[aria-label="Verified account"]');
+    if (verifiedBadge.length) { 
+      verified = true;
+    }
     
     const profileImgElem = tweetArticle.find('[data-testid^="UserAvatar-Container-"] img').first();
     profileImg = profileImgElem.length ? profileImgElem.attr('src') : null;
     
-    const timeElem = tweetArticle.find('time').first();
-    time = timeElem.length ? timeElem.text().trim() : null;
+    // const timeElem = tweetArticle.find('time')[1];
+    // console.log("time element: ",timeElem.attribs.datetime);
+    // time = timeElem.length ? timeElem.text().trim() : null;
+
+    const timeElems = tweetArticle.find("time");
+
+    let mainTimeElem;
+    if (timeElems.length > 1) {
+      mainTimeElem = timeElems.eq(1);  // second time element
+    } else {
+      mainTimeElem = timeElems.first();  // only one time element
+    }
+
+    // Get ISO datetime attribute (reliable)
+    time = mainTimeElem.text().trim();
+
+    console.log("time:", time);
+    // const timeText = timeElem.text().trim();
+    // console.log("time text:", timeText); 
+
+    // const editHistorySpan = tweetArticle.find('span').filter((i, el) => $(el).text().trim() === 'Opens edit history').first();
+    // if (editHistorySpan.length) {
+    //     let next = editHistorySpan[0].nextSibling;
+    //     while (next) {
+    //         if ((next.tagName && (next.tagName === 'TIME' || next.tagName === 'time'))) {
+    //             time = $(next).text().trim();
+    //             break;
+    //         }
+    //         next = next.nextSibling;
+    //     }
+    //     // Fallback: if not found as sibling, try parent().find('time') after this span
+    //     if (!time) {
+    //         const parent = editHistorySpan.parent();
+    //         const times = parent.find('time');
+    //         if (times.length) time = times.first().text().trim();
+    //     }
+    // } else {
+    //     // Fallback: use first <time> in tweetArticle (for legacy or non-edited tweets)
+    //     const timeElem = tweetArticle.find('time').first();
+    //     if (timeElem.length) time = timeElem.text().trim();
+    // }
 
     // Extract metrics (replies, retweets, likes, views) from the overall tweetArticle
     let replies = null, retweets = null, likes = null, views = null, bookmarks = null;
@@ -887,8 +952,9 @@ function extractTweetDataNew(htmlString) {
     }
 
     return { 
-        username: username || userHandle, 
+        username: username || userHandle,
         userHandle, 
+        verified,
         profileImg, 
         tweetContent, 
         tweetImages, 
