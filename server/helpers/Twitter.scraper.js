@@ -672,7 +672,7 @@ function extractTweetDataNew(htmlString) {
                         // if (!qTime && txt.includes('·')) {
                         //     qTime = txt.replace('·', '').trim();
                         // }
-                        const qTimeElem = tweetArticle.find('time').first();
+                        const qTimeElem = quotedTweetDiv.find('a time').first();
                         if (qTimeElem.length) qTime = qTimeElem.text().trim();
                         console.log("qTime: ",qTime);
                     });
@@ -774,7 +774,7 @@ function extractTweetDataNew(htmlString) {
                     // if (!qTime && txt.includes('·')) {
                     //     qTime = txt.replace('·', '').trim();
                     // }
-                    const qTimeElem = tweetArticle.find('time').first();
+                    const qTimeElem = quotedTweetDiv.find('a time').first();
                     if (qTimeElem.length) qTime = qTimeElem.text().trim();
                     console.log("qTime: ",qTime); 
                 });
@@ -858,7 +858,11 @@ function extractTweetDataNew(htmlString) {
     // console.log("time element: ",timeElem.attribs.datetime);
     // time = timeElem.length ? timeElem.text().trim() : null;
 
+    const TesttimeElem = tweetArticle.find('a time').first();
+    // console.log("test time elemenet",TesttimeElem)
+
     const timeElems = tweetArticle.find("time");
+    console.log("time elements found: ", timeElems.length);
 
     let mainTimeElem;
     if (timeElems.length > 1) {
