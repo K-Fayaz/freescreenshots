@@ -4,6 +4,7 @@ import styles from '../RedditPost.module.css';
 import RedditSnooIcon from '../RedditSnooIcon';
 import { FaThreads } from "react-icons/fa6";
 import { useNavigate } from 'react-router-dom';
+import { SiYoutube } from "react-icons/si";
 
 const Hero = () => {
   const [url,setUrl] = useState<string>('');
@@ -61,6 +62,9 @@ const Hero = () => {
           {/* Replace these with actual SVGs or images as needed */}
           <span className="flex items-center gap-2 text-lg font-semibold text-black opacity-80">
             <BsTwitterX size={30} /> Twitter
+          </span>
+          <span className="flex items-center gap-2 text-lg font-semibold text-black opacity-80">
+            <SiYoutube size={30} fill={"#ff0131"} /> YouTube
           </span>
           <span className="flex items-center gap-2 text-lg font-semibold text-black opacity-80">
             <svg width="37" height="37" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg" className="">

@@ -60,7 +60,7 @@ async function scrapeTweet(url) {
         }
 
         const tweetHtml = await page.$eval("article", el => el.outerHTML);
-        // fs.writeFileSync('./text2.html', tweetHtml);
+        // fs.writeFileSync('./text3.html', tweetHtml);
 
         await browser.close();
         console.log('[scrapeTweet] Scraping completed successfully.');
@@ -213,6 +213,8 @@ async function scrapeTweetThreads(url) {
         console.log('[scrapeThread] =================================');
         
         console.log(`[scrapeThread] HTML length: ${fullPageHtml.length} characters`);
+
+        // fs.writeFileSync('./text3.html', fullPageHtml);
         
         return fullPageHtml;
     } catch (err) {
@@ -829,7 +831,7 @@ function extractTweetDataNew(htmlString) {
     }
     // console.log("quoted: ",quoted);
     // Extract main tweet metadata (username, handle, profile image, time) from the overall tweetArticle
-    let username = null, userHandle = null, profileImg = null, time = null, verified = false;
+    let username = null, userHandle = null, profileImg = null, time = null, verified = false, hasPoll = false,pollOptions = null,isLivePoll = false;
     const usernameElem = tweetArticle.find('[data-testid="User-Name"]').first();
     if (usernameElem.length) {
         const spans = usernameElem.find('span');
@@ -853,13 +855,6 @@ function extractTweetDataNew(htmlString) {
     
     const profileImgElem = tweetArticle.find('[data-testid^="UserAvatar-Container-"] img').first();
     profileImg = profileImgElem.length ? profileImgElem.attr('src') : null;
-    
-    // const timeElem = tweetArticle.find('time')[1];
-    // console.log("time element: ",timeElem.attribs.datetime);
-    // time = timeElem.length ? timeElem.text().trim() : null;
-
-    const TesttimeElem = tweetArticle.find('a time').first();
-    // console.log("test time elemenet",TesttimeElem)
 
     const timeElems = tweetArticle.find("time");
     console.log("time elements found: ", timeElems.length);
@@ -873,32 +868,6 @@ function extractTweetDataNew(htmlString) {
 
     // Get ISO datetime attribute (reliable)
     time = mainTimeElem.text().trim();
-
-    console.log("time:", time);
-    // const timeText = timeElem.text().trim();
-    // console.log("time text:", timeText); 
-
-    // const editHistorySpan = tweetArticle.find('span').filter((i, el) => $(el).text().trim() === 'Opens edit history').first();
-    // if (editHistorySpan.length) {
-    //     let next = editHistorySpan[0].nextSibling;
-    //     while (next) {
-    //         if ((next.tagName && (next.tagName === 'TIME' || next.tagName === 'time'))) {
-    //             time = $(next).text().trim();
-    //             break;
-    //         }
-    //         next = next.nextSibling;
-    //     }
-    //     // Fallback: if not found as sibling, try parent().find('time') after this span
-    //     if (!time) {
-    //         const parent = editHistorySpan.parent();
-    //         const times = parent.find('time');
-    //         if (times.length) time = times.first().text().trim();
-    //     }
-    // } else {
-    //     // Fallback: use first <time> in tweetArticle (for legacy or non-edited tweets)
-    //     const timeElem = tweetArticle.find('time').first();
-    //     if (timeElem.length) time = timeElem.text().trim();
-    // }
 
     // Extract metrics (replies, retweets, likes, views) from the overall tweetArticle
     let replies = null, retweets = null, likes = null, views = null, bookmarks = null;
@@ -955,6 +924,55 @@ function extractTweetDataNew(htmlString) {
         }
     }
 
+    let pollDiv = tweetArticle.find('[data-testid="cardPoll"]');
+    if (pollDiv.length) {
+      hasPoll = true;
+      
+      let options = [];
+      
+      // loop over each poll option
+      pollDiv.find('li[role="listitem"]').each(function () {
+        let optionText = $(this).find('div[dir="ltr"] span').first().text().trim();
+        let votePercentText = $(this).find('div[dir="ltr"] span').last().text().trim();
+
+        // some options may not have a percentage (if poll is ongoing), handle that
+        let votePercent = votePercentText.includes('%')
+          ? parseFloat(votePercentText.replace('%', ''))
+          : null;
+
+        options.push({
+          option: optionText,
+          votes: votePercent
+        });
+      });
+
+      let totalVotesText = pollDiv.find('div:contains("votes")').first().text();
+
+      if (options.length === 0) {
+        isLivePoll = true;
+        // fix typo: aria-label
+        let votelessOptions = pollDiv.find('[aria-label="Poll options"]');
+
+        votelessOptions.find('[role="radio"]').each(function () {
+          let optionText = $(this).find('div[dir="ltr"] span').first().text().trim();
+          options.push({
+            option: optionText,
+            votes: 0
+          });
+        });
+
+        let statusText = pollDiv.find('div[dir="ltr"] span:contains("vote")').parent().first().text().trim();
+        totalVotesText = statusText;
+      }
+
+      // total votes (bottom div)
+
+      pollOptions = {
+        options,
+        totalVotes: totalVotesText
+      };
+    }
+
     return { 
         username: username || userHandle,
         userHandle, 
@@ -971,7 +989,10 @@ function extractTweetDataNew(htmlString) {
         isVideo, 
         isQuoted, 
         quoted, 
-        time
+        time,
+        isLivePoll,
+        hasPoll,
+        pollOptions
     };
 }
 

@@ -17,7 +17,7 @@ interface TweetProps {
 
 const Tweet: React.FC<TweetProps> = ({ details, logo, theme, showMetrics, showViews,userType }) => {
     return(
-        <div className="p-5">
+        <div className="p-5 transition-all duration-300">
             {/* Top: Profile */}
             <div className="flex items-center mb-4">
                 {/* Left: Profile, username, verified, handle */}
@@ -205,6 +205,74 @@ const Tweet: React.FC<TweetProps> = ({ details, logo, theme, showMetrics, showVi
                   </div>
                 )}
             </div>
+
+            {/* Votes section */}
+            {
+              details?.hasPoll && details.pollOptions && (
+                <div className="mt-4">
+                  {/* If votes are not revealed, show clickable options */}
+                  {
+                    details?.pollOptions && details.pollOptions?.options.length > 0 && (
+                      <>
+                          {(!details.pollOptions.options[0].votes && !details.pollOptions.options.some(opt => typeof opt.votes === 'number')) ? (
+                            <div className="flex flex-col gap-2">
+                              {details.pollOptions.options.map((opt, idx) => (
+                                <button
+                                  key={idx}
+                                  className="w-full px-4 py-2 rounded-md text-left hover:bg-[#222] transition-colors"
+                                  style={{ color: theme === 'Dark' ? '#fff' : '#000', background: 'transparent', fontWeight: 500 }}
+                                >
+                                  {opt.option}
+                                </button>
+                              ))}
+                            </div>
+                          ) : (
+                            <div className="flex flex-col gap-2">
+                              {(() => {
+                                // Find max vote percentage
+                                const maxVote = Math.max(...details.pollOptions.options.map(opt => opt.votes || 0));
+                                return (details?.pollOptions?.options || []).map((opt, idx) => {
+                                  const percent = opt.votes || 0;
+                                  const isMax = percent === maxVote;
+                                  const borderStyle = details?.isLivePoll ? '1.5px solid #444' : 'none';
+                                  return (
+                                    <div key={idx} className="relative w-full flex items-center" style={{height: 36, border: borderStyle, borderRadius: 6}}>
+                                      <div
+                                        className="absolute left-0 top-0 h-full rounded-md"
+                                        style={{
+                                          width: percent + '%',
+                                          background: isMax ? '#125a8c' : '#333639',
+                                          zIndex: 1,
+                                          transition: 'width 0.3s',
+                                          borderRadius: 6,
+                                        }}
+                                      />
+                                      <div className="relative flex items-center w-full px-4 py-1.5 rounded-md" style={{zIndex: 2, background: 'transparent'}}>
+                                        <span className="flex-1 truncate" style={{
+                                          color: isMax ? '#fff' : 'rgba(255,255,255,0.85)',
+                                          fontWeight: isMax ? 700 : 500,
+                                          position: 'relative',
+                                          zIndex: 2,
+                                        }}>{opt.option}</span>
+                                        {
+                                          !details?.isLivePoll && (
+                                            <span className="ml-2 font-semibold" style={{ minWidth: 40, color: isMax ? '#fff' : 'rgba(255,255,255,0.85)', fontWeight: isMax ? 700 : 500 }}>{percent}%</span>
+                                          )
+                                        }
+                                      </div>
+                                    </div>
+                                  );
+                                });
+                              })()}
+                              <div className="text-sm text-gray-500 mt-1 ml-1">{details.pollOptions.totalVotes}</div>
+                            </div>
+                          )}
+                      </>
+                    )
+                  }
+                </div>
+              )
+            }
             {/* Tweet Metrics */}
             {showMetrics && (
             <div>

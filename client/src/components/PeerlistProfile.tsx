@@ -4,6 +4,7 @@ import badge from "../assets/badge.webp";
 import EmptyLogo from "../assets/emptyLogo.png";
 import PeerListLogoDark from "../assets/peerlist-logo-full.svg";
 import PeerListLogoLight from "../assets/peerlist-logo-full-light.svg";
+import { ChevronDown } from 'lucide-react';
 
 interface PeerlistProfileProps {
   details: any;
@@ -11,16 +12,16 @@ interface PeerlistProfileProps {
   logo: string;
   showMetrics: boolean;
   showProjects: boolean;
+  foldProjects: boolean;
   userType: any;
 }
 
-const PeerlistProfile: React.FC<PeerlistProfileProps> = ({ details, theme, logo, showMetrics,userType, showProjects }) => {
-
-    // useEffect(() => {
-    //     console.log(details);
-    //     console.log(logo);
-    // },[logo]);
-
+const PeerlistProfile: React.FC<PeerlistProfileProps> = ({ details, theme, logo, showMetrics,userType, showProjects,foldProjects }) => {
+    
+    useEffect(() => {
+        console.log("updated: ",foldProjects);
+    }, [foldProjects]);
+    
     // Format date
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
@@ -32,7 +33,7 @@ const PeerlistProfile: React.FC<PeerlistProfileProps> = ({ details, theme, logo,
     };
 
   return(
-        <div className="p-6 w-full mx-auto text-center">
+        <div className="p-6 w-full mx-auto text-center transition-all duration-300">
             {/* Profile Picture */}
             <div className="mb-4">
                 <img 
@@ -108,7 +109,7 @@ const PeerlistProfile: React.FC<PeerlistProfileProps> = ({ details, theme, logo,
             {/* Projects */}
             {showProjects && details?.projects && details.projects.length > 0 && (
                 <div className="mt-4 space-y-2 text-left">
-                    {details.projects.map((project: any, index: number) => (
+                    {(foldProjects ? details.projects.slice(0, 3) : details.projects).map((project: any, index: number) => (
                         <div key={index} className="flex items-start gap-4 p-2 rounded-lg">
                             {/* Project Logo */}
                             <div className={`flex-shrink-0 border rounded-lg ${theme === 'Dark' ? 'bg-[#18191B] border-[#232428]' : 'bg-white border-gray-200'}`}>
@@ -167,12 +168,24 @@ const PeerlistProfile: React.FC<PeerlistProfileProps> = ({ details, theme, logo,
                              </div>
                         </div>
                     ))}
+                    <div className="text-center">
+                        {details.projects.length > 3 && foldProjects && (
+                            <button 
+                                className={`text-sm font-semibold ${
+                                    theme === 'Light' ? 'text-gray-600' : 'text-gray-400'
+                                }`}
+                            >
+                                <ChevronDown size={18} className="inline mr-1" />
+                                +{details?.projects.length - 3} projects
+                            </button>
+                        )}    
+                    </div>
                 </div>
             )}
 
             {
                 logo == "Peerlist" && 
-                <div className="grid place-items-center mt-5">
+                <div className="grid place-items-center mt-1">
                     {
                         theme === 'Dark' ? <img src={PeerListLogoDark} alt="PeerList Logo" className="w-[110px] h-[60px]" /> : <img src={PeerListLogoLight} alt="PeerList Logo" className="w-[110px] h-[60px]" />
                     }

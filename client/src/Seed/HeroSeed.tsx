@@ -89,6 +89,7 @@ let TwitterPostSeed = {
     platform: "x.com",
     data: {
         username: "cinesthetic.",
+        verified: true,
         userHandle: "@TheCinesthetic",
         profileImg: "https://pbs.twimg.com/profile_images/1385452682517745667/mfcIUnoX_normal.jpg",
         tweetContent: "<span class=\"css-1jxf684 r-bcqeeo r-1ttztb7 r-qvutc0 r-poiln3\">F1: The Movie hits $545.6M worldwide.\n\nIt’s now Brad Pitt’s highest-grossing film ever.</span>",
@@ -627,7 +628,9 @@ let TwitterQuotedPost3 = {
         views: "10.7M",
         isVideo: false,
         isQuoted: true,
+        verified: true,
         quoted: {
+            verified: true,
             username: "Captain Eli",
             userHandle: "@TheCaptainEli",
             profileImg: "https://pbs.twimg.com/profile_images/1946695205127585793/4ynbFAya_mini.jpg",
@@ -795,6 +798,64 @@ let PeerlistVotePost = {
     type: "post"
 }
 
+
+let redditPost = {
+    platform: "www.reddit.com",
+    data: {
+        title: "The Rocketeers",
+        subreddit: "midjourney",
+        subredditIcon: "https://styles.redditmedia.com/t5_5zvcfk/styles/communityIcon_zy03g6nwnyf91.png?width=96&height=96&frame=1&auto=webp&crop=96:96,smart&s=96054a0500be7ce27c0a672b443187e4fc95e1d0",
+        timeAgo: "12 hr. ago",
+        username: "Dropdeadlegs84",
+        body: "",
+        postFlair: "AI Showcase - Midjourney",
+        postFlairBackground: "#0079D3",
+        score: "45",
+        commentCount: "3",
+        images: [
+            "https://preview.redd.it/the-rocketeers-v0-cudpkdex4fkf1.png?width=640&crop=smart&auto=webp&s=915dc06ac69618726c26064b2e50f6e4d74ada59",
+            "https://preview.redd.it/the-rocketeers-v0-rnu373hx4fkf1.png?width=640&crop=smart&auto=webp&s=c13d3a4254e51e32afdcb6e64bb2ebd3ec0c41dd",
+            "https://preview.redd.it/the-rocketeers-v0-huy8thjx4fkf1.png?width=640&crop=smart&auto=webp&s=a9f5c286535f996bd321f3001e94ea4929664ba0",
+            "https://preview.redd.it/the-rocketeers-v0-2nfvy1mx4fkf1.png?width=640&crop=smart&auto=webp&s=8fc2a4d1a338d61addeac7c9cddecab30f2b1384",
+            "https://preview.redd.it/the-rocketeers-v0-t7yxo4ox4fkf1.png?width=640&crop=smart&auto=webp&s=1864dad3150e90d6eb94a3e1dbe29966c0157282"
+        ],
+        isVideoPresent: false,
+        videos: []
+    }
+}
+
+let youtubeVideo = {
+    platform: "youtube",
+    data: {
+        name: "I Survived 7 Days In An Abandoned City",
+        description: "This was one of the hardest challenges we’ve ever done\nA deal so good it feels like stealing  🤫 - score a FREE double insulated bottle with any 10 cartridge BeastBundle https://drinkcirkul.com/MrBeast or head to your local Walmart today to try Cirkul.\n\nGo subscribe to Mark’s Channel!  @MarkRober   \n\nNew Merch - https://mrbeast.store\n\nCheck out Viewstats! - https://www.viewstats.com/\n\nSUBSCRIBE OR I TAKE YOUR DOG\n╔═╦╗╔╦╗╔═╦═╦╦╦╦╗╔═╗\n║╚╣║║║╚╣╚╣╔╣╔╣║╚╣═╣ \n╠╗║╚╝║║╠╗║╚╣║║║║║═╣\n╚═╩══╩═╩═╩═╩╝╚╩═╩═╝\n\nFor any questions or inquiries regarding this video, please reach out to chucky@mrbeastbusiness.com\n\nMusic Provided by https://www.extrememusic.com\n\n----------------------------------------------------------------\nfollow all of these or i will kick you\n• Facebook - https://www.facebook.com/MrBeast/\n• Twitter - https://twitter.com/MrBeast\n•  Instagram - https://www.instagram.com/mrbeast\n•  Im Hiring! - https://www.mrbeastjobs.com/\n--------------------------------------------------------------------",
+        thumbnail: "https://i.ytimg.com/vi/tWYsfOSY9vY/maxresdefault.jpg",
+        uploadedDate: "2024-03-02T09:00:00-08:00",
+        channelName: "MrBeast",
+        channelSubscribers: "424M subscribers",
+        channelImage: "https://yt3.ggpht.com/nxYrc_1_2f77DoBadyxMTmv7ZpRZapHR5jbuYe7PlPd5cIRJxtNNEYyOC0ZsxaDyJJzXrnJiuDE=s48-c-k-c0x00ffffff-no-rj",
+        likes: "6.5M",
+        views: "298,532,838"
+    },
+    type: "post"
+}
+
+
+let youtubeChannels = {
+    platform: "youtube",
+    data: {
+        bannerImg: "https://yt3.googleusercontent.com/F7v3blXD3Uho5TuDD1xhcEvEamKE4-99QuUvjKjkmnZIipdFRat0j5ybMR2MRjNqtSGriqsXGCE=w1060-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj",
+        logo: "https://yt3.googleusercontent.com/VunTf0NzCeboiPjbesBdnQuxaF3Lja7UGRbBGQAWRJgMSTj9TTLO3pS1X9qPOJGCNnmPrXeY=s120-c-k-c0x00ffffff-no-rj",
+        channelName: "T-Series",
+        channelHandle: "@tseries",
+        verified: true,
+        subCount: "301M",
+        numVideos: "24K",
+        description: "\"Music can change the world\". T-Series is India's largest Music Label & Movie Studio, believes in bringing world close together through its music."
+    },
+    type: "profile"
+}
+
 export {
     Threads,
     threadsSeed,
@@ -817,5 +878,8 @@ export {
     PeerlistProjectEmbed,
     PeerlistPollEmbed,
     PeerlistArticleEmbed,
-    PeerlistQuotedEmbed
+    PeerlistQuotedEmbed,
+    redditPost,
+    youtubeVideo,
+    youtubeChannels
 }

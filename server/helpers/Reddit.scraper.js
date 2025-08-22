@@ -51,7 +51,7 @@ async function scrapeRedditPost(url) {
         const pageHtml = await page.evaluate(() => document.body.outerHTML);
 
         // Write HTML to text2.html file
-        fs.writeFileSync('./text2.html', pageHtml);
+        // fs.writeFileSync('./text2.html', pageHtml);
         console.log('[scrapeRedditPost] HTML written to text2.html successfully!');
 
         await browser.close();

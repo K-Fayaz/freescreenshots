@@ -1,4 +1,6 @@
 import React from "react";
+import Video from "../../assets/threads-repost.mp4";
+
 
 const VideoSection = () => {
   return (
@@ -7,7 +9,7 @@ const VideoSection = () => {
       <div className="w-full flex justify-center mt-5">
         <div className="relative bg-white rounded-2xl shadow-2xl p-0 md:p-6 w-11/12 md:max-w-4xl flex flex-col items-end">
           <video
-            src={"https://drive.google.com/file/d/13wRb9BBRBEUWCAmI3zatWxVleCv16TAp/view?usp=sharing"}
+            src={Video}
             autoPlay
             loop
             muted

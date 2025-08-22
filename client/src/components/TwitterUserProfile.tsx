@@ -37,7 +37,7 @@ const TwitterUserProfile: React.FC<TweetProps> = ({ details, logo, theme, showMe
     const bioText = details?.bioHTML ? extractBioText(details.bioHTML) : '';
 
     return (
-        <div className={`w-full mx-auto ${theme === 'Dark' ? 'bg-black text-white' : 'bg-white text-black'}`}>
+        <div className={`w-full mx-auto transition-all duration-300 ${theme === 'Dark' ? 'bg-black text-white' : 'bg-white text-black'}`}>
                          {/* Banner */}
              <div className="relative h-34 bg-white overflow-hidden">
                  {details?.bannerImage ? (

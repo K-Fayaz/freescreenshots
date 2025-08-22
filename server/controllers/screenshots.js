@@ -25,6 +25,13 @@ const {
   extractRedditPostData
 } = require("../helpers/Reddit.scraper");
 
+const {
+  scrapeYouTubePage,
+  extractYoutubeVideo,
+  extractYoutubeChannelData
+} = require("../helpers/Youtube.scraper");
+
+
 const getDetails = async (req, res) => {
     try {
       const { url,userId } = req.query;
@@ -85,6 +92,19 @@ const getDetails = async (req, res) => {
           platform,
           data,
         });
+      }
+      else if (platform.includes('youtu.be') || platform.includes('youtube.com')) {
+        platform = "youtube";
+        if (url.includes('/channel') || url.includes('/@')) {
+          console.log("this is a youtube chanel")
+          type = "profile";
+          html = await scrapeYouTubePage(url);
+          data = await extractYoutubeChannelData(html);
+        } else {
+          type = "post";
+          html = await scrapeYouTubePage(url);
+          data = await extractYoutubeVideo(html);
+        }
       }
       else {
         return res.status(400).json({ error: "Invalid URL" });

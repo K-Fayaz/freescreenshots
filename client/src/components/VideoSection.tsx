@@ -1,3 +1,4 @@
+import Video from "../assets/threads-repost.mp4";
 
 const VideoSection = () => {
   return (
@@ -22,7 +23,7 @@ const VideoSection = () => {
               className="w-full h-auto rounded-lg shadow-2xl"
               style={{ minHeight: '600px' }}
             >
-              <source src={"https://drive.google.com/file/d/13wRb9BBRBEUWCAmI3zatWxVleCv16TAp/view?usp=sharing"} type="video/mp4" />
+              <source src={Video} type="video/mp4" />
               Your browser does not support the video tag.
             </video>
           </div>

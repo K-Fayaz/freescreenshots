@@ -6,12 +6,14 @@ import TwitterUserProfile from "../TwitterUserProfile";
 import PeerlistProfile from '../PeerlistProfile';
 import PeerlistPost from '../PeerlistPost';
 import { PeerlistProfileData, PeerlistPostPretty,PeerlistLinkEmbed,PeerlistProjectEmbed,PeerlistVotePost } from "@/Seed/HeroSeed";
-import { ThreadsPostData, Threads, ThreadsProfilSeed, ThreadsQuotedPost } from "@/Seed/HeroSeed";
+import { ThreadsPostData, Threads, ThreadsProfilSeed, ThreadsQuotedPost, redditPost,youtubeVideo,youtubeChannels } from "@/Seed/HeroSeed";
+import RedditPost from "../RedditPost";
 import ThreadsPost from '../ThreadsPost';
 import ThreadsProfile from '../ThreadsProfile';
 import ThreadsFeed from '../ThreadsFeed';
 import Tweet from "../Tweet";
-
+import YoutubeVideo from "../Youtube/YoutubeVideo";
+import YoutubeChannel from "../Youtube/YoutubeChannel";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -92,6 +94,27 @@ const HorizontalScrollOnVertical = () => {
         </div>
 
         <div>
+            <h1 className="mb-4 text-center font-bold text-lg">Youtube Channels</h1>
+            <div className={`${theme == 'Light' ? 'bg-white' : 'bg-black text-white'} border w-[95%] md:w-[500px] max-h-[80%] border-gray-200 rounded-lg overflow-y-auto scrollbar-hide ml-4 md:ml-10 mr-24 text-xs md:text-sm`}>
+                <YoutubeChannel details={youtubeChannels.data} theme={theme} logo={"youtube"} userType={{}} showMetrics={true} showViews={true} showPauseOverlay={true}/>
+            </div>
+        </div>
+
+        <div>
+            <h1 className="mb-4 text-center font-bold text-lg">Youtube Videos</h1>
+            <div className={`${theme == 'Light' ? 'bg-white' : 'bg-black text-white'} border w-[95%] md:w-[500px] max-h-[80%] border-gray-200 rounded-lg overflow-y-auto scrollbar-hide ml-4 md:ml-10 mr-24 text-xs md:text-sm`}>
+                <YoutubeVideo details={youtubeVideo.data} theme={theme} logo={"youtube"} userType={{}} showMetrics={true} showViews={true} showPauseOverlay={true}/>
+            </div>
+        </div>
+
+        <div>
+            <h1 className="mb-4 text-center font-bold text-lg">Reddit Posts</h1>
+            <div className={`${theme == 'Light' ? 'bg-white' : 'bg-black text-white'} border w-[95%] md:w-[500px] max-h-[80%] border-gray-200 rounded-lg overflow-y-auto scrollbar-hide ml-4 md:ml-10 mr-24 text-xs md:text-sm`}>
+                <RedditPost details={redditPost.data} theme={theme} logo={"Reddit"} showMetrics={true} userType={{}} />
+            </div>
+        </div>
+
+        <div>
             <h1 className="mb-4 text-center font-bold text-lg">Peerlist Post</h1>
             <div className={`${theme == 'Light' ? 'bg-white' : 'bg-black text-white'} border w-[95%] md:w-[500px] max-h-[80%] border-gray-200 rounded-lg overflow-y-auto scrollbar-hide ml-4 md:ml-10 mr-24 text-xs md:text-sm`}>
                 <PeerlistPost details={PeerlistPostPretty.data} logo='Peerlist' theme={theme} showMetrics={true} userType={{}} />
@@ -101,7 +124,7 @@ const HorizontalScrollOnVertical = () => {
         <div>
             <h1 className="mb-4 text-center font-bold text-lg">Peerlist Profile</h1>
             <div className={`${theme == 'Light' ? 'bg-white' : 'bg-black text-white'} border w-[95%] md:w-[500px] max-h-[80%] border-gray-200 rounded-lg overflow-y-auto scrollbar-hide ml-4 md:ml-10 mr-24 text-xs md:text-sm`}>
-                <PeerlistProfile details={PeerlistProfileData.data} logo='Peerlist' theme={theme} showMetrics={true} showProjects={false} userType={{}} />
+                <PeerlistProfile details={PeerlistProfileData.data} logo='Peerlist' theme={theme} showMetrics={true} showProjects={false} userType={{}} foldProjects={true}/>
             </div>
         </div>
         

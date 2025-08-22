@@ -7,6 +7,8 @@ import PeerlistProfile from './PeerlistProfile';
 import ThreadsPost from './ThreadsPost';
 import ThreadsFeed from './ThreadsFeed';
 import ThreadsProfile from './ThreadsProfile';
+import YoutubeVideo from './Youtube/YoutubeVideo';
+import YoutubeChannel from './Youtube/YoutubeChannel';
 import RedditPost from './RedditPost';
 import BASE_URL from '@/config';
 import axios from 'axios';
@@ -28,6 +30,8 @@ interface TweetPreviewProps {
   tweetRef?: React.RefObject<HTMLDivElement>;
   parentWidth: number;
   showProjects: boolean;
+  foldProjects: boolean;
+  showPauseOverlay: boolean;
 }
 
 interface userType {
@@ -51,7 +55,9 @@ const TweetPreview: React.FC<TweetPreviewProps> = ({
   postDetails,
   tweetRef,
   showProjects,
-  parentWidth
+  foldProjects,
+  parentWidth,
+  showPauseOverlay
 }) => {
   // Determine background for light mode
   const isGradient = selectedColor.startsWith('linear-gradient');
@@ -138,7 +144,7 @@ const TweetPreview: React.FC<TweetPreviewProps> = ({
               postDetails.type === 'post' ? (
                 <PeerlistPost details={postDetails.post} theme={theme} logo={logo} showMetrics={showMetrics} userType={userType}/>
               ) : (
-                <PeerlistProfile details={postDetails.post} theme={theme} logo={logo} showMetrics={showMetrics} showProjects={showProjects} userType={userType}/>
+                <PeerlistProfile details={postDetails.post} theme={theme} logo={logo} showMetrics={showMetrics} showProjects={showProjects} foldProjects={foldProjects} userType={userType}/>
               )
             ) : postDetails.platform === 'www.threads.com' ? (
               postDetails.type === 'post' ? (
@@ -158,6 +164,12 @@ const TweetPreview: React.FC<TweetPreviewProps> = ({
                 showMetrics={showMetrics}
                 userType={userType}
               />
+            ) : postDetails.platform === "youtube" ? (
+              postDetails.type === 'post' ? (
+                <YoutubeVideo details={postDetails.post} theme={theme} logo={logo} userType={userType} showMetrics={showMetrics} showViews={showViews} showPauseOverlay={showPauseOverlay}/>
+              ) : (
+                <YoutubeChannel details={postDetails.post} theme={theme} logo={logo} userType={userType} showMetrics={showMetrics} showViews={showViews} showPauseOverlay={showPauseOverlay}/>
+              )
             ) : (
               <h1>Could not Find this platform! Please Report this!</h1>
             )

@@ -6,6 +6,8 @@ import { SiPeerlist } from "react-icons/si";
 import { FaThreads } from "react-icons/fa6";
 import styles from './RedditPost.module.css';
 import RedditSnooIcon from './RedditSnooIcon';
+import { SiYoutube } from "react-icons/si";
+
 
 interface SidebarProps {
   theme: 'Light' | 'Dark';
@@ -33,12 +35,16 @@ interface SidebarProps {
   showViews: boolean;
   setShowViews: React.Dispatch<React.SetStateAction<boolean>>;
   showProjects: boolean;
+  foldProjects: boolean;
   setShowProjects: React.Dispatch<React.SetStateAction<boolean>>;
+  setFoldProjects: React.Dispatch<React.SetStateAction<boolean>>;
   postDetails: any;
   onExport: () => void;
   exporting: boolean;
   parentWidth: number;
   setParentWidth: React.Dispatch<React.SetStateAction<number>>;
+  showPauseOverlay: boolean;
+  setShowPauseOverlay: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
@@ -54,8 +60,9 @@ const Sidebar: React.FC<SidebarProps> = ({
   showTimeAgo, setShowTimeAgo,
   showMetrics, setShowMetrics,
   showViews, setShowViews,
-  showProjects, setShowProjects,
-  postDetails, onExport, exporting, parentWidth, setParentWidth
+  showProjects,foldProjects, setShowProjects, setFoldProjects,
+  postDetails, onExport, exporting, parentWidth, setParentWidth,
+  showPauseOverlay, setShowPauseOverlay
 }) => {
   // Theme-based color and gradient options
   const lightColors = [
@@ -350,7 +357,21 @@ const Sidebar: React.FC<SidebarProps> = ({
                     <RedditSnooIcon />
                   </span>
                 </label>              
-            ) : null
+            ) : postDetails.platform === "youtube" ? (
+              <label className="flex flex-col items-center cursor-pointer">
+                  <input
+                    type="radio"
+                    name="logo"
+                    value="youtube"
+                    checked={logo === 'youtube'}
+                    onChange={() => setLogo('youtube')}
+                    className="hidden"
+                  />
+                  <span className={`p-2 rounded-lg border-2 ${logo === 'youtube' ? 'border-blue-500' : 'border-gray-200'}`}>
+                    <SiYoutube className='text-[#ff0c12]' size={20}/>
+                  </span>
+                </label>    
+            ): null
           )}
             <label className="flex flex-col items-center cursor-pointer">
               <input
@@ -371,6 +392,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         {/* Have Projects for Peerlist Profile  */}
         { 
             postDetails && postDetails.platform === 'peerlist.io' && postDetails.type === "profile" && (
+              <>
                 <div className="mb-6">
                     <div className="flex items-center justify-between mb-3">
                         <span className="text-sm font-medium text-gray-700">Projects</span>
@@ -385,6 +407,22 @@ const Sidebar: React.FC<SidebarProps> = ({
                         </label>
                     </div>
                 </div>
+                
+                <div className="mb-6">
+                    <div className="flex items-center justify-between mb-3">
+                        <span className="text-sm font-medium text-gray-700">Fold Projects</span>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                            <input
+                                type="checkbox"
+                                checked={foldProjects}
+                                onChange={(e) => setFoldProjects(e.target.checked)}
+                                className="sr-only peer"
+                            />
+                            <div className="w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                        </label>
+                    </div>
+                </div>
+              </>
             )
         }
 
@@ -486,7 +524,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               </button>
             </div>
             {
-              postDetails && postDetails.platform === 'x.com' && postDetails.type !== "profile" && (
+              postDetails && (postDetails.platform === 'x.com' || postDetails.platform === "youtube") && postDetails.type !== "profile" && (
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-600">Show views</span>
                     <button
@@ -498,6 +536,26 @@ const Sidebar: React.FC<SidebarProps> = ({
                       <span
                         className={`inline-block h-3 w-3 transform rounded-full bg-white transition ${
                           showViews ? 'translate-x-5' : 'translate-x-1'
+                        }`}
+                      />
+                    </button>
+                </div>   
+              )
+            }
+
+            {
+              postDetails && (postDetails.platform === "youtube") && postDetails.type !== "profile" && (
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">Show Pause Overlay</span>
+                    <button
+                      onClick={() => setShowPauseOverlay(!showPauseOverlay)}
+                      className={`relative inline-flex h-5 w-9 items-center rounded-full ${
+                        showPauseOverlay ? 'bg-blue-600' : 'bg-gray-200'
+                      }`}
+                    >
+                      <span
+                        className={`inline-block h-3 w-3 transform rounded-full bg-white transition ${
+                          showPauseOverlay ? 'translate-x-5' : 'translate-x-1'
                         }`}
                       />
                     </button>

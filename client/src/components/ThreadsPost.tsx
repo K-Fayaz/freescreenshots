@@ -41,7 +41,7 @@ const ThreadsPost = React.forwardRef<HTMLDivElement, ThreadsPostProps>(({ detail
   if (!details) return null;
 
     return (
-    <div ref={ref} className={`px-8 py-4 ${isFeed ? 'pr-12 pl-5 py-5' : ''}`}>
+    <div ref={ref} className={`px-8 transition-all duration-300 py-4 ${isFeed ? 'pr-12 pl-5 py-5' : ''}`}>
       {/* Top: Profile */}
       <div className="flex items-center mb-3">
         <img 

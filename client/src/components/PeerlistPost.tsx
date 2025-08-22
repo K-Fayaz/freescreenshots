@@ -53,7 +53,7 @@ function getTimeLeft(endsOn: string) {
 const PeerlistPost = React.forwardRef<HTMLDivElement, PeerlistPostProps>(({ details, theme, logo, userType, showMetrics = true }, ref) => {
   if (!details) return null;
   return (
-    <div ref={ref} className="p-5">
+    <div ref={ref} className="p-5 transition-all duration-300">
       {/* Top: Profile */}
       <div className="flex items-center mb-3">
         <img src={details.profileImg || emptyDP} alt="profile" className="rounded-full w-[40px] h-[40px] mr-3" />

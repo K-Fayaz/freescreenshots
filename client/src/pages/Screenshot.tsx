@@ -49,6 +49,8 @@ function Screenshot() {
   const [showMetrics, setShowMetrics] = useState(true);
   const [showViews, setShowViews] = useState(true);
   const [showProjects, setShowProjects] = useState(true);
+  const [foldProjects,setFoldProjects] = useState(true);
+  const [showPauseOverlay,setShowPauseOverlay] = useState(false);
   const [postDetails,setPostDetails] = useState(null);
   const [parentWidth, setParentWidth] = useState(460);
 
@@ -391,7 +393,8 @@ function Screenshot() {
     showTimeAgo, setShowTimeAgo,
     showMetrics, setShowMetrics,
     showViews, setShowViews,
-    showProjects, setShowProjects,
+    showProjects, foldProjects, setShowProjects, setFoldProjects,
+    showPauseOverlay, setShowPauseOverlay,
     postDetails,
     onExport: handleExport,
     exporting,
@@ -411,6 +414,8 @@ function Screenshot() {
     showMetrics,
     showViews,
     showProjects,
+    showPauseOverlay,
+    foldProjects,
     tweetRef,
     postDetails,
     parentWidth,
