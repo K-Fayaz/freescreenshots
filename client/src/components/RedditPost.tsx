@@ -26,12 +26,42 @@ const RedditPost: React.FC<RedditPostProps> = ({ details = {}, theme, showMetric
   const username = details?.username || '';
   const title = details?.title || '';
   const postFlair = details?.postFlair || '';
+  const emojiFlair = details?.emojiFlair || '';
   const postFlairBackground = details?.postFlairBackground || 'gray';
   const images = Array.isArray(details?.images) ? details?.images : [];
   const isVideoPresent = !!details?.isVideoPresent;
   const body = details?.body || '';
   const score = details?.score || 0;
   const commentCount = details?.commentCount || 0;
+  const authorFlairText = details?.authorFlairText || '';
+  let authorFlairBackground = details?.authorFlairBackground || '';
+  let authorFlairEmojees = details?.authorFlairEmojees || [];
+
+  function convertToTimeAgo(timestamp: number) {
+    const now = Date.now();
+    const seconds = Math.floor((now - timestamp * 1000) / 1000);
+
+    const intervals = [
+      { label: "year", seconds: 31536000 },
+      { label: "month", seconds: 2592000 },
+      { label: "week", seconds: 604800 },
+      { label: "day", seconds: 86400 },
+      { label: "hour", seconds: 3600 },
+      { label: "minute", seconds: 60 },
+    ];
+
+    if (seconds < 5) return "just now";
+    if (seconds < 60) return `${seconds} seconds ago`;
+
+    for (const interval of intervals) {
+      const count = Math.floor(seconds / interval.seconds);
+      if (count >= 1) {
+        return count === 1
+          ? `1 ${interval.label} ago`
+          : `${count} ${interval.label}s ago`;
+      }
+    }
+  }
 
   return (
     <div
@@ -44,21 +74,46 @@ const RedditPost: React.FC<RedditPostProps> = ({ details = {}, theme, showMetric
             <img
               src={subredditIcon}
               alt={subreddit + ' icon'}
-              className="w-8 h-8 rounded-full mr-2"
+              className="w-12 h-12 rounded-full mr-2"
             />
           )}
-          <div className="flex flex-col">
+          <div className="flex flex-col justify-center">
             <span className="font-semibold text-[15px]">
               {
-                subreddit && (<span>r/{subreddit}</span>)
+                subreddit && (<span>{subreddit}</span>)
               }
               {timeAgo && (
-                <span className={`ml-2 font-normal text-[13px] ${isDark ? 'text-neutral-400' : 'text-neutral-600'}`}>• {timeAgo}</span>
+                <span className={`ml-2 font-normal text-[13px] ${isDark ? 'text-neutral-400' : 'text-neutral-600'}`}>• {convertToTimeAgo(Number(timeAgo))}</span>
               )}
             </span>
-            {
-              username && <span className={`text-[13px] ${isDark ? 'text-neutral-400' : 'text-neutral-600'}`}>u/{username}</span>
-            }
+            <span>
+              {
+                username && <span className={`text-[13px] ${isDark ? 'text-neutral-400' : 'text-neutral-600'}`}>u/{username}</span>
+              }
+              {
+                // • 
+                authorFlairText && (
+                  <span className='ml-2 rounded-xl px-2 text-black' style={{ background: authorFlairBackground }}>
+                    {
+                      authorFlairEmojees && authorFlairEmojees.length && authorFlairEmojees.map((emojee, index) => {
+                        if (emojee) {
+                          return (
+                            <img
+                              key={index}
+                              src={emojee}
+                              alt="author flair emoji"
+                              className="inline-block mr-1"
+                              style={{ height: 16, width: 16, verticalAlign: 'middle' }}
+                            />
+                          );
+                        }
+                      })
+                    }
+                    <span className={`text-[13px]`}>{authorFlairText}</span>
+                  </span>
+                )
+              }
+            </span>
           </div>
         </div>
         {
@@ -72,9 +127,19 @@ const RedditPost: React.FC<RedditPostProps> = ({ details = {}, theme, showMetric
       {/* Flair */}
       {postFlair && (
         <div
-          className="reddit-flair-wrapper px-2 py-1 rounded-full mb-2 w-auto text-center inline-block text-xs text-white"
+          className="reddit-flair-wrapper px-2 py-1 rounded-full mb-2 w-auto text-center inline-block text-xs text-black"
           style={{ background: postFlairBackground }}
         >
+          {
+            emojiFlair && (
+              <img
+                src={emojiFlair}
+                alt="flair emoji"
+                className="inline-block mr-1"
+                style={{ height: 16, width: 16, verticalAlign: 'middle' }}
+              />
+            )
+          }
           {postFlair}
         </div>
       )}
@@ -87,7 +152,7 @@ const RedditPost: React.FC<RedditPostProps> = ({ details = {}, theme, showMetric
               <img
                 src={images[0]}
                 alt="Reddit post image"
-                className="w-full rounded-xl object-cover"
+                className="w-full rounded-xl object-contain"
                 style={{ maxHeight: '400px' }}
               />
               {isVideoPresent && (

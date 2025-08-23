@@ -22,7 +22,9 @@ const {
 
 const {
   scrapeRedditPost,
-  extractRedditPostData
+  extractRedditPostData,
+  getRedditPostJSON,
+  extractaDataFromJson
 } = require("../helpers/Reddit.scraper");
 
 const {
@@ -82,10 +84,8 @@ const getDetails = async (req, res) => {
           data = await extractThreadsProfileData(html,url);
         } 
       } else if (platform.includes('reddit.com')) {
-        let html = await scrapeRedditPost(url);
-        let data = extractRedditPostData(html);
-
-        // console.log(html);
+        let html = await getRedditPostJSON(url);
+        let data = await extractaDataFromJson(html);
 
         return res.status(200).json({
           status: true,

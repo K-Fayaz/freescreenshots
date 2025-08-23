@@ -3,6 +3,7 @@ const puppeteer           = require('puppeteer-extra');
 const StealthPlugin       = require('puppeteer-extra-plugin-stealth');
 const { uploadDebugHTML } = require("./fileUpload");
 const fs                  = require('fs');
+const axios = require("axios");
 
 puppeteer.use(StealthPlugin());
 
@@ -50,7 +51,7 @@ async function scrapeRedditPost(url) {
 
         // Get only the <body> HTML from document
         const pageHtml = await page.evaluate(() => document.body.outerHTML);
-        await uploadDebugHTML(pageHtml, 'reddit');
+        // await uploadDebugHTML(pageHtml, 'reddit');
 
         // Write HTML to text2.html file
         // fs.writeFileSync('./text2.html', pageHtml);
@@ -200,7 +201,144 @@ function extractRedditPostData(html) {
     };
 }
 
+async function getRedditPostJSON(url) {
+    try {
+        let response = await axios({
+            method:"GET",
+            url: url + '.json',
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/',
+                'Accept-Language': 'en-US,en;q=0.9',
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+    
+            }
+        });
+
+        return response.data;
+    }
+    catch(err) {
+        console.log('[scrapeRedditPost] Error during scraping:', err);
+        throw err;
+    }
+}
+
+
+        // title, - Done
+        // subreddit, - Done
+        // subredditIcon,
+        // timeAgo,
+        // username, - Done
+        // body, 
+        // postFlair,
+        // postFlairBackground,
+        // score, - DOne
+        // commentCount, - Done
+        // images,
+        // isVideoPresent,
+        // videos
+const extractaDataFromJson = async (postJson) => {
+    let postData = postJson[0].data.children[0].data;
+    
+    let title = postData?.title || '';
+    let subreddit = postData?.subreddit_name_prefixed || '';
+    let upvotes = postData?.ups || 0;
+    let author = postData?.author || '';
+    let comments = postData?.num_comments  || 0;
+    let rawBody = postData?.selftext_html || '';
+    let subredditIcon = '';
+    let postFlairBackground = postData?.link_flair_background_color || '';
+    let authorFlairBackground = postData?.author_flair_background_color || '';
+    let authorFlairText;
+    let authorFlairEmojees;
+    let timeAgo = postData?.created_utc || 0;
+
+    
+    // Post Flair and Emoji
+    let flairArray = postData?.link_flair_richtext || [];
+    let emojiFlair = flairArray.find(flair => flair.e === 'emoji')?.u;
+    let postFlair = flairArray.find(flair => flair.e === 'text')?.t;
+    
+    // Author Flair and Emojees
+    authorFlairText = postData?.author_flair_richtext?.find(flair => flair.e === 'text')?.t?.trim() || '';
+    authorFlairEmojees = postData?.author_flair_richtext?.map((item) => {
+        if (item.e == "emoji") {
+            return item.u;
+        }
+    });
+
+    console.log("emojeesL :",authorFlairEmojees);
+
+
+    let $stage1 = cheerio.load(rawBody);
+    let body = $stage1.root().text();
+    let images = [];
+
+    // https://i.redd.it/${mediaId}.png
+
+    if (subreddit) {
+        let response = await axios({
+            url: `https://www.reddit.com/${subreddit}/about.json`,
+            method: 'GET',
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/',
+                'Accept-Language': 'en-US,en;q=0.9',
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',   
+            }
+        });
+
+        let subredditData = response?.data;
+        subredditIcon = subredditData?.data?.community_icon?.replace(/&amp;/g, "&") || '';
+    }
+
+    let isGallery = postData?.is_gallery || false;
+    let isVideo = postData?.is_video || false;
+
+    if (isGallery) {
+        let gallerItems = postData?.gallery_data?.items || [];
+        images = gallerItems.map(item => {
+            let mediaId = item?.media_id;
+            let meta = postData?.media_metadata?.[mediaId];
+            if (meta) {
+                let ext = meta?.m?.split('/')?.[1] || 'jpg';
+                return `https://i.redd.it/${mediaId}.${ext}`;
+            }
+            return null;
+        }).filter(url => url !== null);
+    } else if (!isVideo) {
+        images = [postData?.thumbnail];
+    }
+
+    if (isVideo) {
+        let thumbnail = postData?.thumbnail;
+        images = [thumbnail.replace(/&amp;/g, "&")];
+    }
+
+    return {
+        title,
+        subreddit,
+        subredditIcon: subredditIcon || 'https://www.redditstatic.com/avatars/avatar_default_02_24A0ED.png',
+        timeAgo,
+        username: author,
+        body, 
+        postFlair,
+        postFlairBackground,
+        score: upvotes,
+        commentCount: comments,
+        images,
+        emojiFlair,
+        isVideoPresent: isVideo,
+        authorFlairBackground,
+        authorFlairEmojees,
+        authorFlairText
+    }
+
+}
+
 module.exports = {
     scrapeRedditPost,
-    extractRedditPostData
+    extractRedditPostData,
+    getRedditPostJSON,
+    extractaDataFromJson
 };

@@ -69,7 +69,7 @@ async function scrapeYouTubePage(url) {
         });
 
         // fs.writeFileSync("./text2.html", contentHtml);
-        await uploadDebugHTML(contentHtml, 'youtube');
+        // await uploadDebugHTML(contentHtml, 'youtube');
 
         console.log(`[scrapeYouTube] Saved #content HTML (${contentHtml.length} chars)`);
         return contentHtml;
