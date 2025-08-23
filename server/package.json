@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@google-cloud/storage": "^7.17.0",
     "@polar-sh/express": "^0.3.4",
     "@polar-sh/sdk": "^0.34.11",
     "axios": "^1.10.0",

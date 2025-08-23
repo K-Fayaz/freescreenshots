@@ -7,6 +7,7 @@ const { v4: uuidv4 } = require('uuid');
 const { exec } = require('child_process');
 const puppeteer = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+const { uploadDebugHTML } = require("./fileUpload");
 
 puppeteer.use(StealthPlugin());
 
@@ -68,6 +69,7 @@ async function scrapeYouTubePage(url) {
         });
 
         // fs.writeFileSync("./text2.html", contentHtml);
+        await uploadDebugHTML(contentHtml, 'youtube');
 
         console.log(`[scrapeYouTube] Saved #content HTML (${contentHtml.length} chars)`);
         return contentHtml;

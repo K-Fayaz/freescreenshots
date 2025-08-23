@@ -1,7 +1,8 @@
-const cheerio       = require('cheerio');
-const puppeteer     = require('puppeteer-extra');
-const StealthPlugin = require('puppeteer-extra-plugin-stealth');
-const fs            = require('fs');
+const cheerio             = require('cheerio');
+const puppeteer           = require('puppeteer-extra');
+const StealthPlugin       = require('puppeteer-extra-plugin-stealth');
+const { uploadDebugHTML } = require("./fileUpload");
+const fs                  = require('fs');
 
 puppeteer.use(StealthPlugin());
 
@@ -49,6 +50,7 @@ async function scrapeRedditPost(url) {
 
         // Get only the <body> HTML from document
         const pageHtml = await page.evaluate(() => document.body.outerHTML);
+        await uploadDebugHTML(pageHtml, 'reddit');
 
         // Write HTML to text2.html file
         // fs.writeFileSync('./text2.html', pageHtml);
