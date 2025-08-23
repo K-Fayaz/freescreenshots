@@ -207,10 +207,10 @@ async function getRedditPostJSON(url) {
             method:"GET",
             url: url + '.json',
             headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/',
-                'Accept-Language': 'en-US,en;q=0.9',
-                'Accept': 'application/json',
+                "User-Agent": "Zapshot/1.0 (by /u/zapshotapp)",  // or use your site instead of Reddit user
+                "Accept": "application/json",
                 'Content-Type': 'application/json',
+                'Accept-Language': 'en-US,en;q=0.9',
     
             }
         });
