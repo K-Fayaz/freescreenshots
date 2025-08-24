@@ -101,6 +101,38 @@ const extractYoutubeVideo = async (html) => {
         }
     }
 
+
+    // Extract video-id from <ytd-watch-metadata> and construct thumbnail URL
+    let thumbnail = null;
+    const watchMeta = $('ytd-watch-metadata[video-id]');
+    if (watchMeta.length) {
+        const videoId = watchMeta.attr('video-id');
+        if (videoId) {
+            // Standard YouTube thumbnail URL
+            thumbnail = `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`;
+            videoData.thumbnail = thumbnail;
+            videoData.videoId = videoId;
+        }
+    }
+
+    // 1b. Extract title from #above-the-fold > #title > h1
+    const titleH1 = $('#above-the-fold #title h1');
+    if (titleH1.length) {
+        // Try to get text from yt-formatted-string inside h1, else fallback to h1 text
+        const ytFormatted = titleH1.find('yt-formatted-string');
+        if (ytFormatted.length) {
+            videoData.title = ytFormatted.text().trim();
+        } else {
+            videoData.title = titleH1.text().trim();
+        }
+    }
+
+    if (videoData?.title) {
+        videoData.name = videoData.title;
+    }
+
+    
+
     // 2. Extract video metrics from #factoids
     const metrics = {};
     const factoidsDiv = $('#factoids');
