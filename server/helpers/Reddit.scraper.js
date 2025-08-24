@@ -1,229 +1,132 @@
-const cheerio             = require('cheerio');
-const puppeteer           = require('puppeteer-extra');
-const StealthPlugin       = require('puppeteer-extra-plugin-stealth');
-const { uploadDebugHTML } = require("./fileUpload");
-const fs                  = require('fs');
+require('dotenv').config();
+const cheerio = require('cheerio');
 const axios = require("axios");
+const snoowrap = require('snoowrap');
 
-puppeteer.use(StealthPlugin());
-
-
-async function scrapeRedditPost(url) {
-    console.log('[scrapeRedditPost] Starting Puppeteer browser...');
-    const browser = await puppeteer.launch({
-        headless: "new",
-        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
-        args: [
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-            '--disable-dev-shm-usage',
-            '--disable-extensions',
-            '--disable-gpu',
-            '--disable-web-security',
-            '--disable-features=VizDisplayCompositor',
-            '--no-first-run',
-            '--no-zygote',
-            '--single-process',
-            '--disable-background-timer-throttling',
-            '--disable-backgrounding-occluded-windows',
-            '--disable-renderer-backgrounding',
-            '--ignore-certificate-errors'
-        ],
-        protocolTimeout: 180000, // 3 minutes
-        timeout: 120000 // 2 minutes browser launch timeout
-    });
-    const page = await browser.newPage();
-    page.setDefaultTimeout(60000);
-    page.setDefaultNavigationTimeout(60000);
-
-    // Set a realistic user-agent and language
-    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36');
-    await page.setExtraHTTPHeaders({
-        'accept-language': 'en-US,en;q=0.9'
-    });
-
+const getRedditClient = async () => {
     try {
-        console.log(`[scrapeRedditPost] Navigating to URL: ${url}`);
-        await page.goto(url, { waitUntil: "networkidle2", timeout: 30000 });
+        // Get access token using client credentials
+        let ClientId = process.env.REDDIT_CLIENT_ID;
+        let secret = process.env.REDDIT_CLIENT_SECRET;
 
-        // Wait for the page to load completely
-        await new Promise(resolve => setTimeout(resolve, 3000));
-
-        // Get only the <body> HTML from document
-        const pageHtml = await page.evaluate(() => document.body.outerHTML);
-        // await uploadDebugHTML(pageHtml, 'reddit');
-
-        // Write HTML to text2.html file
-        // fs.writeFileSync('./text2.html', pageHtml);
-        console.log('[scrapeRedditPost] HTML written to text2.html successfully!');
-
-        await browser.close();
-        console.log('[scrapeRedditPost] Scraping completed successfully.');
-        return pageHtml;
-    } catch (err) {
-        await browser.close();
-        console.log('[scrapeRedditPost] Error during scraping:', err);
-        throw err;
-    }
-}
-
-/**
- * Extracts essential Reddit post data from the HTML string of a Reddit post page.
- * @param {string} html - The HTML string (body) of the Reddit post page.
- * @returns {object} An object with title, subreddit, subredditIcon, timeAgo, username, body, score, commentCount
- */
-function extractRedditPostData(html) {
-    const $ = cheerio.load(html);
-    let post = $('shreddit-post').first();
-    // console.log("post Data is: ",post);
-    if (!post.length) {
-       post = $('shreddit-ad-post').first(); 
-    }
-
-    if (!post.length) {
-        console.log('[extractRedditPostData] No post found in the HTML.');
-        return null; // No post found
-    }
-
-    // Title
-    const title = post.attr('post-title') || '';
-
-    // Subreddit
-    const subreddit = post.attr('subreddit-name') || '';
-
-    // Subreddit Icon
-    let subredditIcon = '';
-    // Try to find the icon img inside the post
-    const iconImg = post.find('img[alt$="icon"]');
-    if (iconImg.length) {
-        subredditIcon = iconImg.attr('src') || '';
-    } else {
-        subredditIcon = post.attr('icon') || '';
-    }
-
-    // Time Ago
-    let timeAgo = '';
-    const timeElem = post.find('faceplate-timeago time');
-    if (timeElem.length) {
-        timeAgo = timeElem.text().trim();
-    }
-
-    // Username
-    let username = '';
-    const authorSpan = post.find('span[slot="authorName"] a');
-    if (authorSpan.length) {
-        username = authorSpan.text().trim();
-    } else {
-        username = post.attr('author') || '';
-    }
-
-    // Body (HTML)
-    let body = '';
-    const bodyDiv = post.find('div[slot="text-body"]');
-    if (bodyDiv.length) {
-        bodyDiv.find('button[id$="read-more-button"]').remove();
-        body = $.html(bodyDiv);
-    }
-
-    // Post Flair
-    let postFlair = '';
-    let postFlairBackground = '';
-    const flairElem = post.find('shreddit-post-flair[slot="post-flair"] a');
-    if (flairElem.length) {
-        postFlair = flairElem.text().trim();
-
-        const spanElem = flairElem.find('span');
-        if (spanElem.length) {
-            const style = spanElem.attr('style');
-            if (style) {
-                // Extract background-color from style attribute
-                const bgColorMatch = style.match(/background-color\s*:\s*([^;]+)/i);
-                if (bgColorMatch) {
-                    postFlairBackground = bgColorMatch[1].trim();
+        if (!ClientId || !secret) {
+            throw new Error('Reddit Client ID or Secret not set in environment variables');
+        }
+        const auth = Buffer.from(`${ClientId}:${secret}`).toString('base64');
+        
+        const tokenResponse = await axios.post(
+            'https://www.reddit.com/api/v1/access_token',
+            'grant_type=client_credentials',
+            {
+                headers: {
+                    'Authorization': `Basic ${auth}`,
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'User-Agent': 'ZapshotInApp/1.0 by /u/Enough_Machine_9164'
                 }
             }
-        }
-    }
+        );
 
-    // Score (upvotes)
-    const score = post.attr('score') || '';
-
-    // Comment count
-    const commentCount = post.attr('comment-count') || '';
-
-    // Images inside <zoomable-img>
-    let images = [];
-    $('zoomable-img img').each((i, el) => {
-        const src = $(el).attr('src');
-        if (src) images.push(src);
-    });
-
-    // Images inside <gallery-carousel>
-    $('gallery-carousel img').each((i, el) => {
-        const src = $(el).attr('src');
-        const lazySrc = $(el).attr('data-lazy-src');
-        if (src && !images.includes(src)) images.push(src);
-        if (lazySrc && !images.includes(lazySrc)) images.push(lazySrc);
-    });
-
-    // Videos inside <shreddit-player-2>
-    let videos = [];
-    let isVideoPresent = false;
-    const videoPlayers = $('shreddit-player-2');
-    if (videoPlayers.length > 0) {
-        isVideoPresent = true;
-        videoPlayers.each((i, el) => {
-            const src = $(el).attr('src');
-            if (src && !videos.includes(src)) videos.push(src);
-            // Poster image
-            const poster = $(el).attr('poster');
-            if (poster && !images.includes(poster)) {
-                // Place poster at the first index if not already present
-                images.unshift(poster);
-            }
+        // Initialize snoowrap with access token
+        const reddit = new snoowrap({
+            userAgent: 'ZapshotInApp/1.0 by /u/Enough_Machine_9164',
+            accessToken: tokenResponse.data.access_token
         });
-    }
 
-    return {
-        title,
-        subreddit,
-        subredditIcon,
-        timeAgo,
-        username,
-        body,
-        postFlair,
-        postFlairBackground,
-        score,
-        commentCount,
-        images,
-        isVideoPresent,
-        videos
-    };
-}
+        return reddit;
+    } catch (error) {
+        console.error('Error getting Reddit client:', error.response?.data || error.message);
+        throw error;
+    }
+};
 
 async function getRedditPostJSON(url) {
     try {
-        let response = await axios({
-            method:"GET",
-            url: url + '.json',
-            headers: {
-                "User-Agent": "ZapshotInApp/1.0 (by /u/Enough_Machine_9164)",
-                "Accept": "application/json",
+        // Extract post ID from URL
+        const postId = url.match(/comments\/([a-z0-9]+)/)?.[1];
+        if (!postId) {
+            throw new Error('Invalid Reddit URL - cannot extract post ID');
+        }
+
+        console.log('Fetching Reddit post with OAuth, Post ID:', postId);
+
+        let reddit = await getRedditClient();
+
+        // Fetch the submission using snoowrap
+        const submission = await reddit.getSubmission(postId);
+        
+        // Convert snoowrap object to JSON format that matches your existing structure
+        const postData = await submission.fetch();
+        
+        // Structure the data to match Reddit's JSON API format
+        const formattedData = [{
+            data: {
+                children: [{
+                    data: {
+                        title: postData?.title || '',
+                        subreddit_name_prefixed: `r/${postData?.subreddit?.display_name}` || '',
+                        ups: postData?.ups || 0,
+                        author: postData?.author?.name || '',
+                        num_comments: postData?.num_comments || 0,
+                        selftext_html: postData?.selftext_html || '',
+                        link_flair_background_color: postData?.link_flair_background_color || '',
+                        author_flair_background_color: postData?.author_flair_background_color || '',
+                        created_utc: postData?.created_utc || '',
+                        link_flair_richtext: postData?.link_flair_richtext || [],
+                        author_flair_richtext: postData.author_flair_richtext || [],
+                        is_gallery: postData?.is_gallery || false,
+                        is_video: postData?.is_video || false,
+                        gallery_data: postData?.gallery_data,
+                        media_metadata: postData?.media_metadata,
+                        thumbnail: postData?.thumbnail,
+                        url: postData?.url,
+                        permalink: postData?.permalink,
+                        score: postData?.score,
+                        upvote_ratio: postData?.upvote_ratio
+                    }
+                }]
             }
-        });
+        }];
 
-        console.log("UserAgent: ","User-Agent: ZapshotInApp/1.0 (contact: https://zapshot.in)");
-        console.log("Scraing url is : ", url + '.json');
+        console.log('Successfully fetched Reddit post via OAuth:', postData?.title);
+        return formattedData;
 
-        return response.data;
-    }
-    catch(err) {
-        console.log('[scrapeRedditPost] Error during scraping:', err);
-        throw err;
+    } catch (error) {
+        console.log('[getRedditPostJSON] OAuth method failed:', error.message);
+        throw error;
     }
 }
 
-const extractaDataFromJson = async (postJson) => {
+async function getRedditPostWithSubredditInfo(url) {
+    try {
+        const postId = url.match(/comments\/([a-z0-9]+)/)?.[1];
+        if (!postId) {
+            throw new Error('Invalid Reddit URL - cannot extract post ID');
+        }
+
+        // Fetch both submission and subreddit info using OAuth
+        const reddit = await getRedditClient();
+        const submission = await reddit.getSubmission(postId);
+        const postData = await submission.fetch();
+        const subredditData = await submission.subreddit.fetch();
+
+        // Get subreddit icon directly from OAuth
+        let subredditIcon = subredditData.community_icon || subredditData.icon_img || '';
+        if (subredditIcon) {
+            subredditIcon = subredditIcon.replace(/&amp;/g, "&");
+        }
+
+        return {
+            postData,
+            subredditIcon: subredditIcon || 'https://www.redditstatic.com/avatars/avatar_default_02_24A0ED.png'
+        };
+
+    } catch (error) {
+        console.error('[getRedditPostWithSubredditInfo] Error:', error.message);
+        throw error;
+    }
+}
+
+const extractaDataFromJson = async (postJson,url) => {
     let postData = postJson[0].data.children[0].data;
     
     let title = postData?.title || '';
@@ -255,27 +158,12 @@ const extractaDataFromJson = async (postJson) => {
 
     console.log("emojeesL :",authorFlairEmojees);
 
-
-    let $stage1 = cheerio.load(rawBody);
-    let body = $stage1.root().text();
+    body = rawBody;
     let images = [];
 
-    // https://i.redd.it/${mediaId}.png
-
     if (subreddit) {
-        let response = await axios({
-            url: `https://www.reddit.com/${subreddit}/about.json`,
-            method: 'GET',
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/',
-                'Accept-Language': 'en-US,en;q=0.9',
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',   
-            }
-        });
-
-        let subredditData = response?.data;
-        subredditIcon = subredditData?.data?.community_icon?.replace(/&amp;/g, "&") || '';
+        let subredditData = await getRedditPostWithSubredditInfo(url);
+        subredditIcon = subredditData?.subredditIcon || '';
     }
 
     let isGallery = postData?.is_gallery || false;
@@ -293,12 +181,19 @@ const extractaDataFromJson = async (postJson) => {
             return null;
         }).filter(url => url !== null);
     } else if (!isVideo) {
-        images = [postData?.thumbnail];
+        // regular express to validate thumbnail urls
+        let urlPattern = /(https?:\/\/[^\s]+(\.jpg|\.jpeg|\.png|\.gif|\.bmp|\.webp))/i;
+        if (postData?.thumbnail && urlPattern.test(postData?.thumbnail)) {  
+            images = [postData?.thumbnail];
+        }
     }
 
     if (isVideo) {
-        let thumbnail = postData?.thumbnail;
-        images = [thumbnail.replace(/&amp;/g, "&")];
+        // regular express to validate thumbnail urls
+        let urlPattern = /(https?:\/\/[^\s]+(\.jpg|\.jpeg|\.png|\.gif|\.bmp|\.webp))/i;
+        if (postData?.thumbnail && urlPattern.test(postData?.thumbnail)) {  
+            images = [postData?.thumbnail.replace(/&amp;/g, "&")];
+        }
     }
 
     return {
@@ -323,8 +218,7 @@ const extractaDataFromJson = async (postJson) => {
 }
 
 module.exports = {
-    scrapeRedditPost,
-    extractRedditPostData,
+    extractaDataFromJson,
     getRedditPostJSON,
-    extractaDataFromJson
+    getRedditPostWithSubredditInfo,
 };

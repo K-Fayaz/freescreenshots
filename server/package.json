@@ -30,6 +30,7 @@
     "puppeteer": "^24.14.0",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2",
+    "snoowrap": "^1.23.0",
     "uuid": "^11.1.0",
     "yt-dlp-wrap": "^2.3.12"
   }
