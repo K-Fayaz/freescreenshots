@@ -207,7 +207,7 @@ async function getRedditPostJSON(url) {
             method:"GET",
             url: url + '.json',
             headers: {
-                "User-Agent": "ZapshotInApp/1.0 (contact: https://zapshot.in)",
+                "User-Agent": "ZapshotInApp/1.0 (by /u/Enough_Machine_9164)",
                 "Accept": "application/json",
             }
         });
@@ -223,20 +223,6 @@ async function getRedditPostJSON(url) {
     }
 }
 
-
-        // title, - Done
-        // subreddit, - Done
-        // subredditIcon,
-        // timeAgo,
-        // username, - Done
-        // body, 
-        // postFlair,
-        // postFlairBackground,
-        // score, - DOne
-        // commentCount, - Done
-        // images,
-        // isVideoPresent,
-        // videos
 const extractaDataFromJson = async (postJson) => {
     let postData = postJson[0].data.children[0].data;
     
