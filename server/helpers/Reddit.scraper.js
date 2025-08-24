@@ -207,13 +207,13 @@ async function getRedditPostJSON(url) {
             method:"GET",
             url: url + '.json',
             headers: {
-                "User-Agent": "Zapshot/1.0 (by /u/zapshotapp)",  // or use your site instead of Reddit user
+                "User-Agent": "ZapshotInApp/1.0 (contact: https://zapshot.in)",
                 "Accept": "application/json",
-                'Content-Type': 'application/json',
-                'Accept-Language': 'en-US,en;q=0.9',
-    
             }
         });
+
+        console.log("UserAgent: ","User-Agent: ZapshotInApp/1.0 (contact: https://zapshot.in)");
+        console.log("Scraing url is : ", url + '.json');
 
         return response.data;
     }
