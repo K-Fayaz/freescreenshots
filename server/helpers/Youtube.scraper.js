@@ -11,6 +11,12 @@ const { uploadDebugHTML } = require("./fileUpload");
 
 puppeteer.use(StealthPlugin());
 
+function extractMetric(text, label) {
+    const regex = new RegExp(`([\\d,.KMkm]+)\\s*${label}s?`, 'i');
+    const match = text.match(regex);
+    return match ? match[1] : text;
+}
+
 async function scrapeYouTubePage(url) {
     console.log('[scrapeYouTube] Launching browser...');
     const browser = await puppeteer.launch({
@@ -145,7 +151,7 @@ const extractYoutubeVideo = async (html) => {
             if (headerText.length) {
                 const titleElem = headerText.find('#title');
                 if (titleElem.length) {
-                    const channelName = titleElem.text().trim();
+                    const channelName = titleElem.contents().first().text().trim();
                     if (channelName && !videoData?.channelName) videoData.channelName = channelName;
                 }
                 // Get subscriber count from #subtitle
@@ -165,28 +171,24 @@ const extractYoutubeVideo = async (html) => {
     const factoidsDiv = $('#factoids');
     if (factoidsDiv.length) {
         factoidsDiv.find('.ytwFactoidRendererFactoid').each((i, el) => {
-            const factoidText = $(el).text().trim();
+            const factoidText = $(el).text().trim().replace(/\s+/g, ' '); // normalize spaces
             const lowerText = factoidText.toLowerCase();
-            // Likes
+
             if (lowerText.includes('like')) {
-                const match = factoidText.match(/([\d,.Kk]+)\s*likes?/i);
-                metrics.likes = match ? match[1] : factoidText;
+                metrics.likes = extractMetric(factoidText, 'like');
             }
-            // Views
             if (lowerText.includes('view')) {
-                const match = factoidText.match(/([\d,.Kk]+)\s*views?/i);
-                metrics.views = match ? match[1] : factoidText;
+                metrics.views = extractMetric(factoidText, 'view');
             }
-            // Comments
             if (lowerText.includes('comment')) {
-                const match = factoidText.match(/([\d,.Kk]+)\s*comments?/i);
-                metrics.comments = match ? match[1] : factoidText;
+                metrics.comments = extractMetric(factoidText, 'comment');
             }
-            // Uploaded year (if present)
+
             const yearMatch = factoidText.match(/(\d{4})/);
             if (yearMatch) metrics.uploadedYear = yearMatch[1];
         });
     }
+
 
     // 4. Extract channel image from #owner yt-img-shadow img[src]
     let channelImage = null;
