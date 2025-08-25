@@ -15,7 +15,6 @@ async function scrapeYouTubePage(url) {
     console.log('[scrapeYouTube] Launching browser...');
     const browser = await puppeteer.launch({
         headless: true,
-        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
         args: [
             '--no-sandbox',
             '--disable-setuid-sandbox',
@@ -101,6 +100,12 @@ const extractYoutubeVideo = async (html) => {
         }
     }
 
+    // 3. Extract channel sub count from #owner-sub-count
+    const subCount = $('#owner-sub-count').text().trim();
+    if (subCount) {
+        videoData.channelSubscribers = subCount;
+    }
+
 
     // Extract video-id from <ytd-watch-metadata> and construct thumbnail URL
     let thumbnail = null;
@@ -131,6 +136,28 @@ const extractYoutubeVideo = async (html) => {
         videoData.name = videoData.title;
     }
 
+    if (!videoData?.channelName || !videoData?.channelSubscribers) {
+        // Fallback: Try to extract from <ytd-video-description-infocards-section-renderer>
+        const infocardSection = $('ytd-video-description-infocards-section-renderer');
+        if (infocardSection.length) {
+            // Get channel name from #header-text > #title
+            const headerText = infocardSection.find('#header-text');
+            if (headerText.length) {
+                const titleElem = headerText.find('#title');
+                if (titleElem.length) {
+                    const channelName = titleElem.text().trim();
+                    if (channelName && !videoData?.channelName) videoData.channelName = channelName;
+                }
+                // Get subscriber count from #subtitle
+                const subtitleElem = headerText.find('#subtitle');
+                if (subtitleElem.length) {
+                    const subCount = subtitleElem.text().trim();
+                    if (subCount && !videoData?.channelSubscribers) videoData.channelSubscribers = subCount;
+                }
+            }
+        }
+    }
+
     
 
     // 2. Extract video metrics from #factoids
@@ -138,19 +165,27 @@ const extractYoutubeVideo = async (html) => {
     const factoidsDiv = $('#factoids');
     if (factoidsDiv.length) {
         factoidsDiv.find('.ytwFactoidRendererFactoid').each((i, el) => {
-            const label = $(el).find('.ytwFactoidRendererLabel').text().trim().toLowerCase();
-            const value = $(el).find('.ytwFactoidRendererValue').text().trim();
-            if (label.includes('like')) metrics.likes = value;
-            if (label.includes('view')) metrics.views = value;
-            if (label.match(/comment/)) metrics.comments = value;
-            if (label.match(/\d{4}/)) metrics.uploadedYear = value; // sometimes year is in label
+            const factoidText = $(el).text().trim();
+            const lowerText = factoidText.toLowerCase();
+            // Likes
+            if (lowerText.includes('like')) {
+                const match = factoidText.match(/([\d,.Kk]+)\s*likes?/i);
+                metrics.likes = match ? match[1] : factoidText;
+            }
+            // Views
+            if (lowerText.includes('view')) {
+                const match = factoidText.match(/([\d,.Kk]+)\s*views?/i);
+                metrics.views = match ? match[1] : factoidText;
+            }
+            // Comments
+            if (lowerText.includes('comment')) {
+                const match = factoidText.match(/([\d,.Kk]+)\s*comments?/i);
+                metrics.comments = match ? match[1] : factoidText;
+            }
+            // Uploaded year (if present)
+            const yearMatch = factoidText.match(/(\d{4})/);
+            if (yearMatch) metrics.uploadedYear = yearMatch[1];
         });
-    }
-
-    // 3. Extract channel sub count from #owner-sub-count
-    const subCount = $('#owner-sub-count').text().trim();
-    if (subCount) {
-        videoData.channelSubscribers = subCount;
     }
 
     // 4. Extract channel image from #owner yt-img-shadow img[src]

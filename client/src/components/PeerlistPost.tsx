@@ -3,6 +3,7 @@ import { ArrowBigUp, MessageCircle, Repeat2 } from 'lucide-react';
 import { SiPeerlist } from "react-icons/si";
 import { FaPlay } from "react-icons/fa6";
 import emptyDP from '../assets/emptyDP.png';
+import "../peerlist.css";
 
 interface PeerlistPostProps {
   details: any;
@@ -90,7 +91,7 @@ const PeerlistPost = React.forwardRef<HTMLDivElement, PeerlistPostProps>(({ deta
       {/* Content */}
       <div className="text-[15px] font-normal leading-snug mb-2" style={{ color: theme === 'Dark' ? '#fff' : '#000' }}>
         <div
-          className={`peerlist-content whitespace-pre-line break-words overflow-x-auto`}
+          className={`peerlist-content break-words overflow-x-auto`}
           style={{ wordBreak: 'break-word', overflowWrap: 'break-word', maxWidth: '100%' }}
           dangerouslySetInnerHTML={{ __html: details.content }}
         />

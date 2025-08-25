@@ -30,7 +30,6 @@ async function scrapeCompleteTwitterThread(url, options = {}) {
     
     const browser = await puppeteer.launch({
         headless: headless ? "new" : false,
-        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
         args: [
             '--no-sandbox',
             '--disable-setuid-sandbox',

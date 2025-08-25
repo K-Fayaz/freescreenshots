@@ -14,7 +14,6 @@ async function scrapeTweet(url) {
     console.log('[scrapeTweet] Starting Puppeteer browser...');
     const browser = await puppeteer.launch({
         headless: "new",
-        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
         args: [
             '--no-sandbox',
             '--disable-setuid-sandbox',
@@ -76,7 +75,6 @@ async function scrapeTweetProfile(url) {
     console.log('[scrapeTweet] Starting Puppeteer browser...');
       const browser = await puppeteer.launch({
           headless: "new",
-          executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
           args: [
               '--no-sandbox',
               '--disable-setuid-sandbox',
@@ -138,7 +136,6 @@ async function scrapeTweetThreads(url) {
     console.log('[scrapeTweetThreads] Starting Puppeteer browser...');
     const browser = await puppeteer.launch({
         headless: "new",
-        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
         args: [
             '--no-sandbox',
             '--disable-setuid-sandbox',
@@ -228,7 +225,6 @@ async function scrapeTweetHTML(url) {
     console.log('[scrapeTweetHTML] Starting Puppeteer browser...');
     const browser = await puppeteer.launch({
         headless: "new",
-        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
         args: [
             '--no-sandbox',
             '--disable-setuid-sandbox',
@@ -1124,13 +1120,8 @@ async function combineAudioVideoFromUrls(urls) {
  * Returns an array of video URLs (mp4/m3u8) found during page load.
  */
 async function scrapeTweetVideoUrls(url) {
-  const puppeteer = require('puppeteer-extra');
-  const StealthPlugin = require('puppeteer-extra-plugin-stealth');
-  // await new Promise(resolve => setTimeout(resolve, 10000));
-  puppeteer.use(StealthPlugin());
   const browser = await puppeteer.launch({
       headless: "new",
-      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
       args: [
           '--no-sandbox',
           '--disable-setuid-sandbox',

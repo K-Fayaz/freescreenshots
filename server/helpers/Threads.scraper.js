@@ -61,7 +61,6 @@ async function scrapeThreadsPosts(url) {
     console.log('[scrapeThreadsPosts] Starting Puppeteer browser...');
     const browser = await puppeteer.launch({
         headless: "new",
-        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
         args: [
             '--no-sandbox',
             '--disable-setuid-sandbox',
@@ -513,7 +512,6 @@ async function scrapeThreadsProfile(url) {
     console.log('[scrapeThreadsProfile] Starting Puppeteer browser...');
     const browser = await puppeteer.launch({
         headless: "new",
-        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
         args: [
             '--no-sandbox',
             '--disable-setuid-sandbox',

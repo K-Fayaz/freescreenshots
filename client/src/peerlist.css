@@ -1,0 +1,36 @@
+.peerlist-content {
+	/* Ensure content is readable and styled */
+	/* font-size: 1rem; */
+	/* line-height: 1.7; */
+    /* white-space: pre; */
+}
+
+.peerlist-content ol,
+.peerlist-content ul {
+	margin: 0.5em 0 0.5em 1em;
+	padding-left: 1.5em;
+}
+
+.peerlist-content ol {
+	list-style-type: decimal;
+}
+
+.peerlist-content ul {
+	list-style-type: disc;
+}
+
+.peerlist-content li {
+	margin-bottom: 0.3em;
+	padding-left: 0.1em;
+}
+
+.peerlist-content a {
+	color: #3d578f;
+	text-decoration: underline;
+	word-break: break-all;
+	transition: color 0.2s;
+}
+
+.peerlist-content p {
+    margin: 0 0 !important;
+}

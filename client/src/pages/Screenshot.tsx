@@ -80,7 +80,10 @@ function Screenshot() {
     // Handle URL submission here
     console.log('URL submitted:', posturl);
 
-    if (!posturl.includes("x.com") && !posturl.includes("peerlist.io") && !posturl.includes("threads.com") && !posturl.includes('reddit.com')) {
+    const allowedPlatforms = ["x.com", "peerlist.io", "threads.com", "reddit.com","youtu.be/","youtube.com"];
+    const isAllowed = allowedPlatforms.some(platform => posturl.includes(platform));
+
+    if (!isAllowed) {
       showError("Invalid URL");
       return;
     }
@@ -297,12 +300,17 @@ function Screenshot() {
 
       // Generate screenshot using html-to-image
       const { toPng } = await import('html-to-image');
-      
+
+      // Determine if selectedColor is a gradient
+      const isGradient = selectedColor && selectedColor.startsWith('linear-gradient');
+      // If not a gradient, use selectedColor as backgroundColor, else transparent
+      const backgroundColor = !isGradient && selectedColor ? selectedColor : 'transparent';
+
       console.log('Generating screenshot...');
       const dataUrl = await toPng(tweetRef.current, {
         quality: 1,
         pixelRatio: 2,
-        backgroundColor: 'transparent',
+        backgroundColor,
         skipFonts: true,
         style: {
           // Ensure fonts are loaded
