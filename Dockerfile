@@ -16,7 +16,8 @@ WORKDIR /app
 
 # Copy server dependencies and install
 COPY server/package*.json ./
-RUN npm ci --only=production
+RUN npm ci --only=production \
+    && npx puppeteer browsers install chrome
 
 # Install minimal dependencies for Chromium (bundled with Puppeteer)
 RUN apt-get update && apt-get install -y \
