@@ -81,7 +81,9 @@ async function getRedditPostJSON(url) {
                         url: postData?.url,
                         permalink: postData?.permalink,
                         score: postData?.score,
-                        upvote_ratio: postData?.upvote_ratio
+                        upvote_ratio: postData?.upvote_ratio,
+                        url_overridden_by_dest: postData?.url_overridden_by_dest || '',
+                        media: postData?.media || null,
                     }
                 }]
             }
@@ -183,6 +185,11 @@ const extractaDataFromJson = async (postJson,url) => {
     } else if (!isVideo) {
         // regular express to validate thumbnail urls
         let urlPattern = /(https?:\/\/[^\s]+(\.jpg|\.jpeg|\.png|\.gif|\.bmp|\.webp))/i;
+
+        if (postData?.url_overridden_by_dest && urlPattern.test(postData?.url_overridden_by_dest)) {  
+            images = [postData?.url_overridden_by_dest];
+        }
+
         if (postData?.thumbnail && urlPattern.test(postData?.thumbnail)) {  
             images = [postData?.thumbnail];
         }
