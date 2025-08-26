@@ -131,7 +131,7 @@ const TwitterVideoDownloader = () => {
               <button
                 type="submit"
                 disabled={!!scrapedVideos?.length || isDownloading || isFetching || fetched}
-                className={`bg-blue-600 text-white rounded-lg px-6 py-3 text-base md:text-lg font-semibold transition flex items-center gap-2 ${
+                className={`bg-black text-white hover:bg-gray-900 transition-colors duration-200 rounded-lg px-6 py-3 text-base md:text-lg font-semibold transition flex items-center gap-2 ${
                   !!scrapedVideos?.length || isDownloading || isFetching || fetched ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'
                 }`}
               >
@@ -148,7 +148,7 @@ const TwitterVideoDownloader = () => {
                       <button 
                         onClick={handleVideoDownload} 
                         disabled={isDownloading}
-                        className={`bg-blue-600 text-white rounded-lg px-6 py-3 font-semibold transition flex items-center gap-2 ${
+                        className={`bg-black text-white hover:bg-gray-900 transition-colors duration-200 rounded-lg px-6 py-3 font-semibold transition flex items-center gap-2 ${
                           isDownloading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'
                         }`}
                         >

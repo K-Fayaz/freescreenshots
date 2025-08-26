@@ -217,8 +217,41 @@ const extractaDataFromJson = async (postJson,url) => {
 
 }
 
+const getRedditVideoData = async (url) => {
+    // Extract post ID from URL
+    const postId = url.match(/comments\/([a-z0-9]+)/)?.[1];
+    if (!postId) {
+        throw new Error('Invalid Reddit URL - cannot extract post ID');
+    }
+
+    console.log('Fetching Reddit post with OAuth, Post ID:', postId);
+
+    let reddit = await getRedditClient();
+
+    // Fetch the submission using snoowrap
+    const submission = await reddit.getSubmission(postId);
+        
+    // Convert snoowrap object to JSON format that matches your existing structure
+    const postData = await submission.fetch();
+
+    let videos = [];
+    if (postData.is_video && postData.media?.reddit_video) {
+        let videoInfo = postData?.media?.reddit_video;
+        videos.push({
+            quality: 'source',
+            url: videoInfo?.fallback_url || '',
+            width: videoInfo?.width || '',
+            height: videoInfo?.height || '',
+            is_gif: videoInfo?.is_gif || false,
+            duration: videoInfo?.duration || 0
+        });
+    }
+    return videos;
+}
+
 module.exports = {
-    extractaDataFromJson,
     getRedditPostJSON,
+    getRedditVideoData,
+    extractaDataFromJson,
     getRedditPostWithSubredditInfo,
 };

@@ -24,46 +24,42 @@ const RedditVideoDownloader = () => {
         setPostUrl(e.target.value);
     };
 
-    const handleDownload = async () => {
-        // To be implemented
-    };
+  const handleFetchVideo = (e: React.FormEvent) => {
+    e.preventDefault();
+    // To be implemented
 
-    const handleFetchVideo = (e: React.FormEvent) => {
-        e.preventDefault();
-        // To be implemented
+    let url = `${BASE_URL}api/tools/reddit-video-downloader?url=${postUrl}`;
+    setIsFetching(true);
 
-        let url = `${BASE_URL}api/tools/reddit-video-downloader?url=${postUrl}`;
+    axios({
+      method:"GET",
+      url,
+      headers: {
+        'Content-Type':'application/json',
+      }
+    })
+    .then((response) => {
+      if (response.status === 200) {
+        let videos = response?.data?.videos || [];
+          // setScrapedVideos(videos);
+          setFetched(true);
+          setVideo(response?.data?.videos[0].url);
+        } else {
+          showError('Failed to fetch video. Please try again.');
+        }
+      })
+    .catch((err) => {
+      console.log(err);
 
-        setIsFetching(true);
+      let message = err.response?.data?.message || 'An error occurred while fetching the video.';
+      showError(message);
+    })
+    .finally(() => {
+      setIsFetching(false);
+    })
+  };
 
-        axios({
-            method:"GET",
-            url,
-            headers: {
-                'Content-Type':'application/json',
-            }
-        })
-        .then((response) => {
-            if (response.status === 200) {
-                let videos = response?.data?.videos || [];
-                setScrapedVideos(videos);
-                setFetched(true);
-            } else {
-                showError('Failed to fetch video. Please try again.');
-            }
-        })
-        .catch((err) => {
-            console.log(err);
-
-            let message = err.response?.data?.message || 'An error occurred while fetching the video.';
-            showError(message);
-        })
-        .finally(() => {
-            setIsFetching(false);
-        })
-    };
-
-    useEffect(() => {
+  /*useEffect(() => {
         if (!scrapedVideos.length) return;
         console.log("Hey there: ",scrapedVideos[0]);
         if (Hls.isSupported()) {
@@ -78,9 +74,10 @@ const RedditVideoDownloader = () => {
             // For Safari
             videoRef.current.src = scrapedVideos[0];
         }
-    }, [scrapedVideos]);
+  }, [scrapedVideos]);
+  */
 
-    const handleVideoDownload = async () => {
+  /*const handleVideoDownload = async () => {
         if (scrapedVideos.length == 0) {
         return showError('No video available to download.');
         }
@@ -106,15 +103,46 @@ const RedditVideoDownloader = () => {
         a.click();
         URL.revokeObjectURL(url);
         setIsDownloading(false);
-    }
+    }*/
 
-    const resetPage = () => {
-        setFetched(false);
-        setIsDownloading(false);
-        setIsFetching(false);
-        setScrapedVideos([]);
-        setPostUrl('');
+  const handleDownload = async () => {
+    if (!video) return;
+
+    setIsDownloading(true);
+    
+    try {
+      // Always treat video as a URL or data URL string
+      const response = await fetch(video);
+      const blob = await response.blob();
+      let splited = postUrl.split('/');
+      let name = `reddit-video-${splited[splited.length - 2]}.mp4`;
+      downloadBlob(blob, name);
+    } catch (error) {
+      console.error('Download failed:', error);
+      alert('Download failed. Please try again.');
+    } finally {
+      setIsDownloading(false);
     }
+  };
+
+  const downloadBlob = (blob: Blob, filename: string) => {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const resetPage = () => {
+    setFetched(false);
+    setIsDownloading(false);
+    setIsFetching(false);
+    setScrapedVideos([]);
+    setPostUrl('');
+  }
 
   return (
     <>
@@ -144,7 +172,7 @@ const RedditVideoDownloader = () => {
               <button
                 type="submit"
                 disabled={!!video || isDownloading || isFetching}
-                className={`bg-blue-600 text-white rounded-lg px-6 py-3 text-base md:text-lg font-semibold transition flex items-center gap-2 ${
+                className={`rounded-lg px-6 py-3 text-base md:text-lg font-semibold transition flex items-center gap-2 bg-black text-white hover:bg-gray-900 transition-colors duration-200 ${
                   !!video || isDownloading || isFetching ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'
                 }`}
               >
@@ -153,7 +181,7 @@ const RedditVideoDownloader = () => {
               </button>
             </form>
           </div>
-          {
+          {/* {
               scrapedVideos.length > 0 && (
                   <div className='max-w-5xl flex flex-col mt-5 items-center justify-between gap-5 p-5'>
                       <video ref={videoRef} muted controls={false} className="mt-5 rounded-lg shadow-lg"></video>
@@ -161,7 +189,7 @@ const RedditVideoDownloader = () => {
                       <button 
                         onClick={handleVideoDownload} 
                         disabled={isDownloading}
-                        className={`bg-blue-600 text-white rounded-lg px-6 py-3 font-semibold transition flex items-center gap-2 ${
+                        className={`bg-blue-600 text-white rounded-lg px-6 py-3 font-semibold transition flex items-center gap-2 bg-black text-white hover:bg-gray-900 transition-colors duration-200 ${
                           isDownloading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'
                         }`}
                         >
@@ -169,10 +197,28 @@ const RedditVideoDownloader = () => {
                       </button>
                   </div>
               )
-          }
+          } */}
+
+          {video && (
+            <div className="grid place-items-center space-y-4 my-5">
+              <video src={video} muted controls={false} autoPlay={true} className="h-auto max-h-[300px] mt-5 rounded-lg shadow-lg"></video>
+                <button 
+                  onClick={handleDownload}
+                  disabled={isDownloading}
+                  className={`px-4 py-3 md:px-8 md:py-5 rounded-lg flex text-base md:text-lg items-center gap-2 font-medium transition-colors bg-black text-white hover:bg-gray-900 transition-colors duration-200 ${
+                  isDownloading
+                    ? 'bg-gray-400 text-gray-700 cursor-not-allowed'
+                    : 'text-white'
+                  }`}
+                >
+                  <Download className='w-5 h-5'/>
+                    {isDownloading ? 'Downloading...' : 'Download Video'}
+                </button>
+            </div>
+          )}
 
           {
-            fetched && !isFetching && scrapedVideos.length === 0 && (
+            fetched && !isFetching && !video && (
               <div className="text-red-500 mt-5">
                 <h1 className='md:text-xl'>No videos found for the provided URL. </h1>
               </div>

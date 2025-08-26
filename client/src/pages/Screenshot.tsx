@@ -333,7 +333,7 @@ function Screenshot() {
 
       // Download the image
       const link = document.createElement('a');
-      link.download = `peerlist-post-${Date.now()}.png`;
+      link.download = `${postDetails?.platform || 'screenshot'}-zap-${Date.now()}.png`;
       link.href = dataUrl;
       document.body.appendChild(link);
       link.click();

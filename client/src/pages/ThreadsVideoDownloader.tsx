@@ -113,7 +113,7 @@ const ThreadsVideoDownloader = () => {
                 <button
                   type="submit"
                   disabled={!!video || isDownloading || isFetching}
-                  className={`bg-blue-600 text-white rounded-lg px-6 py-3 text-base md:text-lg font-semibold transition flex items-center gap-2 ${
+                  className={`rounded-lg px-6 py-3 text-base md:text-lg font-semibold transition flex items-center gap-2 bg-black text-white hover:bg-gray-900 transition-colors duration-200${
                     !!video || isDownloading || isFetching ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'
                   }`}
                 >
@@ -128,10 +128,10 @@ const ThreadsVideoDownloader = () => {
                 <button 
                   onClick={handleDownload}
                   disabled={isDownloading}
-                  className={`px-4 py-3 md:px-8 md:py-5 rounded-lg flex text-base md:text-lg items-center gap-2 font-medium transition-colors ${
+                  className={`px-4 py-3 md:px-8 md:py-5 rounded-lg flex text-base md:text-lg items-center gap-2 font-medium transition-colors bg-black text-white hover:bg-gray-900 transition-colors duration-200 ${
                     isDownloading
-                      ? 'bg-gray-400 text-gray-700 cursor-not-allowed' 
-                      : 'bg-blue-500 text-white hover:bg-blue-600'
+                      ? 'bg-gray-400 text-gray-700 cursor-not-allowed'
+                      : 'text-white'
                   }`}
                 >
                   <Download className='w-5 h-5'/>

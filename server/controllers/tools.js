@@ -11,8 +11,7 @@ const {
 } = require("../helpers/Threads.scraper");
 
 const {
-    scrapeRedditPost,
-    extractRedditPostData,
+    getRedditVideoData
 } = require("../helpers/Reddit.scraper");
 
 const { scrapeTweetHTML, scrapeTweetVideoUrls, combineAudioVideoFromUrls } = require("../helpers/Twitter.scraper");
@@ -124,7 +123,6 @@ const getRedditVideo = async(req,res) => {
             return res.status(400).json({ error: "Missing tweet URL" });
         }
     
-        let html;
         let data;
     
         let platform = url.split('/')[2]; 
@@ -136,9 +134,7 @@ const getRedditVideo = async(req,res) => {
             });
         }
 
-        html = await scrapeRedditPost(url);
-        data = extractRedditPostData(html);
-        let videos = data.videos || [];
+        let videos = await getRedditVideoData(url) || [];
 
         // console.log(html);
 
