@@ -190,7 +190,7 @@ const extractaDataFromJson = async (postJson,url) => {
             images = [postData?.url_overridden_by_dest];
         }
 
-        if (postData?.thumbnail && urlPattern.test(postData?.thumbnail)) {  
+        if (images.length == 0 && postData?.thumbnail && urlPattern.test(postData?.thumbnail)) {  
             images = [postData?.thumbnail];
         }
     }
