@@ -53,7 +53,7 @@ const Footer = () => {
           <div>
             <h4 className="text-lg font-semibold mb-4">Tools</h4>
             <ul className="space-y-2">
-              <li><p onClick={()=> navigate("/twitter-video-downloader")} className="text-gray-700 hover:text-black transition-colors cursor-pointer">Twitter Video Downloader</p></li>
+              {/* <li><p onClick={()=> navigate("/twitter-video-downloader")} className="text-gray-700 hover:text-black transition-colors cursor-pointer">Twitter Video Downloader</p></li> */}
               <li><p onClick={() => navigate("/reddit-video-downloader")} className="text-gray-700 hover:text-black transition-colors cursor-pointer">Reddit Video Downloader</p></li>
               <li><p onClick={() => navigate("/threads-video-downloader")} className="text-gray-700 hover:text-black transition-colors cursor-pointer">Threads Video Downloader</p></li>
               {/* <li><a href="#" className="text-gray-400 hover:text-black transition-colors">Contact</a></li> */}
@@ -65,7 +65,7 @@ const Footer = () => {
         <div className="border-t border-gray-800 mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-400 text-sm">
-              © 2024 Zapshot. All rights reserved.
+              © 2025 Zapshot. All rights reserved.
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
               <a href="#" className="text-gray-700 hover:text-black text-sm transition-colors">Privacy Policy</a>

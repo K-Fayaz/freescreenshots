@@ -2,33 +2,39 @@ import React from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import BASE_URL from '@/config';
+import { Check, Star, Zap } from 'lucide-react';
 
 const plans = [
-  {
-    name: 'Free',
-    price: '$0',
-    features: [
-      'Basic features',
-      'Watermark on screenshots',
-      'Limited support',
-      'No credit card required',
-    ],
-    cta: 'Get Started',
-    highlight: false,
-  },
-  {
-    name: 'Pro',
-    price: '$10 one-time',
-    features: [
-      'One-time payment for up to 1000 pixel-perfect screenshots',
-      'No watermark',
-      'Priority support',
-      'All basic features included',
-    ],
-    cta: 'Buy Pro',
-    highlight: true,
-  },
-];
+    {
+      name: 'Free',
+      price: '$0',
+      description: 'Perfect for getting started',
+      features: [
+        'Basic features',
+        'Watermark on screenshots',
+        'Limited support',
+        'No credit card required'
+      ],
+      buttonText: 'Get Started',
+      popular: false,
+      gradient: 'from-gray-50 to-white'
+    },
+    {
+      name: 'Pro',
+      price: '$10',
+      priceSubtext: 'one-time',
+      description: 'Everything you need to succeed',
+      features: [
+        'One-time payment for up to 1000 pixel-perfect screenshots',
+        'No watermark',
+        'Priority support',
+        'All basic features included'
+      ],
+      buttonText: 'Buy Pro',
+      popular: true,
+      gradient: 'from-black to-gray-800'
+    }
+  ];
 
 const Pricing = () => {
   const navigate = useNavigate();
@@ -69,6 +75,7 @@ const Pricing = () => {
       })
     }
 
+    // User is not loggedin and clicks on free
     if (planName === 'Free') {  
       navigate('/signin');
       return;
@@ -84,7 +91,103 @@ const Pricing = () => {
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-2 text-center">Pricing</h2>
         <p className="text-lg text-gray-500 mb-12 text-center">Choose the right plan for your needs.</p>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          {plans.map((plan, index) => (
+            <div
+              key={plan.name}
+              className={`relative overflow-hidden rounded-3xl border-2 transition-all duration-300 hover:scale-105 hover:shadow-2xl ${
+                plan.popular
+                  ? 'border-black shadow-xl'
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              {/* Popular Badge */}
+              {plan.popular && (
+                <div className="absolute top-0 right-0 bg-gradient-to-r from-amber-500 to-yellow-600 text-black px-4 py-2 rounded-bl-2xl flex items-center gap-1 z-10 shadow-lg">
+                  <Star className="w-4 h-4 fill-current" />
+                  <span className="text-sm font-semibold">Most Popular</span>
+                </div>
+              )}
+
+              {/* Card Content */}
+              <div className={`p-8 h-full bg-gradient-to-br ${plan.gradient} relative`}>
+                {/* Plan Name & Icon */}
+                <div className="flex items-center gap-3 mb-4">
+                  <div className={`p-2 rounded-xl ${plan.popular ? 'bg-white/20' : 'bg-black/5'}`}>
+                    {plan.popular ? (
+                      <Zap className={`w-6 h-6 ${plan.popular ? 'text-white' : 'text-black'}`} />
+                    ) : (
+                      <Star className="w-6 h-6 text-black" />
+                    )}
+                  </div>
+                  <h3 className={`text-2xl font-bold ${plan.popular ? 'text-white' : 'text-black'}`}>
+                    {plan.name}
+                  </h3>
+                </div>
+
+                {/* Description */}
+                <p className={`text-base mb-6 ${plan.popular ? 'text-gray-300' : 'text-gray-600'}`}>
+                  {plan.description}
+                </p>
+
+                {/* Price */}
+                <div className="mb-8">
+                  <div className="flex items-baseline gap-2">
+                    <span className={`text-5xl font-bold ${plan.popular ? 'text-white' : 'text-black'}`}>
+                      {plan.price}
+                    </span>
+                    {plan.priceSubtext && (
+                      <span className={`text-lg ${plan.popular ? 'text-gray-300' : 'text-gray-500'}`}>
+                        {plan.priceSubtext}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Features */}
+                <div className="space-y-4 mb-8">
+                  {plan.features.map((feature, featureIndex) => (
+                    <div key={featureIndex} className="flex items-start gap-3">
+                      <div className={`p-1 rounded-full mt-0.5 ${
+                        plan.popular ? 'bg-white/20' : 'bg-black/10'
+                      }`}>
+                        <Check className={`w-3 h-3 ${plan.popular ? 'text-white' : 'text-black'}`} />
+                      </div>
+                      <span className={`text-sm leading-relaxed ${
+                        plan.popular ? 'text-gray-200' : 'text-gray-700'
+                      }`}>
+                        {feature}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* CTA Button */}
+                <button
+                  onClick={() => handlePlanClick(plan.name)}
+                  className={`w-full py-4 px-6 rounded-2xl font-semibold text-lg transition-all duration-300 transform hover:scale-105 active:scale-95 ${
+                    plan.popular
+                      ? 'bg-white text-black hover:bg-gray-100 shadow-lg'
+                      : 'bg-black text-white hover:bg-gray-800 shadow-lg hover:shadow-xl'
+                  }`}
+                >
+                  {plan.buttonText}
+                </button>
+              </div>
+
+              {/* Subtle Pattern Overlay */}
+              <div className="absolute inset-0 pointer-events-none">
+                <div className={`absolute inset-0 opacity-5 ${
+                  plan.popular 
+                    ? 'bg-[radial-gradient(circle_at_50%_50%,white_1px,transparent_1px)] bg-[length:20px_20px]'
+                    : 'bg-[radial-gradient(circle_at_50%_50%,black_1px,transparent_1px)] bg-[length:20px_20px]'
+                }`} />
+              </div>
+            </div>
+          ))}
+        </div>
+        {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {plans.map((plan, idx) => (
             <div
               key={plan.name}
@@ -117,7 +220,7 @@ const Pricing = () => {
               </ul>
             </div>
           ))}
-        </div>
+        </div> */}
       </div>
     </div>
   );

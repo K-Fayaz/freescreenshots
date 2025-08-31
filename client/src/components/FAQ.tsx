@@ -4,18 +4,18 @@ const faqData = [
   {
     question: 'What platforms does Zapshot support?',
     answer:
-      'Zapshot works across major social platforms like Twitter (X), Threads, Instagram, and more — giving you one tool to capture and render high-quality post screenshots anywhere.'
+      'Zapshot works across major social platforms like Twitter (X),Youtube, Peerlist, Reddit and Threads — giving you one tool to capture and render high-quality post screenshots anywhere.'
   },
   {
     question: 'Does Zapshot store my personal data?',
     answer:
       'No. Zapshot does not store or track your personal account credentials. It only processes public post data to render screenshots, without saving any of your private information.'
   },
-  {
-    question: 'Can I use Zapshot for videos or memes?',
-    answer:
-      'Yes — Zapshot supports downloading videos from Twitter and Threads, and includes a meme-maker so you can remix your screenshots creatively.'
-  },
+  // {
+  //   question: 'Can I use Zapshot for videos or memes?',
+  //   answer:
+  //     'Yes — Zapshot supports downloading videos from Twitter and Threads, and includes a meme-maker so you can remix your screenshots creatively.'
+  // },
   {
     question: 'Why use Zapshot instead of taking a manual screenshot?',
     answer:

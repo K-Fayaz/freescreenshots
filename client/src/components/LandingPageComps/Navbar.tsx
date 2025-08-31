@@ -97,7 +97,7 @@ const Navbar = () => {
               </button>
               {toolsOpen && (
                 <div className="absolute left-0 top-full mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 py-2 flex flex-col animate-fadeIn z-50">
-                  <p onClick={() => navigate('/twitter-video-downloader')} className="px-5 py-2 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer">Twitter Video Downloader</p>
+                  {/* <p onClick={() => navigate('/twitter-video-downloader')} className="px-5 py-2 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer">Twitter Video Downloader</p> */}
                   <p onClick={() => navigate('/reddit-video-downloader')} className="px-5 py-2 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer">Reddit Video Downloader</p>
                   <p onClick={() => navigate('/threads-video-downloader')} className="px-5 py-2 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer">Threads Video Downloader</p>
                 </div>
@@ -197,12 +197,12 @@ const Navbar = () => {
                   Tools
                 </div>
                 <div className="space-y-1">
-                  <Link
+                  {/* <Link
                     to="/twitter-video-downloader"
                     className="block px-3 py-2 text-base text-gray-700 hover:bg-gray-100 rounded-md transition-colors duration-200"
                   >
                     Twitter Video Downloader
-                  </Link>
+                  </Link> */}
                   <Link
                     to="/threads-video-downloader"
                     className="block px-3 py-2 text-base text-gray-700 hover:bg-gray-100 rounded-md transition-colors duration-200"

@@ -13,7 +13,11 @@ const Hero = () => {
   const handleUrlSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    console.log("URL submitted:", url);
+    let token = localStorage.getItem('token') || null;
+    if (!token) {
+      navigate(`/signin?next=${encodeURIComponent(url)}`);
+      return;
+    }
 
     navigate(`/screenshot?url=${encodeURIComponent(url)}`);
   }

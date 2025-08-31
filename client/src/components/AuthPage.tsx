@@ -36,12 +36,16 @@ const AuthPage = () => {
     if (success === 'true' && token) {
       localStorage.setItem('token', token);
       localStorage.setItem('user', id || '');
-      // localStorage.setItem('email', email || '');
-      // localStorage.setItem('isEmailVerified', 'true');
-      if (next) {
+  
+      if (next && next=='pricing') {
         navigate(`/screenshot?display=${next}`);
         return;
       }
+      else if (next) {
+        navigate(`/screenshot?url=${next}`);
+        return;
+      }
+
       navigate('/screenshot');
       return;
     }

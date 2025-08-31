@@ -6,6 +6,7 @@ import XHorizontalScrollSection from "@/components/LandingPageComps/XHorizontalS
 import FAQ from "@/components/FAQ";
 import Pricing from "@/components/Pricing";
 import Footer from "@/components/Footer";
+import FeedbackSection from "@/components/LandingPageComps/FeedbackSection";
 
 const LandingPageTwo = () => {
   return (
@@ -19,6 +20,7 @@ const LandingPageTwo = () => {
         </section>
         {/* <section id="pricing" className="w-full h-screen bg-gray-50"> */}
           <Pricing />
+        {/* <FeedbackSection /> */}
         {/* </section> */}
         <Footer/>
     </div>

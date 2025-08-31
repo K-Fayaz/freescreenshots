@@ -84,6 +84,7 @@ async function getRedditPostJSON(url) {
                         upvote_ratio: postData?.upvote_ratio,
                         url_overridden_by_dest: postData?.url_overridden_by_dest || '',
                         media: postData?.media || null,
+                        preview: postData?.preview || {}
                     }
                 }]
             }
@@ -186,7 +187,12 @@ const extractaDataFromJson = async (postJson,url) => {
         // regular express to validate thumbnail urls
         let urlPattern = /(https?:\/\/[^\s]+(\.jpg|\.jpeg|\.png|\.gif|\.bmp|\.webp))/i;
 
-        if (postData?.url_overridden_by_dest && urlPattern.test(postData?.url_overridden_by_dest)) {  
+        if (postData?.preview?.images?.length > 0 ){
+            console.log("postData?.preview?.images?.length > 0: ",postData?.preview.images[0].source.url)
+            images = [postData?.preview.images[0].source.url]
+        }
+
+        if (images.length == 0 && postData?.url_overridden_by_dest && urlPattern.test(postData?.url_overridden_by_dest)) {  
             images = [postData?.url_overridden_by_dest];
         }
 

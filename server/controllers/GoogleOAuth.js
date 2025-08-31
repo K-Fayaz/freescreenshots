@@ -6,7 +6,7 @@ const callBack = async (req,res) => {
   let userDetails = req.user;
   let next = req.query.state;
 
-  console.log('next:', next);
+  // console.log('next:', next);
 
   let client_url = process.env.CLIENT_REDIRECT_URL;
 
