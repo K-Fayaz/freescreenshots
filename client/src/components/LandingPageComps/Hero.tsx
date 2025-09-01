@@ -53,8 +53,8 @@ const Hero = () => {
           Zap It
         </button>
       </form>
-      {/* Supported Platforms Section */}
-      <div className="w-full flex flex-col items-center mt-20">
+      {/* Supported Platforms Section mt-20 later Peerlist Launch*/}
+      <div className="w-full flex flex-col items-center mt-14">
         <div className="flex items-center w-full text-center md:max-w-6xl mb-6">
           <div className="flex-1 border-t hidden md:block border-gray-300"></div>
           <div className="px-4 text-center text-xs md:text-sm md:text-base text-gray-700 mx-auto font-medium whitespace-nowrap">
@@ -94,6 +94,13 @@ const Hero = () => {
           </span>
         </div>
       </div>
+      <a href="https://peerlist.io/fayaz_3000/project/zapshot" target="_blank" rel="noreferrer">
+        <img
+          src="https://peerlist.io/api/v1/projects/embed/PRJHGNQKR6BNG66L8HKL9JOPLQMJJJ?showUpvote=false&theme=dark"
+          alt="Zapshot"
+          style={{width: "auto" ,height: "72px;",marginTop:'20px'}}
+        />
+      </a>
     </section>
   );
 };
