@@ -7,6 +7,7 @@ import FAQ from "@/components/FAQ";
 import Pricing from "@/components/Pricing";
 import Footer from "@/components/Footer";
 import FeedbackSection from "@/components/LandingPageComps/FeedbackSection";
+import BeforeAfter from "@/components/LandingPageComps/BeforeAfter";
 
 const LandingPageTwo = () => {
   return (
@@ -14,6 +15,9 @@ const LandingPageTwo = () => {
         <Navbar />
         <Hero/>
         <VideoSection />
+        <section className="w-full mx-auto">
+          <BeforeAfter />
+        </section>
         <XHorizontalScrollSection />
         <section id="faq" className="w-full h-screen bg-gray-50 grid place-items-center">
           <FAQ />

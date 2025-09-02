@@ -1,0 +1,58 @@
+
+.slider-button-897 {
+  background-color: hsl(260, 14%, 4%);
+  color: hsl(260, 85%, 97%);
+  font-size: 1.2rem;
+  /* text-transform: uppercase; */
+  letter-spacing: 0.5px;
+  padding: 1.2rem;
+  /* border: 1px solid hsl(260, 90%, 40%); */
+  border-radius: 0.6rem;
+  cursor: pointer;
+}
+
+.slider-button-897:hover {
+  animation-name: shine;
+  animation-duration: 260ms;
+}
+
+@keyframes shine {
+  0% {
+    background: linear-gradient(
+      30deg, 
+      hsl(260, 85%, 95%) 0%, 
+      hsl(266, 17%, 8%) 25%
+    );
+  }
+
+  25% {
+    background: linear-gradient(
+      30deg, 
+      hsl(270, 9%, 4%) 0%, 
+      hsl(260, 85%, 95%) 25%, 
+      hsl(255, 17%, 5%) 50%);
+  }
+
+  50% {
+    background: linear-gradient(
+      30deg,
+      hsl(260, 12%, 5%) 0%, 
+      hsl(260, 85%, 95%) 50%, 
+      hsl(270, 5%, 7%) 75%); 
+  }
+
+  75% {
+    background: linear-gradient(
+      30deg, 
+      hsl(240, 5%, 7%) 0%, 
+      hsl(260, 85%, 95%) 75%, 
+      hsl(255, 9%, 9%) 100%); 
+  }
+
+  100% {
+    background: linear-gradient(
+      30deg, 
+      hsl(240, 3%, 8%) 0%, 
+      hsl(260, 85%, 95%) 100%); 
+  }
+}

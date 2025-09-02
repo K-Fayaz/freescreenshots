@@ -28,7 +28,7 @@ const YoutubeVideo : React.FC<YoutubeVideoProps> = ({ details = {}, theme, showM
     const subscribeBtn = isDark ? 'bg-[#ff0c12] text-white' : 'bg-[#ff0c12] text-white';
 
     return (
-        <div className={`w-full max-w-4xl mx-auto ${bgMain} overflow-hidden shadow-xl transition-all duration-300`}>
+        <div className={`w-full max-w-4xl mx-auto ${bgMain} overflow-hidden transition-all duration-300`}>
             {/* Video Thumbnail */}
             <div className={`relative w-full aspect-video ${bgMain}`}>
                 <img

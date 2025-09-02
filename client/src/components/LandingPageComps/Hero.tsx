@@ -98,7 +98,7 @@ const Hero = () => {
         <img
           src="https://peerlist.io/api/v1/projects/embed/PRJHGNQKR6BNG66L8HKL9JOPLQMJJJ?showUpvote=false&theme=dark"
           alt="Zapshot"
-          style={{width: "auto" ,height: "72px;",marginTop:'20px'}}
+          style={{width: "auto" ,height: "72px;",marginTop:'30px'}}
         />
       </a>
     </section>
