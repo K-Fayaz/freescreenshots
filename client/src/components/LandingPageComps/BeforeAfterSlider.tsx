@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import BeforeImage from "../../assets/1000013651.jpg";
-import AfterImage from "../../assets/after.png"; // optional if you have one
+import AfterImage from "../../assets/after-3.png"; // optional if you have one
 
 const BeforeAfterSlider: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
