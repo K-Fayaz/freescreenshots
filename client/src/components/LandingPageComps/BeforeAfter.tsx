@@ -1,8 +1,21 @@
 
 import BeforeAfterSlider from "./BeforeAfterSlider";
 import "./button.css";
+import { useNavigate } from "react-router-dom";
 
 const BeforeAfter = () => {
+    const navigate = useNavigate();
+
+    const handleClick = () => {
+        let token = localStorage.getItem('token') || undefined;
+        
+        if (token) {
+            navigate('/screenshot');
+            return;
+        }
+        
+        navigate('/signin');
+    }
     return (
         <div className="w-3/4 mx-auto h-[600px] flex sm:flex-col md:flex-row md:justify-between mt-8">
             <div className="basis-[55%] rounded-xl p-8 flex flex-col justify-start">
@@ -21,7 +34,7 @@ const BeforeAfter = () => {
                     <li className="flex items-center text-base font-medium text-black text-lg"><span className="mr-2">⭐</span>Consistent, professional design</li>
                 </ul>
 
-                <button className="slider-button-897 w-[250px] mt-10">
+                <button onClick={handleClick} className="slider-button-897 w-[250px] mt-10">
                     Try Zapshot for free
                 </button>
             </div>
