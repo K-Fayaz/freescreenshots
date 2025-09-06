@@ -22,7 +22,7 @@ const NewTweetModal: React.FC<NewTweetModalProps> = ({ isOpen, onClose, setPostD
     // Handle URL submission here
     console.log('URL submitted:', url);
 
-    const allowedPlatforms = ["x.com", "peerlist.io", "threads.com", "reddit.com","youtu.be/","youtube.com"];
+    const allowedPlatforms = ["x.com", "peerlist.io", "threads.com", "reddit.com","youtu.be/","youtube.com","producthunt.com","www.producthunt.com"];
     const isAllowed = allowedPlatforms.some(platform => url.includes(platform));
 
     if (!isAllowed) {

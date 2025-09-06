@@ -51,8 +51,10 @@ const Footer = () => {
             <h4 className="text-lg font-semibold mb-4">Platforms</h4>
             <ul className="space-y-2">
               <li><p className="text-gray-700 hover:text-black transition-colors">X (Twitter)</p></li>
-              <li><p className="text-gray-700 hover:text-black transition-colors">Reddit</p></li>
               <li><p className="text-gray-700 hover:text-black transition-colors">Peerlist</p></li>
+              <li><p className="text-gray-700 hover:text-black transition-colors">Reddit</p></li>
+              <li><p className="text-gray-700 hover:text-black transition-colors">Youtube</p></li>
+              <li><p className="text-gray-700 hover:text-black transition-colors">Product Hunt</p></li>
               <li><p className="text-gray-700 hover:text-black transition-colors">Threads</p></li>
             </ul>
           </div>

@@ -31,6 +31,9 @@ const {
   extractYoutubeChannelData
 } = require("../helpers/Youtube.scraper");
 
+const {
+  getProductHuntLaunchDetails
+} = require("../helpers/ProductHunt");
 
 const getDetails = async (req, res) => {
     try {
@@ -45,6 +48,7 @@ const getDetails = async (req, res) => {
       let type;
   
       let platform = url.split('/')[2];
+      console.log(platform);
       
       if (platform.includes('x.com')) {
         if (url.includes('/status/')) {
@@ -103,6 +107,10 @@ const getDetails = async (req, res) => {
           html = await scrapeYouTubePage(url);
           data = await extractYoutubeVideo(html);
         }
+      }
+      else if (platform.includes('www.producthunt.com') || platform.includes('producthunt.com')){
+        data = await getProductHuntLaunchDetails(url);
+        // console.log(data);
       }
       else {
         return res.status(400).json({ error: "Invalid URL" });

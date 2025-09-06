@@ -5,6 +5,7 @@ import RedditSnooIcon from '../RedditSnooIcon';
 import { FaThreads } from "react-icons/fa6";
 import { useNavigate } from 'react-router-dom';
 import { SiYoutube } from "react-icons/si";
+import PhKitty from "../../assets/phKitty.png";
 
 const Hero = () => {
   const [url,setUrl] = useState<string>('');
@@ -69,6 +70,13 @@ const Hero = () => {
           </span>
           <span className="flex items-center gap-2 text-lg font-semibold text-black opacity-80">
             <SiYoutube size={30} fill={"#ff0131"} /> YouTube
+          </span>
+          <span className='flex items-center gap-2 text-lg font-semibold text-black opacity-80'>
+            <img 
+              src={PhKitty}
+              className='w-12 h-12'
+            />
+            Product Hunt
           </span>
           <span className="flex items-center gap-2 text-lg font-semibold text-black opacity-80">
             <svg width="37" height="37" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg" className="">

@@ -12,6 +12,7 @@ import YoutubeChannel from './Youtube/YoutubeChannel';
 import RedditPost from './RedditPost';
 import BASE_URL from '@/config';
 import axios from 'axios';
+import ProductHunt from './ProductHunt';
 
 interface TweetPreviewProps {
   theme: 'Light' | 'Dark';
@@ -170,6 +171,8 @@ const TweetPreview: React.FC<TweetPreviewProps> = ({
               ) : (
                 <YoutubeChannel details={postDetails.post} theme={theme} logo={logo} userType={userType} showMetrics={showMetrics} showViews={showViews} showPauseOverlay={showPauseOverlay}/>
               )
+            ) : postDetails.platform === "www.producthunt.com" ? (
+              <ProductHunt details={postDetails.post} logo={logo} theme={theme} showMetrics={showMetrics} showViews={showViews} userType={userType} font={font} />
             ) : (
               <h1>Could not Find this platform! Please Report this!</h1>
             )

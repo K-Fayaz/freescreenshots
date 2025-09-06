@@ -856,7 +856,43 @@ let youtubeChannels = {
     type: "profile"
 }
 
+let PHData = {
+    platform: "www.producthunt.com",
+    data: {
+        name: "Meeting.ai",
+        tagline: "an AI notetaker built for visual learners",
+        description: "Introducing visual notes that help you remember 65% more information. Meeting.ai automatically turns your conversations into hand-drawn diagrams and visual summaries. Just tap start—AI captures, transcribes, and creates memorable visual meeting minutes for you",
+        createdAt: "2025-09-06T07:01:00Z",
+        commentsCount: 2,
+        votesCount: 115,
+        thumbnail: {
+            url: "https://ph-files.imgix.net/77d1c7de-6168-4b65-a944-dd89c4bef6e1.png?auto=format"
+        },
+        topics: {
+            edges: [
+                {
+                    node: {
+                        name: "Productivity"
+                    }
+                },
+                {
+                    node: {
+                        name: "Meetings"
+                    }
+                },
+                {
+                    node: {
+                        name: "Artificial Intelligence"
+                    }
+                }
+            ]
+        },
+        url: "https://www.producthunt.com/products/meeting-ai-visual-note?utm_campaign=producthunt-api&utm_medium=api-v2&utm_source=Application%3A+ZapshotIn+%28ID%3A+221192%29"
+    }
+}
+
 export {
+    PHData,
     Threads,
     threadsSeed,
     TwitterSeed,

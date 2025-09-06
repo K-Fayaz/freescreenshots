@@ -6,7 +6,7 @@ import TwitterUserProfile from "../TwitterUserProfile";
 import PeerlistProfile from '../PeerlistProfile';
 import PeerlistPost from '../PeerlistPost';
 import { PeerlistProfileData, PeerlistPostPretty,PeerlistLinkEmbed,PeerlistProjectEmbed,PeerlistVotePost } from "@/Seed/HeroSeed";
-import { ThreadsPostData, Threads, ThreadsProfilSeed, ThreadsQuotedPost, redditPost,youtubeVideo,youtubeChannels } from "@/Seed/HeroSeed";
+import { ThreadsPostData, Threads, ThreadsProfilSeed, ThreadsQuotedPost, redditPost,youtubeVideo,youtubeChannels,PHData } from "@/Seed/HeroSeed";
 import RedditPost from "../RedditPost";
 import ThreadsPost from '../ThreadsPost';
 import ThreadsProfile from '../ThreadsProfile';
@@ -14,6 +14,7 @@ import ThreadsFeed from '../ThreadsFeed';
 import Tweet from "../Tweet";
 import YoutubeVideo from "../Youtube/YoutubeVideo";
 import YoutubeChannel from "../Youtube/YoutubeChannel";
+import ProductHunt from "../ProductHunt";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -90,6 +91,13 @@ const HorizontalScrollOnVertical = () => {
             <h1 className="mb-4 text-center font-bold text-lg">Twitter Profiles</h1>
             <div className={`${theme == 'Light' ? 'bg-white' : 'bg-black text-white'} border w-[95%] md:w-[500px] max-h-[80%] border-gray-200 rounded-lg overflow-y-auto scrollbar-hide ml-4 md:ml-10 mr-24 text-xs md:text-sm`}>
                 <TwitterUserProfile details={TwitterElomMuskProfile.data} logo='X' theme={theme} showMetrics={true} userType={{}} />
+            </div>
+        </div>
+
+        <div>
+            <h1 className="mb-4 text-center font-bold text-lg">Product Launch</h1>
+            <div className={`${theme == 'Light' ? 'bg-white' : 'bg-black text-white'} border w-[95%] md:w-[600px] max-h-[80%] border-gray-200 rounded-lg overflow-y-auto scrollbar-hide ml-4 md:ml-10 mr-24 text-xs md:text-sm`}>
+                <ProductHunt details={PHData.data} logo='ph' theme={theme} showMetrics={true} userType={{}} showViews={false} />
             </div>
         </div>
 

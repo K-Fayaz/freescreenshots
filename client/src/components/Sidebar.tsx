@@ -7,6 +7,7 @@ import { FaThreads } from "react-icons/fa6";
 import styles from './RedditPost.module.css';
 import RedditSnooIcon from './RedditSnooIcon';
 import { SiYoutube } from "react-icons/si";
+import PhKitty from "../assets/phKitty.png";
 
 
 interface SidebarProps {
@@ -371,7 +372,22 @@ const Sidebar: React.FC<SidebarProps> = ({
                     <SiYoutube className='text-[#ff0c12]' size={20}/>
                   </span>
                 </label>    
-            ): null
+            ): postDetails.platform === "www.producthunt.com" || postDetails.platform === "producthunt.com" ? (
+                <label className="flex flex-col items-center cursor-pointer">
+                  <input
+                    type="radio"
+                    name="logo"
+                    value="ph"
+                    checked={logo === 'ph'}
+                    onChange={() => setLogo('ph')}
+                    className="hidden"
+                  />
+                  <span className={`p-2 rounded-lg border-2 ${logo === 'youtube' ? 'border-blue-500' : 'border-gray-200'}`}>
+                    <img className='text-[#ff0c12] w-10 h-10' src={PhKitty} />
+                  </span>
+               </label>  
+            )
+            : null
           )}
             <label className="flex flex-col items-center cursor-pointer">
               <input
