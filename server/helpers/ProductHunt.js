@@ -3,8 +3,8 @@ const fetch = require('node-fetch'); // If not available, install with: npm inst
 
 // Helper to extract slug from a Product Hunt product URL
 function extractProductSlug(url) {
-    const match = url.match(/producthunt\.com\/products\/([^\/?#]+)/i);
-    return match ? match[1] : null;
+  const match = url.match(/producthunt\.com\/(?:products|posts)\/([^\/?#]+)/i);
+  return match ? match[1] : null;
 }
 
 let token = process.env.DEVELOPER_TOKEN;
