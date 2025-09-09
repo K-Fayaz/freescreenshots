@@ -6,6 +6,7 @@ import { FaThreads } from "react-icons/fa6";
 import { useNavigate } from 'react-router-dom';
 import { SiYoutube } from "react-icons/si";
 import PhKitty from "../../assets/phKitty.png";
+import igLogo from "../../assets/igLogo-2.png";
 
 const Hero = () => {
   const [url,setUrl] = useState<string>('');
@@ -54,8 +55,8 @@ const Hero = () => {
           Zap It
         </button>
       </form>
-      {/* Supported Platforms Section mt-20 later Peerlist Launch*/}
-      <div className="w-full flex flex-col items-center mt-14">
+      {/* Supported Platforms Section*/}
+      <div className="w-full flex flex-col items-center mt-24">
         <div className="flex items-center w-full text-center md:max-w-6xl mb-6">
           <div className="flex-1 border-t hidden md:block border-gray-300"></div>
           <div className="px-4 text-center text-xs md:text-sm md:text-base text-gray-700 mx-auto font-medium whitespace-nowrap">
@@ -78,6 +79,13 @@ const Hero = () => {
             />
             Product Hunt
           </span>
+          <span className='flex items-center gap-2 text-lg font-semibold text-black opacity-80'>
+            <img 
+              src={igLogo}
+              className='w-7 h-7'
+            />
+            Instagram
+          </span>
           <span className="flex items-center gap-2 text-lg font-semibold text-black opacity-80">
             <svg width="37" height="37" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg" className="">
                     <g id="Logo Colour=Primary, Logo Type=LogoMark, Shape=Squircle">
@@ -97,18 +105,14 @@ const Hero = () => {
           <span className="flex items-center gap-2 text-lg font-semibold text-black opacity-80">
             <RedditSnooIcon /> Reddit
           </span>
-          <span className="flex items-center gap-2 text-lg font-semibold text-black opacity-80">
+          {/* <span className="flex items-center gap-2 text-lg font-semibold text-black opacity-80">
             <FaThreads size={30} />Threads
-          </span>
+          </span> */}
+          {/* <span className="flex items-center gap-2 text-lg font-semibold text-black opacity-80">
+            + More
+          </span> */}
         </div>
       </div>
-      <a href="https://peerlist.io/fayaz_3000/project/zapshot" target="_blank" rel="noreferrer">
-        <img
-          src="https://peerlist.io/api/v1/projects/embed/PRJHGNQKR6BNG66L8HKL9JOPLQMJJJ?showUpvote=false&theme=dark"
-          alt="Zapshot"
-          style={{width: "auto" ,height: "72px;",marginTop:'30px'}}
-        />
-      </a>
     </section>
   );
 };

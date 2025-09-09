@@ -39,7 +39,7 @@ const Footer = () => {
             
             <a href="https://peerlist.io/fayaz_3000/project/zapshot" target="_blank" rel="noreferrer">
               <img
-                src="https://peerlist.io/api/v1/projects/embed/PRJHGNQKR6BNG66L8HKL9JOPLQMJJJ?showUpvote=false&theme=dark"
+                src="https://peerlist.io/api/v1/projects/embed/PRJHGNQKR6BNG66L8HKL9JOPLQMJJJ?showUpvote=true&theme=dark"
                 alt="Zapshot"
                 style={{width: "auto" ,height: "72px;",marginTop:'10px'}}
               />

@@ -53,6 +53,9 @@ function Screenshot() {
   const [showPauseOverlay,setShowPauseOverlay] = useState(false);
   const [postDetails,setPostDetails] = useState(null);
   const [parentWidth, setParentWidth] = useState(460);
+  const [foldText, setFoldText] = useState(false);
+  const [showCaption,setShowCaption] = useState(true);
+  const [showGridView,setShowGridView] = useState(false);
 
   React.useEffect(() => {
     if (paramDisplay === 'pricing') {
@@ -80,7 +83,7 @@ function Screenshot() {
     // Handle URL submission here
     console.log('URL submitted:', posturl);
 
-    const allowedPlatforms = ["x.com", "peerlist.io", "threads.com", "reddit.com","youtu.be/","youtube.com","producthunt.com","www.producthunt.com"];
+    const allowedPlatforms = ["x.com", "peerlist.io", "threads.com", "reddit.com","youtu.be/","youtube.com","producthunt.com","www.producthunt.com","www.instagram.com","instagram.com"];
     const isAllowed = allowedPlatforms.some(platform => posturl.includes(platform));
 
     if (!isAllowed) {
@@ -407,7 +410,11 @@ function Screenshot() {
     onExport: handleExport,
     exporting,
     parentWidth, setParentWidth,
+    foldText, setFoldText,
+    showCaption, setShowCaption,
+    showGridView, setShowGridView
   };
+
   const tweetPreviewProps = {
     theme,
     selectedColor,
@@ -427,6 +434,9 @@ function Screenshot() {
     tweetRef,
     postDetails,
     parentWidth,
+    foldText,
+    showCaption,
+    showGridView
   };
 
   // Skeleton component for loading

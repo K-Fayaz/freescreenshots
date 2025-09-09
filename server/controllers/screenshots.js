@@ -32,8 +32,13 @@ const {
 } = require("../helpers/Youtube.scraper");
 
 const {
-  getProductHuntLaunchDetails
+  getProductHuntLaunchDetails,
 } = require("../helpers/ProductHunt");
+
+const {
+  scrapeInstagramPost,
+  extractIgPostData
+} = require("../helpers/Instagram.scraper");
 
 const getDetails = async (req, res) => {
     try {
@@ -111,6 +116,10 @@ const getDetails = async (req, res) => {
       else if (platform.includes('www.producthunt.com') || platform.includes('producthunt.com')){
         data = await getProductHuntLaunchDetails(url);
         // console.log(data);
+      }
+      else if (platform.includes('www.instagram.com') || platform.includes('instagram.com')) {
+        let rawJson = await scrapeInstagramPost(url);
+        data = await extractIgPostData(rawJson);
       }
       else {
         return res.status(400).json({ error: "Invalid URL" });

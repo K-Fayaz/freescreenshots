@@ -13,6 +13,7 @@ import RedditPost from './RedditPost';
 import BASE_URL from '@/config';
 import axios from 'axios';
 import ProductHunt from './ProductHunt';
+import InstagramPost from './Instagram/InstagramPost';
 
 interface TweetPreviewProps {
   theme: 'Light' | 'Dark';
@@ -33,6 +34,9 @@ interface TweetPreviewProps {
   showProjects: boolean;
   foldProjects: boolean;
   showPauseOverlay: boolean;
+  foldText: boolean;
+  showCaption: boolean;
+  showGridView: boolean;
 }
 
 interface userType {
@@ -58,7 +62,10 @@ const TweetPreview: React.FC<TweetPreviewProps> = ({
   showProjects,
   foldProjects,
   parentWidth,
-  showPauseOverlay
+  showPauseOverlay,
+  foldText,
+  showCaption,
+  showGridView
 }) => {
   // Determine background for light mode
   const isGradient = selectedColor.startsWith('linear-gradient');
@@ -130,7 +137,7 @@ const TweetPreview: React.FC<TweetPreviewProps> = ({
     <div className="overflow-y-auto grid place-items-center">
       <div style={{ background: parentBg, padding }} className='shadow-lg transition-all duration-400' ref={tweetRef}>
         <div
-          className={`h-auto transition-all duration-500 ${childBg} ${childText} ${fontClass}`}
+          className={`h-auto transition-all duration-500 ${childBg} ${childText} ${fontClass} rounded-xl`}
           style={{ width: parentWidth + 'px', ...(theme === 'Dark' ? { background: childBg, color: '#fff' } : {}) }}
         >
           {/* Render post details if available */}
@@ -173,6 +180,8 @@ const TweetPreview: React.FC<TweetPreviewProps> = ({
               )
             ) : postDetails.platform === "www.producthunt.com" ? (
               <ProductHunt details={postDetails.post} logo={logo} theme={theme} showMetrics={showMetrics} showViews={showViews} userType={userType} font={font} />
+            ) : postDetails.platform === "www.instagram.com" ? (
+              <InstagramPost details={postDetails.post} logo={logo} theme={theme} showMetrics={showMetrics} showViews={showViews} userType={userType} fontClass={fontClass} foldText={foldText} showCaption={showCaption} showGridView={showGridView}/>
             ) : (
               <h1>Could not Find this platform! Please Report this!</h1>
             )
