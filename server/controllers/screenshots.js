@@ -37,7 +37,10 @@ const {
 
 const {
   scrapeInstagramPost,
-  extractIgPostData
+  extractIgPostData,
+  scrapeInstagramProfile,
+  scrapeInstagramProfileHTML,
+  passMountDivContent
 } = require("../helpers/Instagram.scraper");
 
 const getDetails = async (req, res) => {
@@ -118,8 +121,21 @@ const getDetails = async (req, res) => {
         // console.log(data);
       }
       else if (platform.includes('www.instagram.com') || platform.includes('instagram.com')) {
-        let rawJson = await scrapeInstagramPost(url);
-        data = await extractIgPostData(rawJson);
+        if (url.includes("/p/") || url.includes("/reel/") || url.includes("/tv/")) {
+          let rawJson = await scrapeInstagramPost(url);
+          data = await extractIgPostData(rawJson);
+          type = "post"
+          console.log("this is a post url");
+        } else {
+          // type = "profile"
+          // console.log("this is a profile url");
+          // html = await scrapeInstagramProfileHTML(url);
+          // data = await passMountDivContent(html);
+          return res.status(400).json({
+            status: false,
+            message:"Instagram Profiles integrations are coming soon!"
+          });
+        }
       }
       else {
         return res.status(400).json({ error: "Invalid URL" });

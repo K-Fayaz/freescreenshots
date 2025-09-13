@@ -32,14 +32,13 @@ async function scrapeInstagramPost(url) {
             timeout: 120000
         });
         const page = await browser.newPage();
-        page.setDefaultTimeout(60000);
-        page.setDefaultNavigationTimeout(60000);
+        page.setDefaultTimeout(80000);
+        page.setDefaultNavigationTimeout(80000);
         await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36');
         await page.setExtraHTTPHeaders({
             'accept-language': 'en-US,en;q=0.9'
         });
         await page.goto(url, { waitUntil: "networkidle2" });
-        // const bodyHtml = await page.$eval('body', el => el.outerHTML);
 
         const rawJson = await page.evaluate(() => {
         const scriptTag = Array.from(document.querySelectorAll("script[type='application/json']"))
@@ -48,16 +47,14 @@ async function scrapeInstagramPost(url) {
         });
 
         await browser.close();
-        // fs.writeFileSync("./text.json", rawJson)
+        // fs.writeFileSync("./text2.html", bodyHtml)
         return rawJson;
-        // return bodyHtml;
     } catch (err) {
         if (browser) await browser.close();
         console.log("something went wrong: ", err);
         throw err;
     }
 }
-
 
 function extractCleanIgPostData(rawJson) {
   try {
@@ -191,7 +188,182 @@ async function extractIgPostData(rawJson) {
     }
 }
 
+async function scrapeInstagramProfile(url) {
+    let browser;
+    console.log("this is scraping url for profile details...");
+    try {
+        browser = await puppeteer.launch({
+            headless: "new",
+            args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-dev-shm-usage',
+                '--disable-extensions',
+                '--disable-gpu',
+                '--disable-web-security',
+                '--disable-features=VizDisplayCompositor',
+                '--no-first-run',
+                '--no-zygote',
+                '--single-process',
+                '--disable-background-timer-throttling',
+                '--disable-backgrounding-occluded-windows',
+                '--disable-renderer-backgrounding',
+                '--ignore-certificate-errors'
+            ],
+            protocolTimeout: 180000,
+            timeout: 150000
+        });
+        const page = await browser.newPage();
+        page.setDefaultTimeout(100000);
+        page.setDefaultNavigationTimeout(100000);
+        await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36');
+        await page.setExtraHTTPHeaders({
+            'accept-language': 'en-US,en;q=0.9'
+        });
+        await page.goto(url, { waitUntil: "networkidle2" });
+        const bodyHtml = await page.$eval('body', el => el.outerHTML);
+
+        await browser.close();
+        fs.writeFileSync("./text2.html", bodyHtml);
+        return bodyHtml;
+    } catch (err) {
+        if (browser) await browser.close();
+        console.log("something went wrong: ", err);
+        throw err;
+    }
+}
+
+async function scrapeInstagramProfileHTML(url) {
+    let browser;
+    try {
+        browser = await puppeteer.launch({
+            headless: "new",
+            args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-dev-shm-usage',
+                '--disable-extensions',
+                '--disable-gpu',
+                '--disable-web-security',
+                '--disable-features=VizDisplayCompositor',
+                '--no-first-run',
+                '--no-zygote',
+                '--single-process',
+                '--disable-background-timer-throttling',
+                '--disable-backgrounding-occluded-windows',
+                '--disable-renderer-backgrounding',
+                '--ignore-certificate-errors'
+            ],
+            protocolTimeout: 180000,
+            timeout: 120000
+        });
+
+        const page = await browser.newPage();
+        page.setDefaultTimeout(80000);
+        page.setDefaultNavigationTimeout(80000);
+        
+        await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36');
+        await page.setExtraHTTPHeaders({
+            'accept-language': 'en-US,en;q=0.9'
+        });
+        
+        await page.goto(url, { waitUntil: "networkidle2" });
+
+        // Wait for profile-specific elements to load
+        try {
+            // Wait for common Instagram profile elements to appear
+            await page.waitForSelector('article, main', { timeout: 30000 });
+            // Additional wait for dynamic content
+            await new Promise(resolve => setTimeout(resolve, 5000));
+            // Scroll to trigger lazy loading
+            await page.evaluate(() => {
+                window.scrollTo(0, document.body.scrollHeight / 2);
+            });
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+        } catch (e) {
+            console.log("Profile elements might not have loaded completely:", e.message);
+        }
+
+        // Scrape only the div with id starting with "mount_"
+        const mountDivHTML = await page.evaluate(() => {
+            const mountDiv = document.querySelector('div[id^="mount_"]');
+            return mountDiv ? mountDiv.outerHTML : null;
+        });
+
+        await browser.close();
+        fs.writeFileSync('./text2.html', mountDivHTML);
+        return mountDivHTML;
+        
+    } catch (err) {
+        if (browser) await browser.close();
+        console.log("something went wrong: ", err);
+        throw err;
+    }
+}
+
+async function extractInstagramProfileDetails(page) {
+  const profileData = await page.evaluate(() => {
+    // Helper function to get text from a selector, or null if not found
+    const getText = (selector) => {
+      const el = document.querySelector(selector);
+      return el ? el.textContent.trim() : null;
+    };
+
+    // Helper function to get the title attribute for full follower count
+    const getTitle = (selector) => {
+      const el = document.querySelector(selector);
+      return el ? el.getAttribute('title') : null;
+    };
+
+    // Check for the verified badge SVG
+    const isVerified = !!document.querySelector('svg[aria-label="Verified"]');
+
+    // Scrape the main details
+    const username = getText('h2.x1lliihq');
+    const fullName = getText('section.x1qgnrqa span.x1lliihq');
+    
+    // Scrape counts from the list items
+    const postsEl = document.querySelector('ul li:nth-child(1) span.x5n08af span');
+    const followersEl = document.querySelector('ul li:nth-child(2) span.x5n08af');
+    const followingEl = document.querySelector('ul li:nth-child(3) span.x5n08af span');
+    
+    // Scrape the bio
+    const bioText = getText('div.xmaf8s6 span');
+    const profession = getText('div._ap3a._aaco._aacu._aacy._aad6._aade');
+    const bio = profession && bioText ? `${profession}: ${bioText}` : bioText;
+
+    return {
+      username: username || 'N/A',
+      fullName: fullName || 'N/A',
+      isVerified: isVerified,
+      posts: postsEl ? postsEl.textContent.trim() : 'N/A',
+      followers: followersEl ? followersEl.getAttribute('title') : 'N/A',
+      following: followingEl ? followingEl.textContent.trim() : 'N/A',
+      bio: bio || 'N/A'
+    };
+  });
+
+  console.log(profileData);
+  return profileData;
+}
+
+async function passMountDivContent(divContent) {
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+
+    await page.setContent(divContent);
+
+    const profileDetails = await extractInstagramProfileDetails(page);
+    await browser.close();
+
+    return profileDetails;
+}
+
 module.exports = {
     scrapeInstagramPost,
-    extractIgPostData
+    extractIgPostData,
+    scrapeInstagramProfile,
+    scrapeInstagramProfileHTML,
+    passMountDivContent
 }

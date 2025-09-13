@@ -704,9 +704,9 @@ const Sidebar: React.FC<SidebarProps> = ({
 
         {/* Action Buttons */}
         <div className="flex space-x-2">
-          <button className="flex items-center justify-center w-10 h-10 border border-gray-300 rounded-lg hover:bg-gray-50">
+          {/* <button className="flex items-center justify-center w-10 h-10 border border-gray-300 rounded-lg hover:bg-gray-50">
             <Copy size={16} />
-          </button>
+          </button> */}
           <button 
             className={`flex items-center justify-center space-x-2 flex-1 px-4 py-2 rounded-lg transition-colors ${
               exporting 
