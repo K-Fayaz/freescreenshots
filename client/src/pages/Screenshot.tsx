@@ -31,8 +31,10 @@ function Screenshot() {
   const queryParams = new URLSearchParams(location.search);
   const paramUrl = queryParams.get("url");
   const paramDisplay = queryParams.get("display");
+  const plan = queryParams.get('plan');
   const { showToast,showError } = useToast();
   const [isProModalOpen, setIsProModalOpen] = useState(false);
+  const [showPlans, setShowPlans] = useState(false);
   
 
   // Shared state for Sidebar and TweetPreview
@@ -486,7 +488,7 @@ function Screenshot() {
   return (
     <ToastProvider>
       <div className="flex flex-col bg-gray-50">
-        <Header onNewTweetClick={handleNewTweetClick} />
+        <Header onNewTweetClick={handleNewTweetClick} setShowPlans={setShowPlans} setIsProModalOpen={setIsProModalOpen}/>
         <div className="flex-1 flex md:flex-row flex-col">
           <div className="flex-1 grid place-items-center">
             {loading ? <Skeleton /> : !postDetails ? <EmptyState /> : <TweetPreview {...tweetPreviewProps} />}
@@ -495,7 +497,7 @@ function Screenshot() {
         </div>
         <NewTweetModal isOpen={isModalOpen} onClose={handleCloseModal} setPostDetails={setPostDetails} setLoading={setLoading} />
         {/* <DownloadSuccessModal isOpen={isDownloadModalOpen} onClose={handleCloseDownloadModal} /> */}
-        <GetProModal isOpen={isProModalOpen} onClose={() => setIsProModalOpen(false)} />
+        <GetProModal isOpen={isProModalOpen} showPlans={showPlans} onClose={() => setIsProModalOpen(false)} plan={plan || ''} />
       </div>
     </ToastProvider>
   );

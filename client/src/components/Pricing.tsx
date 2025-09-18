@@ -6,14 +6,16 @@ import { Check, Star, Zap } from 'lucide-react';
 
 const plans = [
     {
-      name: 'Free',
-      price: '$0',
+      name: 'Basic',
+      price: '$2',
       description: 'Perfect for getting started',
       features: [
-        'Basic features',
-        'Watermark on screenshots',
-        'Limited support',
-        'No credit card required'
+        'One-time payment for up to 100 pixel-perfect screenshots',
+        'Take screenshots of posts by its URL',
+        'Create realistic mock posts of Twitter',
+        'No Watermark',
+        'Priority support',
+        'All Platforms included'
       ],
       buttonText: 'Get Started',
       popular: false,
@@ -26,9 +28,11 @@ const plans = [
       description: 'Everything you need to succeed',
       features: [
         'One-time payment for up to 1000 pixel-perfect screenshots',
+        'Take screenshots of posts by its URL',
+        'Create realistic mock posts of Twitter',
         'No watermark',
         'Priority support',
-        'All basic features included'
+        'All Platforms included'
       ],
       buttonText: 'Buy Pro',
       popular: true,
@@ -42,49 +46,36 @@ const Pricing = () => {
   const handlePlanClick = (planName:string) => {
     
     // User is logged in and clicks on 'Free model Get Started button'
-    if (planName === 'Free' && localStorage.getItem('token')) {
-      return navigate('/screenshot');
-    }
+    let token = localStorage.getItem('token') || undefined;
 
-    // User is logged in and clicks on 'buy pro' button 
-    if (planName !== 'Free' && localStorage.getItem('token')) {
-
-      let url = `${BASE_URL}api/polar-checkout`;
-
-      axios({
-        method: "POST",
-        url: url,
-        data: {
-          id: localStorage.getItem('user'),
-        },
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })
-      .then((response) => {
-        let url = response.data.checkoutUrl;
-        if (url) {
-          window.location.href = url;
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      })
-      .finally(() => {
-        return;
-      })
-    }
-
-    // User is not loggedin and clicks on free
-    if (planName === 'Free') {  
-      navigate('/signin');
-      return;
-    }
-
-    let token = localStorage.getItem('token');
     if (!token) {
-      return navigate('/signin?next=pricing');
+      return navigate(`/signin?next=pricing&plan=${planName?.toLocaleLowerCase()}`);
     }
+    
+    let url = `${BASE_URL}api/polar-checkout?plan=${planName?.toLowerCase()}`;
+
+    axios({
+      method: "POST",
+      url: url,
+      data: {
+        id: localStorage.getItem('user'),
+      },
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then((response) => {
+      let url = response.data.checkoutUrl;
+      if (url) {
+        window.location.href = url;
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+    })
+    .finally(() => {
+      return;
+    });
   }
   return (
     <div className="w-full py-20 bg-white">

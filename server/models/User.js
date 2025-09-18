@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const { type } = require("os");
+const { string } = require("zod");
 const { Schema } = mongoose;
 
 const userSchema = new Schema({
@@ -24,9 +25,14 @@ const userSchema = new Schema({
         enum: ["free", "premium"],
         default: "free",
     },
+    plan: {
+        type: String,
+        enum: ["free", "basic", "pro"],
+        default: "free"
+    },
     credits: {
         type: Number,
-        default: 0,
+        default: 5,
     }
 });
 

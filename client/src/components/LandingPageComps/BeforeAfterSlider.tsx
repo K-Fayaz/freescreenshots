@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
-import BeforeImage from "../../assets/1000013651.jpg";
-import AfterImage from "../../assets/after-3.png"; // optional if you have one
+import BeforeImage from "../../assets/naval-snap.png";
+import AfterImage from "../../assets/naval-download.png"; 
 
 const BeforeAfterSlider: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -47,8 +47,8 @@ const BeforeAfterSlider: React.FC = () => {
       style={{ touchAction: "none" }}
     >
       {/* AFTER layer (always full size). Replace bg with an image if you have one */}
-      <div>
-        <img src={AfterImage} alt="After" className="absolute inset-0 w-[95%] h-[95%] rounded-md self-center mx-auto object-contain pointer-events-none" />
+      <div style={{borderRadius:'15px'}}>
+        <img src={AfterImage} alt="After" style={{borderRadius:'15px'}} className="absolute inset-0 w-[90%] h-[80%] self-center mx-auto object-cover pointer-events-none"/>
       </div>
       {/* <div className="absolute inset-0 bg-yellow-800" /> */}
 

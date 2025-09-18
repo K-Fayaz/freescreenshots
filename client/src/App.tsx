@@ -9,19 +9,37 @@ import TwitterVideoDownloader from './pages/TwitterVideoDownloader';
 import RedditVideoDownloader from './pages/RedditVideoDownloader';
 // import TwitterBannerMaker from './pages/TwitterBannerMaker';
 import { ToastProvider } from './components/ToastContext';
+import ProtectedRoute from './components/ProtectedRoute';
+import FakePost from './pages/FakePosts';
 
 function App() {
+  const token = localStorage.getItem('token') || null;
+  // console.log("token is : ",token);
   return (
     <ToastProvider>
       <Router>
         <Routes>
           <Route path="/" element={<LandingPageTwo />} />
-          <Route path="/screenshot" element={<Screenshot />} />
           <Route path="/signin" element={<AuthPage />} />
-          <Route path="/threads-video-downloader" element={<ThreadsVideoDownloader />} />
-          <Route path="/twitter-video-downloader" element={<TwitterVideoDownloader />} />
-          <Route path="/reddit-video-downloader" element={<RedditVideoDownloader />} />
-          {/* <Route path="/twitter-banner-maker" element={<TwitterBannerMaker />} /> */}
+          <Route element={<ProtectedRoute  isAuthenticated={token ? true : false } />}>
+            <Route path="/screenshot" element={<Screenshot />} />
+          </Route>
+          
+          <Route element={<ProtectedRoute  isAuthenticated={token ? true : false } />}>
+            <Route path="/threads-video-downloader" element={<ThreadsVideoDownloader />} />
+          </Route>
+
+          <Route element={<ProtectedRoute  isAuthenticated={token ? true : false } />}>
+            <Route path="/twitter-video-downloader" element={<TwitterVideoDownloader />} />
+          </Route>
+
+          <Route element={<ProtectedRoute  isAuthenticated={token ? true : false } />}>
+            <Route path="/reddit-video-downloader" element={<RedditVideoDownloader />} />
+          </Route>
+
+          <Route element={<ProtectedRoute  isAuthenticated={token ? true : false } />}>
+            <Route path="/fake-posts-generator" element={<FakePost />} />
+          </Route>
         </Routes>
       </Router>
     </ToastProvider>

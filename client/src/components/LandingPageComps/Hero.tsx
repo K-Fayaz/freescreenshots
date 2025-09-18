@@ -43,6 +43,7 @@ const Hero = () => {
           type="text"
           placeholder="Paste your link here..."
           value={url}
+          required
           onChange={(e) => setUrl(e.target.value)}
           className="flex-[8] px-3 py-2 md:px-6 md:py-4 text-md md:text-lg border-none outline-none bg-gray-100"
           style={{ width: '80%' }}

@@ -29,14 +29,16 @@ app.post(
         process.env['POLAR_WEBHOOK_SECRET'] ?? '',
       );
       // Process the event
-      console.log("Received event:", event);
+      // console.log("Received event:", event);
 
+      console.log(event.type);
       if (event.type === 'order.paid') {
         console.log("Inside the webhook");
         
         console.log("event.data: ",event.data);
         
         const userId = event.data?.metadata?.user;
+        const plan = event.data?.metadata?.plan;
         
         if (!userId) {
           console.log("Ignoring event without user metadata:", event);
@@ -57,7 +59,14 @@ app.post(
         }
 
         user.subscription = "premium";
-        user.credits += 1000; // Add 1000 credits on subscription
+        
+        if (plan == "pro") {
+          user.credits += 1000; // Add 1000 credits on subscription
+        } else {
+          user.credits += 100; // add 100 credits for 'basic' Plan
+        }
+
+        user.plan = plan;
 
         await user.save();
         console.log("User subscription updated successfully!");
@@ -93,7 +102,7 @@ passport.use(new GoogleStrategy({
 }, async (accessToken, refreshToken, profile, done) => {
   try {
 
-    console.log(profile);
+    // console.log(profile);
     let userData = {
       email: profile.emails[0].value,
       name: profile.displayName,
@@ -119,13 +128,24 @@ const polar = new Polar({
     // server:"sandbox",
 });
 
-// const local = "http://localhost:5173/screenshot";
-const local = "https://zapshot.in/screenshot";
+// "http://localhost:5173/screenshot"
+let local ;
+local = process.env.NODE_ENV === 'production' ? "https://zapshot.in/screenshot" : "http://localhost:5173/screenshot";
 
 app.post('/api/polar-checkout',async (req,res) => {
     try {
         const { id } = req.body;
-        console.log("req.body is: ",req.body);
+        let plan = req.query?.plan || undefined;
+        console.log("user's selected plan is ,", req.query);
+
+        if (!plan) {
+          return res.status(400).json({
+            status: false,
+            message:"Plan is missing!"
+          });
+        }
+
+        // console.log("req.body is: ",req.body);
         if (!id) {
             res.status(400).json({
                 status: false,
@@ -143,12 +163,19 @@ app.post('/api/polar-checkout',async (req,res) => {
           });
         }
 
+        let products = [];
+        if (plan == "basic") {
+          products = [ process.env.POLAR_PRODUCT_ID_BASIC ]
+        } else if (plan == "pro") {
+          products = [ process.env.POLAR_PRODUCT_ID ];
+        }
+
         const checkout = await polar.checkouts.create({
-            products: [ process.env.POLAR_PRODUCT_ID ],
+            products,
             successUrl: local,
             customerEmail: user.email || "",
-            metadata: { user: id },
-            customerMetadata: { user: id }
+            metadata: { user: id, plan },
+            customerMetadata: { user: id, plan }
         });
 
         // console.log("checkout content: ", checkout);

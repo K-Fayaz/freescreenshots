@@ -7,7 +7,10 @@ router.get('/google/signin', (req, res, next) => {
         scope: ['profile', 'email'],
         session: false,
         prompt: 'select_account',
-        state: req.query.next
+        state: JSON.stringify({
+            next: req.query?.next || null,
+            plan: req.query?.plan || null
+        })
     })(req, res, next);
 });
 

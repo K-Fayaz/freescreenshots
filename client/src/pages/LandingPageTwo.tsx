@@ -8,6 +8,7 @@ import Pricing from "@/components/Pricing";
 import Footer from "@/components/Footer";
 import FeedbackSection from "@/components/LandingPageComps/FeedbackSection";
 import BeforeAfter from "@/components/LandingPageComps/BeforeAfter";
+import CTASection from "@/components/LandingPageComps/CTASection";
 
 const LandingPageTwo = () => {
   return (
@@ -23,7 +24,10 @@ const LandingPageTwo = () => {
           <FAQ />
         </section>
         {/* <section id="pricing" className="w-full h-screen bg-gray-50"> */}
-          <Pricing />
+        <Pricing />
+        <section className="w-3/4 mx-auto">
+          <CTASection />
+        </section>
         {/* <FeedbackSection /> */}
         {/* </section> */}
         <Footer/>

@@ -12,6 +12,7 @@
   "dependencies": {
     "axios": "^1.10.0",
     "clsx": "^2.1.1",
+    "emoji-picker-react": "^4.13.3",
     "fabric": "^6.7.1",
     "gsap": "^3.13.0",
     "hls.js": "^1.6.9",

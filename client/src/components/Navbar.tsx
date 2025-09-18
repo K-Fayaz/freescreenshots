@@ -38,10 +38,14 @@ const Navbar = () => {
         });
       }else {
         setIsAuthenticated(false);
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
       }
     })
     .catch((err) => {
       console.log(err);
+      localStorage.removeItem('user');
+      localStorage.removeItem('token');
     })
 
   }, []);

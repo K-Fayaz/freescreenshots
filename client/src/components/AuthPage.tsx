@@ -10,6 +10,7 @@ const AuthPage = () => {
   const [error, setError] = useState<string | null>(null);
   const queryParams = new URLSearchParams(location.search);
   const nextUrl = queryParams.get("next");
+  const chosenPlan = queryParams.get('plan');
 
   const errorMessageMap: Record<string, string> = {
     'invalid_callback': 'Invalid callback from X. Please try logging in again.',
@@ -30,6 +31,7 @@ const AuthPage = () => {
     const success = params.get('success');
     const id = params.get('id');
     const next = params.get('next');
+    const plan = params.get('plan');
     // const email = params.get('email');
     
     // Handle Google OAuth success callback
@@ -38,15 +40,21 @@ const AuthPage = () => {
       localStorage.setItem('user', id || '');
   
       if (next && next=='pricing') {
-        navigate(`/screenshot?display=${next}`);
+        setTimeout(() => {
+          window.location.href = `/screenshot?display=${next}${plan ? `&plan=${plan?.toLowerCase()}`: ''}`;
+        },100);
         return;
       }
       else if (next) {
-        navigate(`/screenshot?url=${next}`);
+        setTimeout(() => {
+          window.location.href = `/screenshot?url=${next}`
+        }, 100);
         return;
       }
 
-      navigate('/screenshot');
+      setTimeout(() => {
+        window.location.href = '/screenshot';
+      }, 100);
       return;
     }
     
@@ -60,7 +68,7 @@ const AuthPage = () => {
   const handleGoogleSignIn = () => {
     // Determine the correct endpoint based on login/signup mode
     // const endpoint = isLogin ? 'login' : `signup?timezone=${userTimezone}`;
-    let url = `${BASE_URL}api/auth/google/signin?next=${nextUrl || ''}`;
+    let url = `${BASE_URL}api/auth/google/signin?next=${nextUrl || ''}${chosenPlan ? `&plan=${chosenPlan}`:''}`;
 
     // For Google OAuth, we redirect directly to the Google auth URL
     window.location.href = url;
