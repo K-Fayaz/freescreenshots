@@ -6,10 +6,9 @@ const callBack = async (req,res) => {
   let userDetails = req.user;
   let query = req.query.state ? JSON.parse(req.query.state) : null;
 
-  console.log("query is  : ", query);
-
   let next = query?.next || undefined;
   let plan = query?.plan || undefined;
+  let redirect = query?.redirect || undefined;
 
   // console.log('next:', next);
 
@@ -20,7 +19,7 @@ const callBack = async (req,res) => {
   if (user) {
     const result = await loginUser(userDetails);
     if (result.success) {
-      return res.redirect(`${client_url}/signin?status=true&token=${result.token}&id=${result.id}&success=true${next ? `&next=${next}` : ''}${plan ? `&plan=${plan}` : ''}`);
+      return res.redirect(`${client_url}/signin?status=true&token=${result.token}&id=${result.id}&success=true${next ? `&next=${next}` : ''}${plan ? `&plan=${plan}` : ''}${redirect ? `&redirect=${redirect}` : ''}`);
     } else {
       return res.redirect(`${client_url}/signin?status=false&message=${result.message}`);
     } 
@@ -28,7 +27,7 @@ const callBack = async (req,res) => {
   else {
     const result = await signupUser(userDetails);
     if (result.success) {
-      return res.redirect(`${client_url}/signin?status=true&token=${result.token}&id=${result.id}&success=true${next ? `&next=${next}` : ''}${plan ? `&plan=${plan}` : ''}`);
+      return res.redirect(`${client_url}/signin?status=true&token=${result.token}&id=${result.id}&success=true${next ? `&next=${next}` : ''}${plan ? `&plan=${plan}` : ''}${redirect ? `&redirect=${redirect}` : ''}`);
     } else {
       return res.redirect(`${client_url}/signin?status=false&message=${result.message}`);
     }

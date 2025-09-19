@@ -25,19 +25,19 @@ function App() {
             <Route path="/screenshot" element={<Screenshot />} />
           </Route>
           
-          <Route element={<ProtectedRoute  isAuthenticated={token ? true : false } />}>
+          <Route element={<ProtectedRoute  isAuthenticated={token ? true : false } next={'/threads-video-downloader'} />}>
             <Route path="/threads-video-downloader" element={<ThreadsVideoDownloader />} />
           </Route>
 
-          <Route element={<ProtectedRoute  isAuthenticated={token ? true : false } />}>
+          <Route element={<ProtectedRoute  isAuthenticated={token ? true : false } next={'/twitter-video-downloader'} />}>
             <Route path="/twitter-video-downloader" element={<TwitterVideoDownloader />} />
           </Route>
 
-          <Route element={<ProtectedRoute  isAuthenticated={token ? true : false } />}>
+          <Route element={<ProtectedRoute  isAuthenticated={token ? true : false } next={'/reddit-video-downloader'} />}>
             <Route path="/reddit-video-downloader" element={<RedditVideoDownloader />} />
           </Route>
 
-          <Route element={<ProtectedRoute  isAuthenticated={token ? true : false } />}>
+          <Route element={<ProtectedRoute  isAuthenticated={token ? true : false } next={'/fake-posts-generator'} />}>
             <Route path="/fake-posts-generator" element={<FakePost />} />
           </Route>
         </Routes>

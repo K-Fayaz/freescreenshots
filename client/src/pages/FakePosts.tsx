@@ -10,9 +10,11 @@ import { FaInstagramSquare } from "react-icons/fa";
 import FakeTwitterPostEditor from "@/components/MockPosts/TwitterEditor";
 import { Download } from "lucide-react";
 import * as htmlToImage from 'html-to-image';
-import { FcNext } from "react-icons/fc";
 import FakeTweet from "@/components/MockPosts/FakeTweet";
 import GetProModal from "../components/GetProModal";
+import Background from "@/components/MockPosts/Background";
+import FakeLinkedInPostEditor from "@/components/MockPosts/FakeLinkedInPostEditor";
+import FakeLinkedInPost from "@/components/MockPosts/FakeLinkedInPost";
 
 interface userDetails {
   credits: number;
@@ -61,6 +63,50 @@ let initialValue = {
     font: 'ibmSans',
     theme: 'light',
     mediaName: ''
+}
+
+interface LinkedInPostProps {
+    name: string;
+    headline: string;
+    verified: boolean;
+    profilePic: string;
+    time: string;
+    date: string;
+    appearance: string;
+    content: string;
+    media: string[];
+    views: string;
+    likes: string;
+    comments: string;
+    reposts: string;
+    bookmarks: string;
+    font: string;
+    coloredIcons: boolean;
+    logo: string;
+    theme: string;
+    mediaName: string;
+}
+
+let initialLinkedinValue = {
+    name: "Ranbeer Kapoor",
+    headline: "Product Manager @ Microsoft | Driving AI-powered solutions | Ex-Startup Founder | Speaker on Innovation & Strategy",
+    verified: true,
+    profilePic: "",
+    time: "12:55",
+    date: "2025-09-11",
+    appearance: "light",
+    content: "Thrilled to share that our team has just launched a new AI feature that will transform the way businesses interact with customers. \n\n Grateful for the hard work, collaboration, and late nights that made this possible!",
+    media: [],
+    views: "1200",
+    likes: "998",
+    comments: "35",
+    reposts: "9",
+    bookmarks: "",
+    font: "ibmSans",
+    coloredIcons: true,
+    logo: "Linkedin",
+    theme: "light",
+    mediaName: "",
 }
 
 const solidColors = [
@@ -136,6 +182,7 @@ const FakePost = () => {
     const navigate = useNavigate();
     const [userDetails,setUserDetails] = useState<userDetails | null>(null);
     const [twitterPostData, setTwitterPostData] = useState<TwitterPostProps | null>(initialValue);
+    const [linkedInPostData, setLinkedInPostData] = useState<LinkedInPostProps | null>(initialLinkedinValue);
     // Tab state for Content/Background
     const [selectedTab, setSelectedTab] = useState<'Content' | 'Background'>("Content");
     // State for selected background (color or gradient)
@@ -143,6 +190,18 @@ const FakePost = () => {
     const postRef = useRef<HTMLDivElement>(null);
     const [isProModalOpen,setIsProModalOpen] = useState(false);
     const [showPlans, setShowPlans] = useState(false);
+    const [selectedPlatform,setSelectedPlatform] = useState<string>('X');
+
+    const fontMap: Record<string, string> = {
+        Inter: 'font-sans',
+        ibmSans: 'font-ibmSans',
+        noto: 'font-noto',
+        rubik: 'font-rubik',
+        geistMono: 'font-geistMono',
+        poppins: 'font-poppins',
+        imbMono: 'font-imbMono',
+    };
+    const fontClass = fontMap[twitterPostData?.font || 'Inter'] || 'font-sans';
 
     // Download handler with loading state
     const [downloading, setDownloading] = useState(false);
@@ -191,7 +250,6 @@ const FakePost = () => {
     
     
     useEffect(() => {
-        console.log(twitterPostData)
         const token = localStorage.getItem('token');
         if (!token) {
           return;
@@ -229,7 +287,7 @@ const FakePost = () => {
             return navigate('/signin');
           }
         })
-      }, []);
+    }, []);
 
     return (
         <div className="h-screen">
@@ -262,12 +320,12 @@ const FakePost = () => {
                     <div className="mt-5">
                         {/* <h1 className="ml-5 text-sm">Choose Platform</h1> */}
                         <div className="w-[90%] mx-auto flex mt-3">
-                            <section className="w-12 h-12 border border-black rounded-md grid place-items-center opacity-80">
+                            <section onClick={() => setSelectedPlatform('X')} className={`w-12 h-12 rounded-md grid place-items-center cursor-pointer ${selectedPlatform == 'X' ? 'border border-black':''}`}>
                                 <FaSquareXTwitter size={28} />
                             </section>
 
-                            <section className="w-12 h-12 border border-gray-200 rounded-md grid place-items-center ml-3 opacity-50 cursor-not-allowed">
-                                <div className="relative group w-full h-full flex items-center justify-center" title="coming soon...">
+                            <section onClick={() => setSelectedPlatform('LinkedIn')} className={`w-12 h-12 rounded-md grid place-items-center ml-3 cursor-pointer ${selectedPlatform == 'LinkedIn' ? 'border border-black':''}`}>
+                                <div className="relative group w-full h-full flex items-center justify-center">
                                     <FaLinkedin size={28} />
                                 </div>
                             </section>
@@ -300,48 +358,19 @@ const FakePost = () => {
                     <div className="w-[90%] mx-auto mt-3">
                         {
                             selectedTab === 'Content' ? (
-                                <FakeTwitterPostEditor setTwitterPostData={setTwitterPostData} twitterPostData={twitterPostData}/>
+                                selectedPlatform == 'X' ? (
+                                    <FakeTwitterPostEditor setTwitterPostData={setTwitterPostData} twitterPostData={twitterPostData}/>
+                                ) : selectedPlatform == 'LinkedIn' ? (
+                                    <FakeLinkedInPostEditor setLinkedInPostData={setLinkedInPostData} linkedInPostData={linkedInPostData}/>
+                                ) : null
                             ) : (
-                                <div>
-                                    {/* Here I need to have grid of various different backgrounds */}
-                                    {/* Have two groups */}
-                                    {/* 1. for solid colors have multiple solid colors */}
-                                    <div className="mb-4">
-                                        <h1 className="font-semibold mb-2">Solid Colors</h1>
-                                        <div className="grid grid-cols-8 gap-2">
-                                            {solidColors?.map((color) => (
-                                                <div
-                                                    key={color}
-                                                    className={`w-12 h-12 rounded cursor-pointer border transition-all duration-150 ${selectedBg === color ? 'ring-2 ring-blue-500 border-blue-500 scale-110' : 'border-gray-200'}`}
-                                                    style={{ background: color }}
-                                                    title={color}
-                                                    onClick={() => setSelectedBg(color)}
-                                                />
-                                            ))}
-                                        </div>
-                                    </div>
-                                    {/* 2. for various gradient colors */}
-                                    <div>
-                                        <h1 className="font-semibold mb-2">Gradient Colors</h1>
-                                        <div className="grid grid-cols-5 gap-2">
-                                            {gradientColors.map((gradient, idx) => (
-                                                <div
-                                                    key={idx}
-                                                    className={`w-20 h-8 rounded cursor-pointer border transition-all duration-150 ${selectedBg === gradient ? 'ring-2 ring-blue-500 border-blue-500 scale-110' : 'border-gray-200'}`}
-                                                    style={{ background: gradient }}
-                                                    title={`Gradient ${idx+1}`}
-                                                    onClick={() => setSelectedBg(gradient)}
-                                                />
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
+                                <Background selectedBg={selectedBg} setSelectedBg={setSelectedBg} gradientColors={gradientColors} solidColors={solidColors}/>
                             )
                         }
                     </div>
 
                     <div className="w-[90%] mx-auto mt-3 mb-4 flex justify-between">
-                        <section className="bg-black rounded-md basis-[48%] text-sm flex items-center justify-center text-white p-2">
+                        <section className="bg-black rounded-md basis-[98%] text-sm flex items-center justify-center text-white p-2">
                             <button className="flex items-center" onClick={handleDownload} disabled={downloading}>
                                 {downloading ? (
                                     <svg className="animate-spin h-5 w-5 mr-3 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -351,39 +380,31 @@ const FakePost = () => {
                                 ) : (
                                     <Download size={15} className="mr-3"/>
                                 )}
-                                {downloading ? 'Downloading...' : 'Download'}
+                                {downloading ? 'Exporting...' : 'Export'}
                             </button>
                         </section>
-                        <button className="rounded-md basis-[48%] text-sm flex items-center justify-center p-2 border boder-gray-500">
+                        {/* <button className="rounded-md basis-[48%] text-sm flex items-center justify-center p-2 border boder-gray-500">
                             Next
-                        </button>
+                        </button> */}
                     </div>
                 </section>
 
                 {/* Font map for dynamic font class */}
-                {(() => {
-                    const fontMap: Record<string, string> = {
-                        Inter: 'font-sans',
-                        ibmSans: 'font-ibmSans',
-                        noto: 'font-noto',
-                        rubik: 'font-rubik',
-                        geistMono: 'font-geistMono',
-                        poppins: 'font-poppins',
-                        imbMono: 'font-imbMono',
-                    };
-                    const fontClass = fontMap[twitterPostData?.font || 'Inter'] || 'font-sans';
-                    return (
-                        <section className={`basis-[65%] overflow-y-scroll grid place-items-center ${fontClass}`}>
-                            <div
-                                className="w-[70%] p-10 h-auto min-h-[60%] grid place-items-center rounded-2xl"
-                                style={{ background: selectedBg }}
-                                ref={postRef}
-                            >
+                <section className={`basis-[65%] overflow-y-scroll grid place-items-center ${fontClass}`}>
+                    <div
+                        className="w-[70%] p-10 h-auto min-h-[60%] grid place-items-center rounded-2xl"
+                        style={{ background: selectedBg }}
+                        ref={postRef}
+                    >
+                        {
+                            selectedPlatform == 'X' ? (
                                 <FakeTweet twitterPostData={twitterPostData}/>
-                            </div>
-                        </section>
-                    );
-                })()}
+                            ) : selectedPlatform == 'LinkedIn' ? (
+                                <FakeLinkedInPost linkedInPostData={linkedInPostData}/>
+                            ) : null
+                        }
+                    </div>
+                </section>
             </main>
             <GetProModal isOpen={isProModalOpen} showPlans={showPlans} onClose={() => setIsProModalOpen(false)} plan={''} />
         </div>

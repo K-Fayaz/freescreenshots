@@ -47,11 +47,6 @@ const GetProModal: React.FC<GetProModalProps> = ({ isOpen, onClose, plan, showPl
   const navigate = useNavigate();
   const [loading, setLoading] = React.useState(false);
 
-  useEffect(() => {
-    console.log(showPlans)
-    console.log(isOpen)
-  },[]);
-
   const handleBuyPro = (argPlan:string) => {
     let token = localStorage.getItem('token');
     if (!token) {

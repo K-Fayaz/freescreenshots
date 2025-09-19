@@ -11,6 +11,7 @@ const AuthPage = () => {
   const queryParams = new URLSearchParams(location.search);
   const nextUrl = queryParams.get("next");
   const chosenPlan = queryParams.get('plan');
+  const redirectUrl = queryParams.get('redirect');
 
   const errorMessageMap: Record<string, string> = {
     'invalid_callback': 'Invalid callback from X. Please try logging in again.',
@@ -32,6 +33,8 @@ const AuthPage = () => {
     const id = params.get('id');
     const next = params.get('next');
     const plan = params.get('plan');
+    const redirect = params.get('redirect');
+    console.log("redirect 1: ",redirect)
     // const email = params.get('email');
     
     // Handle Google OAuth success callback
@@ -49,6 +52,11 @@ const AuthPage = () => {
         setTimeout(() => {
           window.location.href = `/screenshot?url=${next}`
         }, 100);
+        return;
+      } else if (redirect) {
+        setTimeout(() => {
+          window.location.href = `${redirect}`;
+        });
         return;
       }
 
@@ -68,7 +76,7 @@ const AuthPage = () => {
   const handleGoogleSignIn = () => {
     // Determine the correct endpoint based on login/signup mode
     // const endpoint = isLogin ? 'login' : `signup?timezone=${userTimezone}`;
-    let url = `${BASE_URL}api/auth/google/signin?next=${nextUrl || ''}${chosenPlan ? `&plan=${chosenPlan}`:''}`;
+    let url = `${BASE_URL}api/auth/google/signin?next=${nextUrl || ''}${chosenPlan ? `&plan=${chosenPlan}`:''}${redirectUrl ? `&redirect=${redirectUrl}`:''}`;
 
     // For Google OAuth, we redirect directly to the Google auth URL
     window.location.href = url;
