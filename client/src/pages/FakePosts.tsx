@@ -15,10 +15,30 @@ import GetProModal from "../components/GetProModal";
 import Background from "@/components/MockPosts/Background";
 import FakeLinkedInPostEditor from "@/components/MockPosts/FakeLinkedInPostEditor";
 import FakeLinkedInPost from "@/components/MockPosts/FakeLinkedInPost";
+import ReplyChainEditor from "@/components/MockPosts/ReplyChainEditor";
+import TwitterReplyChain from "@/components/MockPosts/TwitterReplyChain";
 
 interface userDetails {
   credits: number;
   avatar: string;
+}
+
+interface Reply {
+    comment: string;
+    pfp: string;
+    name: string;
+    headline: string;
+    likesCount: number;
+}
+
+interface TwitterReply {
+    name: string;
+    userHandle: string;
+    pfp: string;
+    comment: string;
+    likesCount: number;
+    retweets: number;
+    comments: number;
 }
 
 interface TwitterPostProps {
@@ -41,6 +61,7 @@ interface TwitterPostProps {
     font: string;
     theme: string;
     mediaName: string;
+    replies: TwitterReply[];
 }
 
 let initialValue = {
@@ -62,7 +83,8 @@ let initialValue = {
     logo: 'X',
     font: 'ibmSans',
     theme: 'light',
-    mediaName: ''
+    mediaName: '',
+    replies: []
 }
 
 interface LinkedInPostProps {
@@ -85,6 +107,7 @@ interface LinkedInPostProps {
     logo: string;
     theme: string;
     mediaName: string;
+    replies: Reply[];
 }
 
 let initialLinkedinValue = {
@@ -107,6 +130,7 @@ let initialLinkedinValue = {
     logo: "Linkedin",
     theme: "light",
     mediaName: "",
+    replies:[]
 }
 
 const solidColors = [
@@ -184,7 +208,7 @@ const FakePost = () => {
     const [twitterPostData, setTwitterPostData] = useState<TwitterPostProps | null>(initialValue);
     const [linkedInPostData, setLinkedInPostData] = useState<LinkedInPostProps | null>(initialLinkedinValue);
     // Tab state for Content/Background
-    const [selectedTab, setSelectedTab] = useState<'Content' | 'Background'>("Content");
+    const [selectedTab, setSelectedTab] = useState<'Content' | 'Background' | 'Reply'>("Content");
     // State for selected background (color or gradient)
     const [selectedBg, setSelectedBg] = useState<string>(solidColors[3]);
     const postRef = useRef<HTMLDivElement>(null);
@@ -201,7 +225,9 @@ const FakePost = () => {
         poppins: 'font-poppins',
         imbMono: 'font-imbMono',
     };
-    const fontClass = fontMap[twitterPostData?.font || 'Inter'] || 'font-sans';
+    const fontClass = selectedPlatform === 'LinkedIn'
+        ? (fontMap[linkedInPostData?.font || 'Inter'] || 'font-sans')
+        : (fontMap[twitterPostData?.font || 'Inter'] || 'font-sans');
 
     // Download handler with loading state
     const [downloading, setDownloading] = useState(false);
@@ -224,7 +250,8 @@ const FakePost = () => {
                     const dataUrl = await htmlToImage.toPng(postRef?.current, { cacheBust: true, backgroundColor: undefined });
                     const link = document.createElement('a');
                     link.href = dataUrl;
-                    link.download = 'tweet.png';
+                    let postName = selectedPlatform == 'X' ? 'tweet.png' : 'linkedinpost.png';
+                    link.download = postName;
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
@@ -347,6 +374,12 @@ const FakePost = () => {
                                 Content
                             </button>
                             <button
+                                className={`ml-4 px-4 py-2 font-medium focus:outline-none transition-colors duration-150 ${selectedTab === 'Reply' ? 'border-b-2 border-black text-black' : 'text-gray-500'}`}
+                                onClick={() => setSelectedTab('Reply')}
+                            >
+                                Replies
+                            </button>
+                            <button
                                 className={`ml-4 px-4 py-2 font-medium focus:outline-none transition-colors duration-150 ${selectedTab === 'Background' ? 'border-b-2 border-black text-black' : 'text-gray-500'}`}
                                 onClick={() => setSelectedTab('Background')}
                             >
@@ -363,9 +396,15 @@ const FakePost = () => {
                                 ) : selectedPlatform == 'LinkedIn' ? (
                                     <FakeLinkedInPostEditor setLinkedInPostData={setLinkedInPostData} linkedInPostData={linkedInPostData}/>
                                 ) : null
-                            ) : (
+                            ) : selectedTab == 'Background' ? (
                                 <Background selectedBg={selectedBg} setSelectedBg={setSelectedBg} gradientColors={gradientColors} solidColors={solidColors}/>
-                            )
+                            ) : selectedTab == 'Reply' ? (
+                                selectedPlatform == 'LinkedIn' ? (
+                                    <ReplyChainEditor setLinkedInPostData={setLinkedInPostData} linkedInPostData={linkedInPostData}/>
+                                ) : selectedPlatform  == 'X' ? (
+                                    <TwitterReplyChain twitterPostData={twitterPostData} setTwitterPostData={setTwitterPostData}/>
+                                ) : null
+                            ) : null
                         }
                     </div>
 

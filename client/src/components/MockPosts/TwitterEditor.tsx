@@ -6,6 +6,16 @@ import { FaXTwitter } from "react-icons/fa6";
 import { FaTwitter } from "react-icons/fa";
 import emptyDP from "../../assets/emptyDP.png";
 
+interface TwitterReply {
+    name: string;
+    userHandle: string;
+    pfp: string;
+    comment: string;
+    likesCount: number;
+    retweets: number;
+    comments: number;
+}
+
 interface TwitterPostProps {
     name: string;
     userHandle: string;
@@ -26,6 +36,7 @@ interface TwitterPostProps {
     logo: string;
     theme:string;
     mediaName:string;
+    replies: TwitterReply[];
 }
 
 interface FakeTwitterPostEditorProps {

@@ -6,6 +6,14 @@ import { ImagePlus } from "lucide-react";
 import { FaLinkedin } from "react-icons/fa";
 import emptyDP from "../../assets/emptyDP.png";
 
+interface Reply {
+    comment: string;
+    pfp: string;
+    name: string;
+    headline: string;
+    likesCount: number;
+}
+
 interface LinkedInPostProps {
     name: string;
     headline: string;
@@ -26,6 +34,7 @@ interface LinkedInPostProps {
     logo: string;
     theme: string;
     mediaName: string;
+    replies: Reply[];
 }
 
 interface FakeLinkedInPostEditorProps {

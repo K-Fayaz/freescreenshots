@@ -13,6 +13,16 @@ import { FaComment } from "react-icons/fa";
 import { FaHeart } from "react-icons/fa";
 import { FaBookmark } from "react-icons/fa6";
 
+interface TwitterReply {
+    name: string;
+    userHandle: string;
+    pfp: string;
+    comment: string;
+    likesCount: number;
+    retweets: number;
+    comments: number;
+}
+
 interface TwitterPostProps {
     name: string;
     userHandle: string;
@@ -33,6 +43,7 @@ interface TwitterPostProps {
     font: string;
     theme: string;
     mediaName: string;
+    replies: TwitterReply[];
 }
 
 interface FakeTwitterPostEditorProps {
@@ -82,7 +93,7 @@ const FakeTweet: React.FC<FakeTwitterPostEditorProps> = ({ twitterPostData }) =>
     }
 
     return (
-        <div className={`${twitterPostData?.theme == 'dark' ? 'bg-black text-white' :'bg-white text-black'} w-[450px] p-5 rounded-2xl`}>
+        <div className={`${twitterPostData?.theme == 'dark' ? 'bg-black text-white' :'bg-white text-black'} w-[500px] p-5 rounded-2xl`}>
             {/* Tweet Component UI */}
             <div className="">
                     {/* Header */}
@@ -176,7 +187,7 @@ const FakeTweet: React.FC<FakeTwitterPostEditorProps> = ({ twitterPostData }) =>
                                 twitterPostData?.coloredIcons ? (
                                     <FaHeart size={17} fill="#f91880"/>
                                 ) : (
-                                    <FaRegHeart size={17}/>
+                                    <FaRegHeart size={16}/>
                                 )
                             }
                             <span className={`${twitterPostData?.coloredIcons ? 'text-[#f91880]' : ''}`}>{formatNumber(twitterPostData?.likes || "")}</span>
@@ -198,6 +209,66 @@ const FakeTweet: React.FC<FakeTwitterPostEditorProps> = ({ twitterPostData }) =>
                         </div>
                     </div>
             </div>
+
+            {/* This section has mocked replies of user */}
+            {/* Replies */}
+            {
+                twitterPostData?.replies.length > 0 && (
+                    <div className={`border-b ${twitterPostData?.theme == 'light' ? 'border-gray-200' :'border-gray-700'} mt-3`}></div>
+                )
+            }
+            {Array.isArray(twitterPostData.replies) && twitterPostData.replies.length > 0 && (
+                <div className="mt-6 space-y-4">
+                    {twitterPostData.replies.map((reply, idx) => (
+                        <div key={idx} className={`flex items-start space-x-3`}>
+                            <div className="w-9 h-9 rounded-full overflow-hidden flex-shrink-0 bg-gray-300">
+                                {reply.pfp ? (
+                                    <img src={reply.pfp} alt="pfp" className="w-full h-full object-cover" />
+                                ) : (
+                                    <img src={emptyDp} alt="empty" className="w-full h-full object-cover" />
+                                )}
+                            </div>
+                            <div className="flex-1">
+                                <div className="flex items-center space-x-2">
+                                    <span className="font-semibold text-sm">{reply.name}</span>
+                                    <span className="text-xs text-gray-400">{reply.userHandle}</span>
+                                </div>
+                                <div className="text-sm whitespace-pre-line">
+                                    {reply.comment}
+                                </div>
+                                <div className="flex items-center justify-between space-x-4 mt-2 text-xs text-gray-400">
+                                    {/* <span className="flex items-center space-x-1"><FaRegComment size={14}/>{reply.comments}</span>
+                                    <span className="flex items-center space-x-1"><FaRetweet size={14}/>{reply.retweets}</span>
+                                    <span className="flex items-center space-x-1"><FaRegHeart size={14}/>{reply.likesCount}</span> */}
+                                    <div className="flex items-center space-x-1">
+                                        <FaRegComment size={17}/>
+                                        <span>{reply.comments}</span>
+                                    </div>
+                                            
+                                    <div className="flex items-center space-x-1">
+                                        <FaRetweet size={19}/>
+                                        <span>{reply.retweets}</span>
+                                    </div>
+                                            
+                                    <div className="flex items-center space-x-1">
+                                        <FaRegHeart size={16}/>
+                                        <span>{reply.likesCount}</span>
+                                    </div>
+                                            
+                                    {/* <div className="flex items-center space-x-1">
+                                        <FaRegBookmark size={16}/>
+                                        <span className={`${twitterPostData?.coloredIcons ? 'text-[#1d9bf0]' : ''}`}>{formatNumber(twitterPostData?.bookmarks || "")}</span>
+                                    </div> */}
+                                            
+                                    <div className="flex items-center space-x-1">
+                                        <LuUpload size={18} />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
         </div>
     )
 }
