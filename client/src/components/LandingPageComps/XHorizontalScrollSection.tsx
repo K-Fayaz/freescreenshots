@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { TwitterPostSeed, TwitterQuotedPost3, TwitterElomMuskProfile } from "@/Seed/HeroSeed";
@@ -15,6 +16,7 @@ import Tweet from "../Tweet";
 import YoutubeVideo from "../Youtube/YoutubeVideo";
 import YoutubeChannel from "../Youtube/YoutubeChannel";
 import ProductHunt from "../ProductHunt";
+import { GrNext } from "react-icons/gr";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -22,6 +24,7 @@ const HorizontalScrollOnVertical = () => {
   const containerRef = useRef(null);
   const trackRef = useRef(null);
   const [theme,setTheme] = useState<"Light" | "Dark">("Light");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const container = containerRef.current;
@@ -116,74 +119,84 @@ const HorizontalScrollOnVertical = () => {
         </div>
 
         <div>
+            <div onClick={() => navigate('/gallery')} className={`border w-[95%] md:w-[500px] h-[400px] border-gray-200 rounded-lg overflow-y-auto scrollbar-hide ml-4 md:ml-10 mr-24 text-xs md:text-sm flex flex-col justify-center items-center hover:scale-105 transition-all duration-300 cursor-pointer bg-gray-200 hover:bg-gray-300`}>
+                <GrNext className="p-4 bg-gray-200 rounded-full w-20 h-20"/>
+                <p className="my-2">+3 more Platform screenshots</p>
+                <p className="hover:text-blue-800 hover:underline cursor-pointer">
+                    Check here
+                </p>
+            </div>
+        </div>
+
+        {/* <div>
             <h1 className="mb-4 text-center font-bold text-lg">Reddit Posts</h1>
             <div className={`${theme == 'Light' ? 'bg-white' : 'bg-black text-white'} border w-[95%] md:w-[500px] max-h-[80%] border-gray-200 rounded-lg overflow-y-auto scrollbar-hide ml-4 md:ml-10 mr-24 text-xs md:text-sm`}>
                 <RedditPost details={redditPost.data} theme={theme} logo={"Reddit"} showMetrics={true} userType={{}} />
             </div>
-        </div>
+        </div> */}
 
-        <div>
+        {/* <div>
             <h1 className="mb-4 text-center font-bold text-lg">Peerlist Post</h1>
             <div className={`${theme == 'Light' ? 'bg-white' : 'bg-black text-white'} border w-[95%] md:w-[500px] max-h-[80%] border-gray-200 rounded-lg overflow-y-auto scrollbar-hide ml-4 md:ml-10 mr-24 text-xs md:text-sm`}>
                 <PeerlistPost details={PeerlistPostPretty.data} logo='Peerlist' theme={theme} showMetrics={true} userType={{}} />
             </div>
-        </div>
+        </div> */}
 
-        <div>
+        {/* <div>
             <h1 className="mb-4 text-center font-bold text-lg">Peerlist Profile</h1>
             <div className={`${theme == 'Light' ? 'bg-white' : 'bg-black text-white'} border w-[95%] md:w-[500px] max-h-[80%] border-gray-200 rounded-lg overflow-y-auto scrollbar-hide ml-4 md:ml-10 mr-24 text-xs md:text-sm`}>
                 <PeerlistProfile details={PeerlistProfileData.data} logo='Peerlist' theme={theme} showMetrics={true} showProjects={false} userType={{}} foldProjects={true}/>
             </div>
-        </div>
+        </div> */}
         
-        <div>
+        {/* <div>
             <h1 className="mb-4 text-center font-bold text-lg">Peerlist Link Embeds</h1>
             <div className={`${theme == 'Light' ? 'bg-white' : 'bg-black text-white'} border w-[400px] md:w-[500px] max-h-[80%] border-gray-200 rounded-lg overflow-y-auto scrollbar-hide ml-4 md:ml-10 mr-24 text-xs md:text-sm`}>
                 <PeerlistPost details={PeerlistLinkEmbed.data} logo='Peerlist' theme={theme} showMetrics={true} userType={{}} />
             </div>
-        </div>
+        </div> */}
 
-        <div>
+        {/* <div>
             <h1 className="mb-4 text-center font-bold text-lg">Peerlist project embed</h1>
             <div className={`${theme == 'Light' ? 'bg-white' : 'bg-black text-white'} border w-[400px] md:w-[500px] max-h-[80%] border-gray-200 rounded-lg overflow-y-auto scrollbar-hide ml-4 md:ml-10 mr-24 text-xs md:text-sm`}>
                 <PeerlistPost details={PeerlistProjectEmbed.data} logo='Peerlist' theme={theme} showMetrics={true} userType={{}} />
             </div>
-        </div>
+        </div> */}
 
-        <div>
+        {/* <div>
             <h1 className="mb-4 text-center font-bold text-lg">Peerlist poll Embeds</h1>
             <div className={`${theme == 'Light' ? 'bg-white' : 'bg-black text-white'} border w-[95%] md:w-[500px] max-h-[80%] border-gray-200 rounded-lg overflow-y-auto scrollbar-hide ml-4 md:ml-10 mr-24 text-xs md:text-sm`}>
                 <PeerlistPost details={PeerlistVotePost.data} logo='Peerlist' theme={theme} showMetrics={true} userType={{}} />
             </div>
-        </div>
+        </div> */}
 
-        <div>
+        {/* <div>
             <h1 className="mb-4 text-center font-bold text-lg">Threads Post</h1>
             <div className={`${theme == 'Light' ? 'bg-white' : 'bg-black text-white'} border w-[90%] md:w-[500px] max-h-[80%] border-gray-200 rounded-lg overflow-y-auto scrollbar-hide ml-4 md:ml-10 mr-24 text-xs md:text-sm`}>
                 <ThreadsPost details={postDetails} theme={theme} logo="Threads" showMetrics={true} isFeed={false} userType={{}} />
             </div>
-        </div>
+        </div> */}
 
-        <div>
+        {/* <div>
             <h1 className="mb-4 text-center font-bold text-lg">Threads!</h1>
             <div className={`${theme == 'Light' ? 'bg-white' : 'bg-black text-white'} border w-[90%] md:w-[500px] max-h-[80%] border-gray-200 rounded-lg overflow-y-auto scrollbar-hide ml-4 md:ml-10 mr-24 text-xs md:text-sm`}>
                 <ThreadsFeed posts={Threads.data} theme={theme} logo="Threads" showMetrics={true} userType={{}} />
             </div>
-        </div>
+        </div> */}
 
-        <div>
+        {/* <div>
             <h1 className="mb-4 text-center font-bold text-lg">Threads Profile</h1>
             <div className={`${theme == 'Light' ? 'bg-white' : 'bg-black text-white'} border w-[90%] md:w-[500px] max-h-[80%] border-gray-200 rounded-lg overflow-y-auto scrollbar-hide ml-4 md:ml-10 mr-24 text-xs md:text-sm`}>
                 <ThreadsProfile details={ThreadsProfilSeed.data} theme={theme} logo="Threads" userType={{}} />
             </div>
-        </div>
+        </div> */}
         
-        <div>
+        {/* <div>
             <h1 className="mb-4 text-center font-bold text-lg">Threads Quoted Post</h1>
             <div className={`${theme == 'Light' ? 'bg-white' : 'bg-black text-white'} border w-[90%] md:w-[500px] max-h-[80%] border-gray-200 rounded-lg overflow-y-auto scrollbar-hide ml-4 md:ml-10 mr-24 text-xs md:text-sm`}>
                 <ThreadsPost details={ThreadsQuotedPost.data[0]} theme={theme} logo="Threads" showMetrics={true} isFeed={false} userType={{}} />
             </div>
-        </div>
+        </div> */}
 
       </div>
     </section>

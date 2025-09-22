@@ -9,6 +9,7 @@ import Footer from "@/components/Footer";
 import FeedbackSection from "@/components/LandingPageComps/FeedbackSection";
 import BeforeAfter from "@/components/LandingPageComps/BeforeAfter";
 import CTASection from "@/components/LandingPageComps/CTASection";
+import MockPost from "@/components/LandingPageComps/MockPost";
 
 const LandingPageTwo = () => {
   return (
@@ -16,11 +17,14 @@ const LandingPageTwo = () => {
         <Navbar />
         <Hero/>
         <VideoSection />
-        <section className="w-full mx-auto">
+        {/* <section className="w-full mx-auto">
           <BeforeAfter />
-        </section>
+        </section> */}
         <XHorizontalScrollSection />
-        <section id="faq" className="w-full h-screen bg-gray-50 grid place-items-center">
+        <section className="w-full h-screen bg-gray-50">
+          <MockPost />
+        </section>
+        <section id="faq" className="w-full grid place-items-center">
           <FAQ />
         </section>
         {/* <section id="pricing" className="w-full h-screen bg-gray-50"> */}

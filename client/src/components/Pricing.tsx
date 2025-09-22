@@ -78,7 +78,7 @@ const Pricing = () => {
     });
   }
   return (
-    <div className="w-full py-20 bg-white">
+    <div className="w-full py-20 bg-white" id='pricing'>
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-2 text-center">Pricing</h2>
         <p className="text-lg text-gray-500 mb-12 text-center">Choose the right plan for your needs.</p>

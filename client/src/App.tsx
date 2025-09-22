@@ -11,6 +11,7 @@ import RedditVideoDownloader from './pages/RedditVideoDownloader';
 import { ToastProvider } from './components/ToastContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import FakePost from './pages/FakePosts';
+import Gallery from './pages/Gallery';
 
 function App() {
   const token = localStorage.getItem('token') || null;
@@ -21,6 +22,7 @@ function App() {
         <Routes>
           <Route path="/" element={<LandingPageTwo />} />
           <Route path="/signin" element={<AuthPage />} />
+          <Route path="/gallery" element={<Gallery />} />
           <Route element={<ProtectedRoute  isAuthenticated={token ? true : false } />}>
             <Route path="/screenshot" element={<Screenshot />} />
           </Route>

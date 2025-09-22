@@ -71,8 +71,14 @@ const Navbar = () => {
     navigate("/screenshot");
   };
 
+  const handleSmoothScroll = (e, element:string) => {
+    e.preventDefault();
+    const el = document.getElementById(element);
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  }
+
   return (
-    <nav className={`sticky top-6 z-50 mx-auto w-11/12 md:max-w-6xl ${isMobileMenuOpen ? 'rounded-none' : 'rounded-full'} bg-white shadow-lg flex items-center justify-between px-8 py-3 mb-8 transition-all`}>
+    <nav className={`sticky top-0 z-50 mx-auto w-full border-b bg-white flex items-center justify-between px-8 py-3 mb-8 transition-all`}>
       {/* Logo */}
       <div className="w-full px-4 sm:px-6 lg:px-8">
         
@@ -84,8 +90,8 @@ const Navbar = () => {
 
           {/* Links */}
           <div className="hidden md:flex items-center gap-8 text-base font-medium">
-            <a href="#faq" className="transition-colors">FAQ</a>
-            <a href="#pricing" className="transition-colors">Pricing</a>
+            <a href="#pricing" className="transition-colors" onClick={(e) => handleSmoothScroll(e,'pricing')}>Pricing</a>
+            <a href="#faq" className="transition-colors" onClick={(e) => handleSmoothScroll(e,'faq')}>FAQ</a>
             <div
               className="relative"
               onMouseEnter={() => setToolsOpen(true)}
@@ -96,14 +102,15 @@ const Navbar = () => {
                 <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
               </button>
               {toolsOpen && (
-                <div className="absolute left-0 top-full mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 py-2 flex flex-col animate-fadeIn z-50">
+                <div className="absolute -left-8 top-full w-64 bg-white rounded-xl shadow-xl border border-gray-100 py-2 flex flex-col animate-fadeIn z-50">
                   {/* <p onClick={() => navigate('/twitter-video-downloader')} className="px-5 py-2 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer">Twitter Video Downloader</p> */}
-                  <p onClick={() => navigate('/reddit-video-downloader')} className="px-5 py-2 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer">Reddit Video Downloader</p>
-                  <p onClick={() => navigate('/threads-video-downloader')} className="px-5 py-2 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer">Threads Video Downloader</p>
+                  <a href='/reddit-video-downloader' className="px-5 py-2 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer">Reddit Video Downloader</a>
+                  <a href={'/threads-video-downloader'} className="px-5 py-2 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer">Threads Video Downloader</a>
                 </div>
               )}
             </div>
             <a href="/fake-posts-generator" className="transition-colors">Create Mock posts</a>
+            <a href="/gallery" className="transition-colors">Gallery</a>
           </div>
 
           {/* Profile/User Menu or CTA */}
@@ -122,17 +129,17 @@ const Navbar = () => {
                   )}
                 </button>
                 {isUserMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
-                    <button
+                  <div className="absolute -right-7 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                    {/* <button
                       onClick={handleAccount}
                       className="flex items-center space-x-2 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
                     >
                       <Settings size={16} />
                       <span>Account</span>
-                    </button>
+                    </button> */}
                     <button
                       onClick={handleLogout}
-                      className="flex items-center space-x-2 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+                      className="flex items-center space-x-2 w-full px-4 py-4 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
                     >
                       <LogOut size={16} />
                       <span>Logout</span>
@@ -191,6 +198,17 @@ const Navbar = () => {
                   Pricing
                 </a>
               </div>
+              
+              <div className="px-3 py-2">
+                <ul>
+                  <li>
+                    <a href="/fake-posts-generator" className="block px-3 py-2 text-base text-gray-700 hover:bg-gray-100 rounded-md transition-colors duration-200">Create Mock posts</a>
+                  </li>
+                  <li>
+                    <a href="/gallery" className="block px-3 py-2 text-base text-gray-700 hover:bg-gray-100 rounded-md transition-colors duration-200">Gallery</a>
+                  </li>
+                </ul>
+              </div>
 
               {/* Tools */}
               <div className="px-3 py-2">
@@ -223,13 +241,13 @@ const Navbar = () => {
               <div className="px-3 py-2">
                 {isAuthenticated ? (
                   <div className="space-y-2">
-                    <button 
+                    {/* <button 
                       onClick={handleAccount}
                       className="flex items-center space-x-2 w-full px-3 py-2 text-base text-gray-700 hover:bg-gray-100 rounded-md transition-colors duration-200"
                     >
                       <Settings size={16} />
                       <span>Account</span>
-                    </button>
+                    </button> */}
                     <button 
                       onClick={handleLogout}
                       className="flex items-center space-x-2 w-full px-3 py-2 text-base text-gray-700 hover:bg-gray-100 rounded-md transition-colors duration-200"

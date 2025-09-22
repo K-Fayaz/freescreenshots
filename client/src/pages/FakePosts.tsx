@@ -199,13 +199,18 @@ const gradientColors = [
     "linear-gradient(135deg, #f59e0b 0%, #ef4444 100%)",
     "linear-gradient(135deg, #9333ea 0%, #3b82f6 100%)",
     "linear-gradient(135deg, #14b8a6 0%, #0f766e 100%)"
-
 ];
 
 const FakePost = () => {
+    let storageData = localStorage.getItem('mock-data');
+    if (storageData) localStorage.removeItem('mock-data');
+
+
     const navigate = useNavigate();
     const [userDetails,setUserDetails] = useState<userDetails | null>(null);
-    const [twitterPostData, setTwitterPostData] = useState<TwitterPostProps | null>(initialValue);
+    let defaultData = storageData ? JSON.parse(storageData) : initialValue;
+    console.log(defaultData);
+    const [twitterPostData, setTwitterPostData] = useState<TwitterPostProps | null>(defaultData);
     const [linkedInPostData, setLinkedInPostData] = useState<LinkedInPostProps | null>(initialLinkedinValue);
     // Tab state for Content/Background
     const [selectedTab, setSelectedTab] = useState<'Content' | 'Background' | 'Reply'>("Content");

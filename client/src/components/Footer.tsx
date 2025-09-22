@@ -55,7 +55,7 @@ const Footer = () => {
               <li><p className="text-gray-700 hover:text-black transition-colors">Reddit</p></li>
               <li><p className="text-gray-700 hover:text-black transition-colors">Youtube</p></li>
               <li><p className="text-gray-700 hover:text-black transition-colors">Product Hunt</p></li>
-              <li><p className="text-gray-700 hover:text-black transition-colors">Threads</p></li>
+              <li><p className="text-gray-700 hover:text-black transition-colors">Instagram</p></li>
             </ul>
           </div>
 
@@ -64,8 +64,9 @@ const Footer = () => {
             <h4 className="text-lg font-semibold mb-4">Tools</h4>
             <ul className="space-y-2">
               {/* <li><p onClick={()=> navigate("/twitter-video-downloader")} className="text-gray-700 hover:text-black transition-colors cursor-pointer">Twitter Video Downloader</p></li> */}
-              <li><p onClick={() => navigate("/reddit-video-downloader")} className="text-gray-700 hover:text-black transition-colors cursor-pointer">Reddit Video Downloader</p></li>
-              <li><p onClick={() => navigate("/threads-video-downloader")} className="text-gray-700 hover:text-black transition-colors cursor-pointer">Threads Video Downloader</p></li>
+              <li><a href="/reddit-video-downloader" className="text-gray-700 hover:text-black transition-colors cursor-pointer">Reddit Video Downloader</a></li>
+              <li><a href="/threads-video-downloader" className="text-gray-700 hover:text-black transition-colors cursor-pointer">Threads Video Downloader</a></li>
+              <li><a href="/fake-posts-generator" className="text-gray-700 hover:text-black transition-colors cursor-pointer">Create Mock Posts</a></li>
               {/* <li><a href="#" className="text-gray-400 hover:text-black transition-colors">Contact</a></li> */}
             </ul>
           </div>
