@@ -46,10 +46,10 @@ const MockPost = () => {
         }
     }
     return (
-        <div className="w-full h-full overflow-hidden">
-            <h1 className="text-5xl font-bold text-center my-14 text-gray-800">Bring Your Ideas to Life with Mock Posts</h1>
-            <div className="w-3/4 h-[80%] mx-auto flex">
-                <div className="w-1/2 rounded-2xl border p-6 flex flex-col justify-between">
+        <div className="w-full h-auto">
+            <h1 className="text-3xl md:text-5xl font-bold text-center my-14 text-gray-800">Bring Your Ideas to Life with Mock Posts</h1>
+            <div className="w-full max-w-3xl md:max-w-7xl h-auto mx-auto flex flex-col md:flex-row gap-4 md:gap-0">
+                <div className="w-full md:w-1/2 rounded-2xl border p-6 flex flex-col justify-between md:mr-2 md:mb-0 mb-4">
                     <div>
                         <div className="flex items-center space-x-4 mb-4">
                             {/* Avatar */}
@@ -105,7 +105,7 @@ const MockPost = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="flex items-center space-x-6 mb-4">
+                        <div className="flex items-center flex-wrap space-x-6 mb-4">
                             <div>
                                 <span className="block text-xs mb-1">Time & date</span>
                                 <div className="flex space-x-2">
@@ -198,7 +198,7 @@ const MockPost = () => {
                                 </div>
                             )}
                         </div>
-                        <div className="flex space-x-6 mt-2">
+                        <div className="flex flex-wrap space-x-6 mt-2">
                             <div>
                                 <span className="block text-xs mb-1">Views</span>
                                 <input
@@ -267,7 +267,7 @@ const MockPost = () => {
                     </div>
                 </div>
                 {/* Preview */}
-                <div className="w-1/2 p-6 flex items-center justify-center border rounded-2xl ml-2 relative overflow-hidden" style={{ background:'linear-gradient(135deg, #facc15 0%, #10b981 100%)' }}>
+                <div className="w-full md:w-1/2 p-6 flex items-center justify-center border rounded-2xl relative overflow-hidden" style={{ background:'linear-gradient(135deg, #facc15 0%, #10b981 100%)' }}>
                     {/* Watermark */}
                     <span
                         className="pointer-events-none select-none absolute left-1/2 top-1/2 text-[3rem] md:text-[5.5rem] font-extrabold text-gray-300 opacity-40"

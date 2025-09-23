@@ -12,6 +12,8 @@ import { ToastProvider } from './components/ToastContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import FakePost from './pages/FakePosts';
 import Gallery from './pages/Gallery';
+import PricingPage from './pages/Pricing';
+import NotFound from './pages/NotFound';
 
 function App() {
   const token = localStorage.getItem('token') || null;
@@ -42,6 +44,10 @@ function App() {
           <Route element={<ProtectedRoute  isAuthenticated={token ? true : false } next={'/fake-posts-generator'} />}>
             <Route path="/fake-posts-generator" element={<FakePost />} />
           </Route>
+
+          <Route path="/pricing" element={<PricingPage />} />
+
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
     </ToastProvider>

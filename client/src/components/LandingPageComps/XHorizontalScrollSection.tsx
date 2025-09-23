@@ -6,7 +6,7 @@ import { TwitterPostSeed, TwitterQuotedPost3, TwitterElomMuskProfile } from "@/S
 import TwitterUserProfile from "../TwitterUserProfile";
 import PeerlistProfile from '../PeerlistProfile';
 import PeerlistPost from '../PeerlistPost';
-import { PeerlistProfileData, PeerlistPostPretty,PeerlistLinkEmbed,PeerlistProjectEmbed,PeerlistVotePost } from "@/Seed/HeroSeed";
+import { PeerlistProfileData, PeerlistPostPretty,PeerlistLinkEmbed,PeerlistProjectEmbed,PeerlistVotePost, TwitterPattern } from "@/Seed/HeroSeed";
 import { ThreadsPostData, Threads, ThreadsProfilSeed, ThreadsQuotedPost, redditPost,youtubeVideo,youtubeChannels,PHData } from "@/Seed/HeroSeed";
 import RedditPost from "../RedditPost";
 import ThreadsPost from '../ThreadsPost';
@@ -79,7 +79,7 @@ const HorizontalScrollOnVertical = () => {
         <div>
             <h1 className="mb-4 text-center font-bold text-lg">Twitter posts</h1>
             <div className={`${theme == 'Light' ? 'bg-white' : 'bg-black text-white'} w-[90%] md:w-[460px] max-h-[80%] border border-gray-200 rounded-lg p-4 overflow-y-auto scrollbar-hide ml-4 md:ml-10 mr-24 text-xs md:text-sm`}>
-                <Tweet details={TwitterPostSeed.data} logo='X' theme={theme} showMetrics={true} showViews={true} userType={{}} />
+                <Tweet details={TwitterPattern.data} logo='X' theme={theme} showMetrics={true} showViews={true} userType={{}} />
             </div>
         </div>
         
@@ -128,47 +128,6 @@ const HorizontalScrollOnVertical = () => {
             </div>
         </div>
 
-        {/* <div>
-            <h1 className="mb-4 text-center font-bold text-lg">Reddit Posts</h1>
-            <div className={`${theme == 'Light' ? 'bg-white' : 'bg-black text-white'} border w-[95%] md:w-[500px] max-h-[80%] border-gray-200 rounded-lg overflow-y-auto scrollbar-hide ml-4 md:ml-10 mr-24 text-xs md:text-sm`}>
-                <RedditPost details={redditPost.data} theme={theme} logo={"Reddit"} showMetrics={true} userType={{}} />
-            </div>
-        </div> */}
-
-        {/* <div>
-            <h1 className="mb-4 text-center font-bold text-lg">Peerlist Post</h1>
-            <div className={`${theme == 'Light' ? 'bg-white' : 'bg-black text-white'} border w-[95%] md:w-[500px] max-h-[80%] border-gray-200 rounded-lg overflow-y-auto scrollbar-hide ml-4 md:ml-10 mr-24 text-xs md:text-sm`}>
-                <PeerlistPost details={PeerlistPostPretty.data} logo='Peerlist' theme={theme} showMetrics={true} userType={{}} />
-            </div>
-        </div> */}
-
-        {/* <div>
-            <h1 className="mb-4 text-center font-bold text-lg">Peerlist Profile</h1>
-            <div className={`${theme == 'Light' ? 'bg-white' : 'bg-black text-white'} border w-[95%] md:w-[500px] max-h-[80%] border-gray-200 rounded-lg overflow-y-auto scrollbar-hide ml-4 md:ml-10 mr-24 text-xs md:text-sm`}>
-                <PeerlistProfile details={PeerlistProfileData.data} logo='Peerlist' theme={theme} showMetrics={true} showProjects={false} userType={{}} foldProjects={true}/>
-            </div>
-        </div> */}
-        
-        {/* <div>
-            <h1 className="mb-4 text-center font-bold text-lg">Peerlist Link Embeds</h1>
-            <div className={`${theme == 'Light' ? 'bg-white' : 'bg-black text-white'} border w-[400px] md:w-[500px] max-h-[80%] border-gray-200 rounded-lg overflow-y-auto scrollbar-hide ml-4 md:ml-10 mr-24 text-xs md:text-sm`}>
-                <PeerlistPost details={PeerlistLinkEmbed.data} logo='Peerlist' theme={theme} showMetrics={true} userType={{}} />
-            </div>
-        </div> */}
-
-        {/* <div>
-            <h1 className="mb-4 text-center font-bold text-lg">Peerlist project embed</h1>
-            <div className={`${theme == 'Light' ? 'bg-white' : 'bg-black text-white'} border w-[400px] md:w-[500px] max-h-[80%] border-gray-200 rounded-lg overflow-y-auto scrollbar-hide ml-4 md:ml-10 mr-24 text-xs md:text-sm`}>
-                <PeerlistPost details={PeerlistProjectEmbed.data} logo='Peerlist' theme={theme} showMetrics={true} userType={{}} />
-            </div>
-        </div> */}
-
-        {/* <div>
-            <h1 className="mb-4 text-center font-bold text-lg">Peerlist poll Embeds</h1>
-            <div className={`${theme == 'Light' ? 'bg-white' : 'bg-black text-white'} border w-[95%] md:w-[500px] max-h-[80%] border-gray-200 rounded-lg overflow-y-auto scrollbar-hide ml-4 md:ml-10 mr-24 text-xs md:text-sm`}>
-                <PeerlistPost details={PeerlistVotePost.data} logo='Peerlist' theme={theme} showMetrics={true} userType={{}} />
-            </div>
-        </div> */}
 
         {/* <div>
             <h1 className="mb-4 text-center font-bold text-lg">Threads Post</h1>

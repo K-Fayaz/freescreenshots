@@ -50,12 +50,12 @@ const Footer = () => {
           <div>
             <h4 className="text-lg font-semibold mb-4">Platforms</h4>
             <ul className="space-y-2">
-              <li><p className="text-gray-700 hover:text-black transition-colors">X (Twitter)</p></li>
-              <li><p className="text-gray-700 hover:text-black transition-colors">Peerlist</p></li>
-              <li><p className="text-gray-700 hover:text-black transition-colors">Reddit</p></li>
-              <li><p className="text-gray-700 hover:text-black transition-colors">Youtube</p></li>
-              <li><p className="text-gray-700 hover:text-black transition-colors">Product Hunt</p></li>
-              <li><p className="text-gray-700 hover:text-black transition-colors">Instagram</p></li>
+              <li><a href="/gallery?tab=X" className="text-gray-700 hover:text-black transition-colors">X (Twitter)</a></li>
+              <li><a href="/gallery?tab=Peerlist" className="text-gray-700 hover:text-black transition-colors">Peerlist</a></li>
+              <li><a href="/gallery?tab=Reddit" className="text-gray-700 hover:text-black transition-colors">Reddit</a></li>
+              <li><a href="/gallery?tab=Youtube" className="text-gray-700 hover:text-black transition-colors">Youtube</a></li>
+              <li><a href="/gallery?tab=Product-Hunt" className="text-gray-700 hover:text-black transition-colors">Product Hunt</a></li>
+              <li><a href="/gallery?tab=Instagram" className="text-gray-700 hover:text-black transition-colors">Instagram</a></li>
             </ul>
           </div>
 

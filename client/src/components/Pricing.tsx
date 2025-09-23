@@ -38,9 +38,13 @@ const plans = [
       popular: true,
       gradient: 'from-black to-gray-800'
     }
-  ];
+];
 
-const Pricing = () => {
+interface PricingProps {
+  page?:string;
+}
+
+const Pricing: React.FC<PricingProps> = ({ page='landing' }) => {
   const navigate = useNavigate();
 
   const handlePlanClick = (planName:string) => {
@@ -78,10 +82,14 @@ const Pricing = () => {
     });
   }
   return (
-    <div className="w-full py-20 bg-white" id='pricing'>
+    <div className={`w-full ${page == 'landing' ? 'py-20' : 'mb-10'} bg-white`} id='pricing'>
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-2 text-center">Pricing</h2>
-        <p className="text-lg text-gray-500 mb-12 text-center">Choose the right plan for your needs.</p>
+        {
+          page == 'landing' && (
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-2 text-center">Pricing</h2>
+          )
+        }
+        <p className={`text-lg text-gray-500 ${page == 'landing' ? 'mb-12' : 'mb-6'} text-center`}>Choose the right plan for your needs.</p>
 
         <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
           {plans.map((plan, index) => (

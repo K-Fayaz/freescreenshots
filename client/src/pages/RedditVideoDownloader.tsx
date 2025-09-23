@@ -146,7 +146,7 @@ const RedditVideoDownloader = () => {
 
   return (
     <>
-      <Navbar />
+      <Navbar page="not-landing"/>
       <div className="min-h-screen flex flex-col justify-between">
         <div className="flex-1 flex flex-col justify-center items-center">
           <div className="max-w-xl w-full">

@@ -105,7 +105,7 @@ const TwitterVideoDownloader = () => {
 
   return (
     <>
-      <Navbar />
+      <Navbar page="not-landing"/>
       <div className="h-auto min-h-screen flex flex-col justify-between">
         <div className="flex-1 flex flex-col justify-center items-center my-10">
           <div className="max-w-xl w-full">

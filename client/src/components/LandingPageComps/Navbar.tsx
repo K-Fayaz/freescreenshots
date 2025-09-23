@@ -8,7 +8,12 @@ interface UserProps {
   username: string;
   profile: string;
 };
-const Navbar = () => {
+
+interface NavbarProps {
+  page?: string;
+}
+
+const Navbar:React.FC<NavbarProps> = ({ page='landing' }) => {
   const [toolsOpen, setToolsOpen] = useState(false);
   const navigate = useNavigate();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -90,8 +95,12 @@ const Navbar = () => {
 
           {/* Links */}
           <div className="hidden md:flex items-center gap-8 text-base font-medium">
-            <a href="#pricing" className="transition-colors" onClick={(e) => handleSmoothScroll(e,'pricing')}>Pricing</a>
-            <a href="#faq" className="transition-colors" onClick={(e) => handleSmoothScroll(e,'faq')}>FAQ</a>
+            <a href={page == 'landing' ? "#pricing":"/pricing"} className="transition-colors" onClick={page == 'landing' ? (e) => handleSmoothScroll(e,'pricing') : () => {}}>Pricing</a>
+            {
+              page == 'landing' && (
+                <a href="#faq" className="transition-colors" onClick={(e) => handleSmoothScroll(e,'faq')}>FAQ</a>
+              )
+            }
             <div
               className="relative"
               onMouseEnter={() => setToolsOpen(true)}

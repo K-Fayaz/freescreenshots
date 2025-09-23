@@ -21,7 +21,7 @@ const LandingPageTwo = () => {
           <BeforeAfter />
         </section> */}
         <XHorizontalScrollSection />
-        <section className="w-full h-screen bg-gray-50">
+        <section className="w-full h-auto md:h-screen bg-gray-50">
           <MockPost />
         </section>
         <section id="faq" className="w-full grid place-items-center">
@@ -29,7 +29,7 @@ const LandingPageTwo = () => {
         </section>
         {/* <section id="pricing" className="w-full h-screen bg-gray-50"> */}
         <Pricing />
-        <section className="w-3/4 mx-auto">
+        <section className="w-full md:w-3/4 mx-auto">
           <CTASection />
         </section>
         {/* <FeedbackSection /> */}
