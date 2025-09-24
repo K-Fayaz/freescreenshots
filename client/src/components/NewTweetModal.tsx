@@ -14,6 +14,7 @@ interface NewTweetModalProps {
 const NewTweetModal: React.FC<NewTweetModalProps> = ({ isOpen, onClose, setPostDetails, setLoading }) => {
   const [url, setUrl] = useState('');
   const { showToast,showError } = useToast();
+  const [message,setMessage] = useState<string>('');
 
   if (!isOpen) return null;
 
@@ -22,8 +23,15 @@ const NewTweetModal: React.FC<NewTweetModalProps> = ({ isOpen, onClose, setPostD
     // Handle URL submission here
     console.log('URL submitted:', url);
 
+
     const allowedPlatforms = ["x.com", "peerlist.io", "threads.com", "reddit.com","youtu.be/","youtube.com","producthunt.com","www.producthunt.com","www.instagram.com","instagram.com"];
     const isAllowed = allowedPlatforms.some(platform => url.includes(platform));
+
+    // Product Hunt URL validation
+    if ((url.includes("producthunt.com") || url.includes("www.producthunt.com")) && url.includes("/products")) {
+      setMessage('Invalid Product Hunt URL: Please use the URL from the share button (should contain /posts, not /products).');
+      return;
+    }
 
     if (!isAllowed) {
       showError("Invalid URL");
@@ -62,11 +70,18 @@ const NewTweetModal: React.FC<NewTweetModalProps> = ({ isOpen, onClose, setPostD
     onClose();
   };
 
+
+  const handleInputChange = (e) => {
+    setMessage('');
+    setUrl(e.target.value);
+
+  }
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold">Paste new Tweet URL</h2>
+          <h2 className="text-lg font-semibold">Paste new URL</h2>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600"
@@ -76,18 +91,24 @@ const NewTweetModal: React.FC<NewTweetModalProps> = ({ isOpen, onClose, setPostD
         </div>
         
         <p className="text-sm text-gray-600 mb-4">
-          Supports Tweet, thread, profile, and article URL.
+          Supports Twitter, Product Hunt, Youtube, and more.
         </p>
         
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="url"
             value={url}
-            onChange={(e) => setUrl(e.target.value)}
+            onChange={handleInputChange}
             placeholder="Paste your Tweet URL here"
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             required
           />
+
+          {
+            message && (
+              <p className='text-sm px-3' style={{color:"red"}}>{message}</p>
+            )
+          }
           
           <div className="flex justify-end">
             <button
