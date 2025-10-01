@@ -143,10 +143,11 @@ const FakeTweet: React.FC<FakeTwitterPostEditorProps> = ({ twitterPostData }) =>
 
                     {
                         twitterPostData?.media.length > 0 && (
-                            <div className="w-full h-[230px]">
+                            <div className="w-full h-auto">
                                 <img 
                                     src={twitterPostData?.media[0]}
-                                    className="w-full h-full object-cover rounded-xl"
+                                    className="w-full h-full object-cover rounded-xl post-media-gif"
+                                    alt="post media"
                                 />
                             </div>
                         )

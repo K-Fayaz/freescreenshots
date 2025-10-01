@@ -14,6 +14,8 @@
     "clsx": "^2.1.1",
     "emoji-picker-react": "^4.13.3",
     "fabric": "^6.7.1",
+    "gif.js": "^0.2.0",
+    "gifuct-js": "^2.1.2",
     "gsap": "^3.13.0",
     "hls.js": "^1.6.9",
     "html-to-image": "^1.11.13",

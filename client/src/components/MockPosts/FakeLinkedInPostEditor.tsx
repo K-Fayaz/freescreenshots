@@ -40,9 +40,10 @@ interface LinkedInPostProps {
 interface FakeLinkedInPostEditorProps {
     setLinkedInPostData: React.Dispatch<React.SetStateAction<LinkedInPostProps | null>>;
     linkedInPostData: LinkedInPostProps | null;
+    setIsGif: React.Dispatch<React.SetStateAction<boolean | null>>;
 }
 
-const FakeLinkedInPostEditor: React.FC<FakeLinkedInPostEditorProps> = ({ setLinkedInPostData, linkedInPostData }) => {
+const FakeLinkedInPostEditor: React.FC<FakeLinkedInPostEditorProps> = ({ setLinkedInPostData, linkedInPostData, setIsGif }) => {
     const [date, setDate] = useState("2024-01-01");
     const [time, setTime] = useState("12:00");
     const [verified, setVerified] = useState(linkedInPostData?.verified || false);
@@ -383,11 +384,17 @@ const FakeLinkedInPostEditor: React.FC<FakeLinkedInPostEditorProps> = ({ setLink
                             <span className="text-xs">PNG, JPG up to 5MB</span>
                             <input
                                 type="file"
-                                accept="image/png, image/jpeg"
+                                accept="image/*"
                                 className="hidden"
                                 onChange={e => {
                                     if (e.target.files && e.target.files[0]) {
                                         const file = e.target.files[0];
+                                        if (file.type === 'image/gif') {
+                                            // Optionally, you can set a flag or handle GIFs differently
+                                            if (setIsGif) setIsGif(true);
+                                        } else {
+                                            if (setIsGif) setIsGif(false);
+                                        }
                                         const reader = new FileReader();
                                         reader.onloadend = () => {
                                             if (linkedInPostData && setLinkedInPostData) {
@@ -414,6 +421,7 @@ const FakeLinkedInPostEditor: React.FC<FakeLinkedInPostEditorProps> = ({ setLink
                                 className="ml-2 text-gray-500 hover:text-red-500"
                                 onClick={() => {
                                     if (linkedInPostData && setLinkedInPostData) {
+                                        setIsGif(false);
                                         setLinkedInPostData({
                                             ...linkedInPostData,
                                             media: [],

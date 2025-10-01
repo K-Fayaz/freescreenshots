@@ -144,12 +144,12 @@ const getDetails = async (req, res) => {
       if (userId && userId !== "undefined" && userId !== "") {
         console.log("user id is: ",userId)
         let user = await User.findById(userId);
-        if (user && user.subscription === "premium") {
+        if (user && user.credits > 0) {
           user.credits -= 1;
           await user.save();
         }
   
-        if (user.credits <= 0 && user.subscription === "premium") {
+        if (user.credits <= 0) {
           user.subscription = "free";
           user.credits = 0;
           await user.save();

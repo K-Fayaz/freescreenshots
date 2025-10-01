@@ -17,6 +17,10 @@ import FakeLinkedInPostEditor from "@/components/MockPosts/FakeLinkedInPostEdito
 import FakeLinkedInPost from "@/components/MockPosts/FakeLinkedInPost";
 import ReplyChainEditor from "@/components/MockPosts/ReplyChainEditor";
 import TwitterReplyChain from "@/components/MockPosts/TwitterReplyChain";
+import html2canvas from 'html2canvas';
+import GIF from 'gif.js';
+import { parseGIF, decompressFrames } from'gifuct-js';
+import { toPng } from 'html-to-image';
 
 interface userDetails {
   credits: number;
@@ -236,6 +240,9 @@ const FakePost = () => {
 
     // Download handler with loading state
     const [downloading, setDownloading] = useState(false);
+    const [downloadGif, setDownloadGif] = useState(false);
+    const [isGif,setIsGif] = useState(false);
+
     const handleDownload = async () => {
         if (!postRef.current) return;
 
@@ -279,8 +286,264 @@ const FakePost = () => {
             setDownloading(false);
         })
     };
-    
-    
+
+    const handleGifDownload = async () => {
+        if (!postRef.current) return;
+        // setDownloading(true);
+        setDownloadGif(true);
+
+        let url = `${BASE_URL}api/user/fake-post-download`;
+
+        try {
+            // Track download
+            await axios({
+                url,
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+
+            // Find the image element (it will have base64 src)
+            const gifElement = postRef.current.querySelector('img.post-media-gif[src^="data:image"]') as HTMLImageElement;
+            
+            if (!gifElement) {
+                alert('No media found in the post');
+                setDownloadGif(false);
+                return;
+            }
+
+            // Get the base64 source
+            const gifSrc = gifElement.src;
+
+            // Check if it's actually a GIF
+            if (!gifSrc.includes('data:image/gif')) {
+                alert('The uploaded media is not a GIF');
+                setDownloadGif(false);
+                return;
+            }
+
+            // Extract frames from base64 GIF with proper timing
+            const { frames: gifFrames, delays } = await extractGifFrames(gifSrc);
+
+            // Get the base layout (without GIF) using html-to-image
+            // Temporarily hide the GIF
+            const originalSrc = gifElement.src;
+            gifElement.style.visibility = 'hidden';
+            
+            // Use html-to-image instead of html2canvas for consistent rendering
+            const baseDataUrl = await toPng(postRef.current, {
+                quality: 1,
+                pixelRatio: 0.8,
+                // backgroundColor: null // Transparent background
+            });
+
+            // Show GIF again
+            gifElement.style.visibility = 'visible';
+
+            // Convert base image to canvas
+            const baseCanvas = await createCanvasFromDataUrl(baseDataUrl);
+
+            // Create GIF encoder with better settings
+            const gif = new GIF({
+                workers: 2,
+                quality: 1,
+                width: baseCanvas.width,
+                height: baseCanvas.height,
+                workerScript: '/gif.worker.js',
+                transparent: null
+            });
+
+            // Get GIF position in the canvas
+            const postRect = postRef.current.getBoundingClientRect();
+            const gifRect = gifElement.getBoundingClientRect();
+            const scale = 0.8; // Same as pixelRatio
+            
+            const gifX = Math.round((gifRect.left - postRect.left) * scale);
+            const gifY = Math.round((gifRect.top - postRect.top) * scale);
+            const gifWidth = Math.round(gifRect.width * scale);
+            const gifHeight = Math.round(gifRect.height * scale);
+
+            // Create frames by overlaying GIF frames on base canvas
+            for (let i = 0; i < gifFrames.length; i++) {
+                const frameCanvas = document.createElement('canvas');
+                frameCanvas.width = baseCanvas.width;
+                frameCanvas.height = baseCanvas.height;
+                const ctx = frameCanvas.getContext('2d', { 
+                    willReadFrequently: false,
+                    alpha: true // Enable alpha for transparency
+                })!;
+
+                // Draw base layout
+                ctx.drawImage(baseCanvas, 0, 0);
+
+                // Draw GIF frame on top with proper scaling
+                await new Promise<void>((resolve) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        ctx.imageSmoothingEnabled = true;
+                        ctx.imageSmoothingQuality = 'high';
+                        ctx.drawImage(img, gifX, gifY, gifWidth, gifHeight);
+                        resolve();
+                    };
+                    img.onerror = () => resolve();
+                    img.src = gifFrames[i];
+                });
+
+                // Use actual frame delay from original GIF, but apply speed multiplier
+                const speedMultiplier = 0.1; // Adjust as needed
+                const originalDelay = delays[i] || 100;
+                const frameDelay = Math.max(20, originalDelay * speedMultiplier);
+                
+                gif.addFrame(frameCanvas, { delay: frameDelay, copy: true });
+            }
+
+            // Generate and download
+            gif.on('finished', (blob) => {
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = selectedPlatform === 'X' ? 'tweet.gif' : 'post.gif';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                setDownloading(false);
+                setDownloadGif(false);
+            });
+
+            gif.render();
+
+        } catch (err) {
+            console.error('GIF generation failed:', err);
+            alert('Failed to generate GIF. Please try again.');
+            // setDownloading(false);
+            setDownloadGif(false);
+        }
+    };
+
+    // Helper function to create canvas from data URL
+    async function createCanvasFromDataUrl(dataUrl: string): Promise<HTMLCanvasElement> {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext('2d')!;
+                ctx.drawImage(img, 0, 0);
+                resolve(canvas);
+            };
+            img.onerror = reject;
+            img.src = dataUrl;
+        });
+    }
+
+    // Helper function to extract GIF frames from base64 with delays
+    async function extractGifFrames(base64Gif: string): Promise<{ frames: string[], delays: number[] }> {
+        return new Promise(async (resolve, reject) => {
+            try {
+                // Convert base64 to ArrayBuffer
+                const base64Data = base64Gif.split(',')[1];
+                const binaryString = atob(base64Data);
+                const bytes = new Uint8Array(binaryString.length);
+                for (let i = 0; i < binaryString.length; i++) {
+                    bytes[i] = binaryString.charCodeAt(i);
+                }
+
+                // Use gifuct-js to parse GIF
+                const gifData = parseGIF(bytes.buffer);
+                const frames = decompressFrames(gifData, true);
+
+                // Get full GIF dimensions
+                const fullWidth = gifData.lsd.width;
+                const fullHeight = gifData.lsd.height;
+
+                // Convert frames to base64 images with proper disposal
+                const imageFrames: string[] = [];
+                const frameDelays: number[] = [];
+                
+                // Create persistent canvas for frame accumulation
+                const persistentCanvas = document.createElement('canvas');
+                persistentCanvas.width = fullWidth;
+                persistentCanvas.height = fullHeight;
+                const persistentCtx = persistentCanvas.getContext('2d', {
+                    willReadFrequently: false,
+                    alpha: true
+                })!;
+                
+                // Fill with background color if present
+                if (gifData.gct) {
+                    const bgColorIndex = gifData.lsd.backgroundColorIndex;
+                    if (bgColorIndex !== undefined) {
+                        const bgColor = gifData.gct[bgColorIndex];
+                        persistentCtx.fillStyle = `rgb(${bgColor[0]},${bgColor[1]},${bgColor[2]})`;
+                        persistentCtx.fillRect(0, 0, fullWidth, fullHeight);
+                    }
+                }
+                
+                for (let i = 0; i < frames.length; i++) {
+                    const frame = frames[i];
+                    
+                    // Handle disposal method from previous frame
+                    if (i > 0) {
+                        const prevFrame = frames[i - 1];
+                        const disposalType = prevFrame.disposalType || 0;
+                        
+                        if (disposalType === 2) {
+                            // Restore to background color
+                            persistentCtx.clearRect(
+                                prevFrame.dims.left,
+                                prevFrame.dims.top,
+                                prevFrame.dims.width,
+                                prevFrame.dims.height
+                            );
+                        }
+                    }
+                    
+                    // Create temporary canvas for this frame's patch
+                    const tempCanvas = document.createElement('canvas');
+                    tempCanvas.width = frame.dims.width;
+                    tempCanvas.height = frame.dims.height;
+                    const tempCtx = tempCanvas.getContext('2d', {
+                        willReadFrequently: false,
+                        alpha: true
+                    })!;
+                    
+                    // Draw current frame patch
+                    const imageData = tempCtx.createImageData(
+                        frame.dims.width,
+                        frame.dims.height
+                    );
+                    imageData.data.set(frame.patch);
+                    tempCtx.putImageData(imageData, 0, 0);
+                    
+                    // Draw patch onto persistent canvas
+                    persistentCtx.drawImage(
+                        tempCanvas,
+                        frame.dims.left,
+                        frame.dims.top
+                    );
+
+                    // Save current state as a frame
+                    imageFrames.push(persistentCanvas.toDataURL('image/png'));
+                    
+                    // Get frame delay
+                    let delay = frame.delay !== undefined ? frame.delay * 10 : 100;
+                    if (delay <= 10) delay = 50;
+                    
+                    frameDelays.push(delay);
+                }
+
+                resolve({ frames: imageFrames, delays: frameDelays });
+            } catch (error) {
+                console.error('Error extracting GIF frames:', error);
+                reject(error);
+            }
+        });
+    }
+  
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (!token) {
@@ -397,9 +660,9 @@ const FakePost = () => {
                         {
                             selectedTab === 'Content' ? (
                                 selectedPlatform == 'X' ? (
-                                    <FakeTwitterPostEditor setTwitterPostData={setTwitterPostData} twitterPostData={twitterPostData}/>
+                                    <FakeTwitterPostEditor setTwitterPostData={setTwitterPostData} twitterPostData={twitterPostData} setIsGif={setIsGif}/>
                                 ) : selectedPlatform == 'LinkedIn' ? (
-                                    <FakeLinkedInPostEditor setLinkedInPostData={setLinkedInPostData} linkedInPostData={linkedInPostData}/>
+                                    <FakeLinkedInPostEditor setLinkedInPostData={setLinkedInPostData} linkedInPostData={linkedInPostData} setIsGif={setIsGif}/>
                                 ) : null
                             ) : selectedTab == 'Background' ? (
                                 <Background selectedBg={selectedBg} setSelectedBg={setSelectedBg} gradientColors={gradientColors} solidColors={solidColors}/>
@@ -414,8 +677,8 @@ const FakePost = () => {
                     </div>
 
                     <div className="w-[90%] mx-auto mt-3 mb-4 flex justify-between">
-                        <section className="bg-black rounded-md basis-[98%] text-sm flex items-center justify-center text-white p-2">
-                            <button className="flex items-center" onClick={handleDownload} disabled={downloading}>
+                        <section className="basis-[98%] text-sm flex items-center justify-between text-white">
+                            <button className={`flex ${isGif ? 'basis-[45%]' : 'basis-[100%]'} items-center justify-center items-center bg-black rounded-md p-2`} onClick={handleDownload} disabled={downloading || downloadGif}>
                                 {downloading ? (
                                     <svg className="animate-spin h-5 w-5 mr-3 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
@@ -424,8 +687,23 @@ const FakePost = () => {
                                 ) : (
                                     <Download size={15} className="mr-3"/>
                                 )}
-                                {downloading ? 'Exporting...' : 'Export'}
+                                {downloading ? 'Exporting png...' : 'Export png'}
                             </button>
+                            {
+                                isGif && (
+                                    <button className="flex basis-[45%] items-center justify-center bg-black rounded-md p-2" onClick={handleGifDownload} disabled={downloadGif || downloading}>
+                                        {downloadGif ? (
+                                            <svg className="animate-spin h-5 w-5 mr-3 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                                            </svg>
+                                        ) : (
+                                            <Download size={15} className="mr-3"/>
+                                        )}
+                                        {downloadGif ? 'Exporting Gif...' : 'Export Gif'}
+                                    </button>
+                                )
+                            }
                         </section>
                         {/* <button className="rounded-md basis-[48%] text-sm flex items-center justify-center p-2 border boder-gray-500">
                             Next

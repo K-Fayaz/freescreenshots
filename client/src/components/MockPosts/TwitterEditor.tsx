@@ -42,9 +42,10 @@ interface TwitterPostProps {
 interface FakeTwitterPostEditorProps {
     setTwitterPostData: React.Dispatch<React.SetStateAction<TwitterPostProps | null>>;
     twitterPostData: TwitterPostProps | null;
+    setIsGif: React.Dispatch<React.SetStateAction<boolean | null>>;
 }
 
-const FakeTwitterPostEditor: React.FC<FakeTwitterPostEditorProps> = ({ setTwitterPostData, twitterPostData }) => {
+const FakeTwitterPostEditor: React.FC<FakeTwitterPostEditorProps> = ({ setTwitterPostData, twitterPostData, setIsGif }) => {
 
     const [date, setDate] = useState("2024-01-01");
     const [time, setTime] = useState("12:00");
@@ -401,14 +402,21 @@ const FakeTwitterPostEditor: React.FC<FakeTwitterPostEditorProps> = ({ setTwitte
                         <label className="block w-full cursor-pointer border-2 border-dashed border-gray-300 rounded-lg h-[90px] flex flex-col items-center justify-center text-gray-400 hover:border-gray-400 transition-colors">
                             <ImagePlus />
                             <span className="text-xs">Click to upload image</span>
-                            <span className="text-xs">PNG, JPG up to 5MB</span>
+                            <span className="text-xs">Image/Gif</span>
                             <input
                                 type="file"
-                                accept="image/png, image/jpeg"
+                                accept="image/*"
                                 className="hidden"
                                 onChange={e => {
                                     if (e.target.files && e.target.files[0]) {
                                         const file = e.target.files[0];
+                                        // Check if file is a gif
+                                        if (file.type === 'image/gif') {
+                                            // Optionally, you can set a flag or handle GIFs differently
+                                            if (setIsGif) setIsGif(true);
+                                        } else {
+                                            if (setIsGif) setIsGif(false);
+                                        }
                                         const reader = new FileReader();
                                         reader.onloadend = () => {
                                             if (twitterPostData && setTwitterPostData) {
@@ -435,6 +443,7 @@ const FakeTwitterPostEditor: React.FC<FakeTwitterPostEditorProps> = ({ setTwitte
                                 className="ml-2 text-gray-500 hover:text-red-500"
                                 onClick={() => {
                                     if (twitterPostData && setTwitterPostData) {
+                                        setIsGif(false);
                                         setTwitterPostData({
                                             ...twitterPostData,
                                             media: [],

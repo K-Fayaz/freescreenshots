@@ -122,8 +122,12 @@ const FakeLinkedInPost: React.FC<FakeLinkedInPostProps> = ({ linkedInPostData })
 
             {/* Media */}
             {linkedInPostData.media.length > 0 && (
-                <div className="w-full h-[250px] mt-2">
-                    <img src={linkedInPostData.media[0]} className="w-full h-full object-cover rounded-xl" />
+                <div className="w-full h-auto mt-2">
+                    <img 
+                        src={linkedInPostData.media[0]} 
+                        className="w-full h-full object-cover rounded-xl post-media-gif"
+                        alt="post media"
+                    />
                 </div>
             )}
 
